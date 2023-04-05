@@ -1,0 +1,13 @@
+ignore = [
+    "D203",  # ignores D203 (one-blank-line-before-class) since we use D211 (no-blank-line-before-class)
+    "D213",  # ignores D213 (multi-line-summary-second-line) since we use D212 (multi-line-summary-first-line)
+]
+
+line-length = 120
+
+select = [
+    "ALL",  # enable all rules by default
+]
+
+# Allow imports relative to these directories.
+src = ["src"]

@@ -1,0 +1,46 @@
+[tool.poetry]
+
+authors = [
+    "Alexander Goryev <lxgorev@gmail.com>",
+    "Alexey Tsivunin <alexey.tsivunin@yandex.ru",
+]
+
+description = "Backend for Wisher application."
+
+name = "wisher-backend"
+
+version = "0.0.0"
+
+
+[tool.poetry.dependencies]
+
+python = "~3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+
+darglint = "1.8.1"  # Checks whether a docstring's description matches the actual function/method implementation
+dlint = "0.14.0"  # Tool for encouraging best coding practices and helping ensure Python code is secure.
+flake8 = "6.0.0"
+flake8-aaa = "0.14.0"  # Lints tests against the Arrange Act Assert pattern.
+flake8-absolute-import = "1.0.0.1"  # Plugin to require absolute imports.
+flake8-annotations-complexity = "0.0.7"  # Plugin to validate annotations complexity.
+flake8-codes = "0.2.2"  # CLI tool to introspect flake8 plugins and their codes.
+flake8-docstrings = "1.7.0"  # Include checks provided by pep257
+flake8-functions = "0.0.7"  # Plugin for validation of function parameters (length, complexity, etc).
+flake8-import-order = "0.18.2"  # Include checks import order against various Python Style Guides.
+flake8-mock-x2 = "^0.4.1"  # Provides checking mock non-existent methods.
+flake8-mutable = "1.2.0"  # Extension for mutable default arguments.
+flake8-rst-docstrings = "0.3.0"  # Validate Python docstrings as reStructuredText (сRST)
+flake8-spellcheck = "0.28.0"  # Spellcheck variables, classnames, comments, docstrings etc.
+mypy = "1.2.0"
+pyenchant = "3.2.2"  # needed for pylint's spellchecker
+pylint = "2.17.2"
+ruff = "0.0.261"
+
+
+[build-system]
+
+build-backend = "poetry.core.masonry.api"
+
+requires = ["poetry-core"]
