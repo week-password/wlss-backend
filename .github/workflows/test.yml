@@ -10,8 +10,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
+
       - name: Build pytest
         run: docker compose --file envs/ci/docker-compose.yml build pytest
 
       - name: Run pytest
         run: docker compose --file envs/ci/docker-compose.yml run pytest
+
+      - name: Update buildx cache
+        uses: ./.github/actions/docker/update-buildx-cache
