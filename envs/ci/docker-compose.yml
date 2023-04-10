@@ -21,3 +21,7 @@ services:
   pylint:
     <<: *app-build
     entrypoint: pylint src
+
+  pytest:
+    <<: *app-build
+    entrypoint: pytest --cov=src

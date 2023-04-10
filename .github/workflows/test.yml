@@ -1,0 +1,17 @@
+name: Test
+run-name: Test commit "${{ github.sha }}"
+
+on: push
+jobs:
+  pytest:
+    name: Pytest
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build pytest
+        run: docker compose --file envs/ci/docker-compose.yml build pytest
+
+      - name: Run pytest
+        run: docker compose --file envs/ci/docker-compose.yml run pytest
