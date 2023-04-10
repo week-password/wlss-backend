@@ -46,7 +46,7 @@ mypy
 
 2. Ruff.
 ```bash
-ruff check src
+ruff check src tests
 ```
 
 3. Flake8.
@@ -57,6 +57,26 @@ flake8
 4. Pylint.
 ```bash
 pylint src
+```
+
+
+## Run tests
+
+To run tests you need to do all steps from [First time setup](#first-time-setup) section.
+
+- Pytest.
+```bash
+pytest --cov=src
+```
+
+- Coverage report.
+```bash
+coverage html
+```
+
+- Report with contexts.
+```bash
+pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
 ```
 
 ## Troubleshooting

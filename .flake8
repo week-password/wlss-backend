@@ -2,6 +2,7 @@
 
 filename =
     ./src/*,
+    ./tests/*,
 
 exclude =
     __pycache__,
@@ -10,6 +11,13 @@ ignore =
     # following line ignores all checks from raw flake8 (pyflakes, pycodestyle and mccabe)
     # because those are already implemented in ruff and will be checked by ruff since it's much faster
     E, F, W, C90,
+
+per-file-ignores = 
+    # files with tests
+    tests/*test_*:
+        # Missing docstring
+        D,
+
 
 # NEXT WILL BE LISTED SOME OPTIONS USED BY PLUGINS
 # PLEASE KEEP THIS LIST SORTED BY PLUGIN NAMES ALPHABETICALLY
