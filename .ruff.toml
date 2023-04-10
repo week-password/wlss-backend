@@ -11,3 +11,13 @@ select = [
 
 # Allow imports relative to these directories.
 src = ["src"]
+
+
+[per-file-ignores]
+
+# files with tests
+"tests/*test_*" = [
+    "ANN",  # Absence of function annotations and type comments.
+    "D",  # Missing docstrings.
+    "S101",  # Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+]
