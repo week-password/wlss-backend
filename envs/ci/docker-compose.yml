@@ -16,15 +16,15 @@ services:
 
   ruff:
     <<: *app-build
-    entrypoint: ruff check src
+    entrypoint: ruff check src tests
 
   flake8:
     <<: *app-build
     entrypoint: flake8
-  
+
   pylint:
     <<: *app-build
-    entrypoint: pylint src
+    entrypoint: pylint src tests
 
   pytest:
     <<: *app-build

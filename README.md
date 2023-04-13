@@ -56,7 +56,7 @@ flake8
 
 4. Pylint.
 ```bash
-pylint src
+pylint src tests
 ```
 
 
