@@ -13,6 +13,15 @@ jobs:
       - name: Cache Docker layers
         uses: ./.github/actions/docker/use-buildx-cache
 
+      - name: Cache pytest
+        uses: actions/cache@v3
+        with:
+          path: ./.pytest_cache
+          key: pytest-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            pytest-${{ runner.os }}-${{ github.ref_name }}
+            pytest-${{ runner.os }}-${{ github.event.repository.default_branch }}
+
       - name: Build pytest
         run: docker compose --file envs/ci/docker-compose.yml build pytest
 
