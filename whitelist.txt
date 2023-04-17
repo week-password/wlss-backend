@@ -1,5 +1,27 @@
 # This is a whitelist of allowed words for flake8-spellcheck plugin.
 # IMPORTANT: please keep this list alphabetically sorted by whitelisted words
 
+# Python library 
+anyio
+
+# asynchronous (pylint spellcheck)
+async
+
+
+# Python standart library for asynchronous code (pylint spellcheck)
+asyncio
+
+# fastapi framework
+fastapi
+
+# Python library for testing (pylint spellcheck)
+pytest
+
+# health check
+healthcheck
+
 # source
 src
+
+# fastapi client for tests
+testclient
