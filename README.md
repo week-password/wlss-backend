@@ -33,6 +33,21 @@ poetry shell
 ```
 
 
+## Run app
+
+To run application you need to do all steps from [First time setup](#first-time-setup) section.
+
+1. Run FastAPI.
+```bash
+uvicorn src.app:app
+```
+
+2. Check health status.
+```bash
+curl --request GET http://localhost:8000/health
+```
+
+
 ## Run linters
 
 To run linters you need to do all steps from [First time setup](#first-time-setup) section.
