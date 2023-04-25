@@ -19,7 +19,7 @@ Go to the project root directory.
 
 1. Setup git user for this repository.
 ```bash
-source envs/dev/scripts/git/iam.sh
+source envs/local/dev/scripts/git/iam.sh
 ```
 
 2. Create virtual environment and install dependencies.
