@@ -23,10 +23,10 @@ jobs:
             pytest-${{ runner.os }}-${{ github.event.repository.default_branch }}
 
       - name: Build pytest
-        run: docker compose --file envs/ci/docker-compose.yml build pytest
+        run: docker compose --file envs/ci/lint/docker-compose.yml build pytest
 
       - name: Run pytest
-        run: docker compose --file envs/ci/docker-compose.yml run pytest
+        run: docker compose --file envs/ci/lint/docker-compose.yml run pytest
 
       - name: Update buildx cache
         uses: ./.github/actions/docker/update-buildx-cache

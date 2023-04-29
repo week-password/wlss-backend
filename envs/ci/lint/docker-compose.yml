@@ -3,8 +3,8 @@ version: "3.8"
 services:
   app-build: &app-build
     build:
-      context: ../..  # path from the corrent file to the project root dir
-      dockerfile: envs/ci/Dockerfile  # path from the project root dir to the Dockerfile
+      context: ../../..  # path from the corrent file to the project root dir
+      dockerfile: envs/ci/lint/Dockerfile  # path from the project root dir to the Dockerfile
       cache_from:
         - type=local,src=${BUILDX_CACHE_SRC}
       cache_to:
@@ -14,14 +14,14 @@ services:
     <<: *app-build
     volumes:
       # bind .mypy_cache to the host in order to store mypy cache in GitHub Cache
-      - ../../.mypy_cache:/app/.mypy_cache  # host path is relative to the current docker-compose file
+      - ../../../.mypy_cache:/app/.mypy_cache  # host path is relative to the current docker-compose file
     entrypoint: mypy
 
   ruff:
     <<: *app-build
     volumes:
       # bind .ruff_cache to the host in order to store ruff cache in GitHub Cache
-      - ../../.ruff_cache:/app/.ruff_cache  # host path is relative to the current docker-compose file
+      - ../../../.ruff_cache:/app/.ruff_cache  # host path is relative to the current docker-compose file
     entrypoint: ruff check src tests
 
   flake8:
@@ -36,5 +36,5 @@ services:
     <<: *app-build
     volumes:
       # bind .pytest_cache to the host in order to store pytest cache in GitHub Cache
-      - ../../.pytest_cache:/app/.pytest_cache  # host path is relative to the current docker-compose file
+      - ../../../.pytest_cache:/app/.pytest_cache  # host path is relative to the current docker-compose file
     entrypoint: pytest --cov=src
