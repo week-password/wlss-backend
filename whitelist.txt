@@ -1,12 +1,11 @@
 # This is a whitelist of allowed words for flake8-spellcheck plugin.
 # IMPORTANT: please keep this list alphabetically sorted by whitelisted words
 
-# Python library 
+# Python library
 anyio
 
 # asynchronous (pylint spellcheck)
 async
-
 
 # Python standart library for asynchronous code (pylint spellcheck)
 asyncio
@@ -14,11 +13,11 @@ asyncio
 # fastapi framework
 fastapi
 
-# Python library for testing (pylint spellcheck)
-pytest
-
 # health check
 healthcheck
+
+# Python library for testing (pylint spellcheck)
+pytest
 
 # source
 src
