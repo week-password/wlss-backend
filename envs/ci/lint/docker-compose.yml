@@ -31,10 +31,3 @@ services:
   pylint:
     <<: *app-build
     entrypoint: pylint --jobs=0 src tests
-
-  pytest:
-    <<: *app-build
-    volumes:
-      # bind .pytest_cache to the host in order to store pytest cache in GitHub Cache
-      - ../../../.pytest_cache:/app/.pytest_cache  # host path is relative to the current docker-compose file
-    entrypoint: pytest --cov=src
