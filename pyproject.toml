@@ -5,9 +5,9 @@ authors = [
     "Alexey Tsivunin <alexey.tsivunin@yandex.ru",
 ]
 
-description = "Backend for Wisher application."
+description = "Backend for WLSS application."
 
-name = "wisher-backend"
+name = "wlss-backend"
 
 version = "0.0.0"
 

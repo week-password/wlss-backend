@@ -1,4 +1,6 @@
-# Wisher backend
+# WLSS backend
+
+Backend application for [Wish List Sharing Service](https://github.com/week-password/wisher).
 
 ***
 

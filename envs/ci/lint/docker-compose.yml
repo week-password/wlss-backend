@@ -1,5 +1,7 @@
 version: "3.8"
 
+name: wlss-ci-lint
+
 services:
   app-build: &app-build
     build:
