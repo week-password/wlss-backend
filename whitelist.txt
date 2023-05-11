@@ -10,17 +10,72 @@ async
 # Python standart library for asynchronous code (pylint spellcheck)
 asyncio
 
+# auto increment
+autoincrement
+
+# configuration component
+config
+
+# designates files with `.env` extension
+dotenv
+
+# environment
+env
+
+# environments
+envs
+
 # fastapi framework
 fastapi
 
 # health check
 healthcheck
 
+# MinIO service
+minio
+
+# ORM - Object-Relational Mapping
+orm
+
+# PostgreSQL
+postgre
+
+# python library
+pydantic
+pydantic's
+
+# Pylint tool
+pylint
+
 # Python library for testing (pylint spellcheck)
 pytest
+
+# schemas
+schemas
+
+# scope function
+scopefunc
+
+# session maker
+sessionmaker
+
+# session start
+sessionstart
+
+# python library
+sqlalchemy
 
 # source
 src
 
+# table name
+tablename
+
 # fastapi client for tests
 testclient
+
+# utilities
+utils
+
+# project id, stands for "Wish List Sharing Service"
+wlss

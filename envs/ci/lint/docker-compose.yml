@@ -33,3 +33,7 @@ services:
   pylint:
     <<: *app-build
     entrypoint: pylint --jobs=0 src tests
+
+  black:
+    <<: *app-build
+    entrypoint: black --line-length=120 --check migrations

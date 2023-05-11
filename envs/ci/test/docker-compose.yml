@@ -14,7 +14,27 @@ services:
 
   pytest:
     <<: *app-build
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - WLSS_ENV=ci/test
     volumes:
       # bind .pytest_cache to the host in order to store pytest cache in GitHub Cache
       - ../../../.pytest_cache:/app/.pytest_cache  # host path is relative to the current docker-compose file
     entrypoint: pytest --cov=src
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    healthcheck:
+      # see: https://github.com/peter-evans/docker-compose-healthcheck#waiting-for-postgresql-to-be-healthy
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

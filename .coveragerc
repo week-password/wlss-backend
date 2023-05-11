@@ -2,6 +2,11 @@
 
 branch = True
 
+# The concurrency libraries in use by the product code.
+# If your program uses multiprocessing, gevent, greenlet, or eventlet,
+# you must name that library in this option, or coverage.py will produce very wrong results.
+concurrency = greenlet
+
 
 [report]
 

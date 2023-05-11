@@ -96,3 +96,22 @@ jobs:
 
       - name: Update buildx cache
         uses: ./.github/actions/docker/update-buildx-cache
+
+  black:
+    name: Black
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
+
+      - name: Build black
+        run: docker compose --file envs/ci/lint/docker-compose.yml build black
+
+      - name: Run black
+        run: docker compose --file envs/ci/lint/docker-compose.yml run black
+
+      - name: Update buildx cache
+        uses: ./.github/actions/docker/update-buildx-cache

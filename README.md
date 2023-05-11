@@ -8,6 +8,8 @@ Backend application for [Wish List Sharing Service](https://github.com/week-pass
 
 To develop this project you need to have the following software installed.
 
+- Docker 19.03+ (as a part of [Docker Desktop](https://docs.docker.com/get-docker/))
+- Docker Compose 2.0.0+ (as a part of [Docker Desktop](https://docs.docker.com/get-docker/))
 - [Poetry 1.4.2](https://python-poetry.org/docs/)
 - [Python](https://www.python.org/) (see version in `pyproject.toml` file)
 
@@ -39,12 +41,22 @@ poetry shell
 
 To run application you need to do all steps from [First time setup](#first-time-setup) section.
 
-1. Run FastAPI.
+1. Run services.
 ```bash
-uvicorn src.app:app
+docker compose --file=envs/local/dev/docker-compose.yml up --detach
 ```
 
-2. Check health status.
+2. Apply migrations.
+```bash
+WLSS_ENV=local/dev alembic upgrade head
+```
+
+3. Run FastAPI.
+```bash
+WLSS_ENV=local/dev uvicorn src.app:app
+```
+
+# 4. Check health status.
 ```bash
 curl --request GET http://localhost:8000/health
 ```
@@ -81,9 +93,19 @@ pylint src tests
 
 To run tests you need to do all steps from [First time setup](#first-time-setup) section.
 
+1. Run services.
+```bash
+docker compose --file=envs/local/test/docker-compose.yml up --detach
+```
+
+2. Apply migrations.
+```bash
+WLSS_ENV=local/test alembic upgrade head
+```
+
 - Pytest.
 ```bash
-pytest --cov=src
+WLSS_ENV=local/test pytest --cov=src
 ```
 
 - Coverage report.
@@ -93,8 +115,43 @@ coverage html
 
 - Report with contexts.
 ```bash
-pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
+WLSS_ENV=local/test pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
 ```
+
+## Working with migrations
+
+Following examples will use `local/test` environment, but you can use any other value for `$WLSS_ENV` you need.
+
+- Generate new migration.
+```bash
+WLSS_ENV=local/test alembic revision --autogenerate -m "migration message"
+```
+
+- Apply all migrations.
+```bash
+WLSS_ENV=local/test alembic upgrade head
+```
+
+- Apply migrations up to particular revision.
+```bash
+WLSS_ENV=local/test alembic upgrade 746039e79eb3
+```
+
+- Downgrade certain number of migrations.
+```bash
+WLSS_ENV=local/test alembic downgrade -2
+```
+
+- Downgrade migrations to particular revision.
+```bash
+WLSS_ENV=local/test alembic upgrade 746039e79eb3
+```
+
+- Autoformat revision code if you changed it by hand.
+```bash
+black --line-length=120 migrations
+```
+
 
 ## Troubleshooting
 

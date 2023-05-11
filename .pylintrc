@@ -1,5 +1,15 @@
 [MAIN]
 
+# Pydantic library was added here to prevent `no-name-in-module` error from pylint
+# it looks really weird because all imports from pydantic are resolved with no issues
+# so probably pylint reports this error because pydantic has some part of the code written
+# in C language. I don't know actually whether this is a correct way to handle it
+# So you can check the links below to know more about this issue
+# https://pylint.pycqa.org/en/v2.17.4/user_guide/messages/error/no-member.html
+# https://github.com/pydantic/pydantic/issues/1961
+extension-pkg-whitelist=pydantic
+
+
 disable =
     # options below are disabled because they are already implemented in ruff
     # if you want to disable another error for some reason, please do it in a separate section above
@@ -114,6 +124,7 @@ disable =
     yield-outside-function,
 
 load-plugins =
+    pylint_per_file_ignores,  # This pylint plugin will enable per-file-ignores in your project
     pylint.extensions.bad_builtin,  # It can be used for finding prohibited used builtins, such as map or filter, for which other alternatives exists.
     pylint.extensions.broad_try_clause,  # Maximum number of statements allowed in a try clause.
     pylint.extensions.check_elif,  # Used when an else statement is immediately followed by an if statement and does not contain statements that would be unrelated to it.
@@ -195,4 +206,3 @@ spelling-private-dict-file = whitelist.txt
 # This flag controls whether the implicit-str-concat should generate a warning
 # on implicit string concatenation in sequences defined over several lines.
 check-str-concat-over-line-jumps = yes
-
