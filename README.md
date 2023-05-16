@@ -56,7 +56,7 @@ WLSS_ENV=local/dev alembic upgrade head
 WLSS_ENV=local/dev uvicorn src.app:app
 ```
 
-# 4. Check health status.
+4. Check health status.
 ```bash
 curl --request GET http://localhost:8000/health
 ```
