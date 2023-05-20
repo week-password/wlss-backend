@@ -1,21 +1,39 @@
 """Routes for dummy Entity model."""
 
-from fastapi import APIRouter, Depends
+import io
+from typing import Annotated
+
+from fastapi import APIRouter, Body, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.entity import schemas
 from src.entity.models import Entity
 from src.shared.database import get_session
+from src.shared.minio import get_minio, Minio
 
 
 router = APIRouter()
 
 
 @router.post("/entities")
-async def create_entity(db: AsyncSession = Depends(get_session)) -> None:
+async def create_entity(
+    entity_body: Annotated[schemas.NewEntity, Body()],
+    db: AsyncSession = Depends(get_session),
+    minio: Minio = Depends(get_minio),
+) -> None:
     """Create entity."""
-    db.add(Entity())
+    new_entity = Entity(**entity_body.dict())
+    db.add(new_entity)
+
+    file_content = b"some text"
+    minio.put_object(
+        bucket_name=new_entity.bucket,
+        object_name=new_entity.key,
+        data=io.BytesIO(file_content),
+        length=len(file_content),
+    )
+
     await db.commit()
 
 

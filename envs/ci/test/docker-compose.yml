@@ -17,6 +17,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       - WLSS_ENV=ci/test
     volumes:
@@ -36,5 +38,20 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  minio:
+    image: minio/minio:latest
+    env_file:
+      - .env
+    healthcheck:
+      # see: https://github.com/rodrigobdz/docker-compose-healthchecks#minio
+      # see: https://github.com/minio/minio/blob/c9d502e6fadf2c2cbb1e2ce7a9dc8de7dfed1d34/docs/orchestration/docker-swarm/docker-compose-secrets.yaml#L25-L29
+      test: ["CMD", "curl", "-f", "${MINIO_SCHEMA}://${MINIO_HOST}:${MINIO_PORT}/minio/health/live"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - minio:/data
+    command: server /data --console-address ":9001"
+
 volumes:
   postgres:
+  minio:

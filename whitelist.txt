@@ -4,6 +4,9 @@
 # Python library
 anyio
 
+# positional arguments in Python
+args
+
 # asynchronous (pylint spellcheck)
 async
 
@@ -19,6 +22,9 @@ config
 # designates files with `.env` extension
 dotenv
 
+# enumeration (pylint spellcheck)
+enum
+
 # environment
 env
 
@@ -28,11 +34,23 @@ envs
 # fastapi framework
 fastapi
 
+# file get (used by `minio` library)
+fget
+
 # health check
 healthcheck
 
+# keyword arguments in Python
+kwargs
+
+# same as 127.0.0.1
+localhost
+
 # MinIO service
 minio
+
+# default username and password for MinIO
+minioadmin
 
 # ORM - Object-Relational Mapping
 orm
@@ -73,6 +91,9 @@ tablename
 
 # fastapi client for tests
 testclient
+
+# temporary
+tmp
 
 # utilities
 utils

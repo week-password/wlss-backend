@@ -7,8 +7,17 @@ class Entity(BaseModel):
     """Entity schema."""
 
     id: int  # noqa: A003
+    bucket: str
+    key: str
 
     class Config:  # pylint: disable=too-few-public-methods
         """Pydantic's special class to configure pydantic models."""
 
         orm_mode = True
+
+
+class NewEntity(BaseModel):
+    """New entity schema."""
+
+    bucket: str
+    key: str

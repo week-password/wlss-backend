@@ -164,6 +164,7 @@ bad-names =
 
 # Good variable names which should always be accepted, separated by a comma.
 good-names =
+    f,
     i,
     j,
     k,

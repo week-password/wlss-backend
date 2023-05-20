@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, Asy
 
 from src.app import app
 from src.shared.database import get_session, POSTGRES_CONNECTION_URL
+from src.shared.minio import get_minio
 from tests.utils.database import set_autoincrement_counters
 
 
@@ -56,3 +57,14 @@ async def db():
     await async_session.close()
     await transaction.rollback()
     await connection.close()
+
+
+@pytest.fixture
+async def minio():
+    """Empty minio."""
+    minio = next(get_minio())
+    for _, bucket_name in minio.BUCKETS:
+        for minio_object in minio.list_objects(bucket_name, recursive=True):
+            minio.remove_object(bucket_name, minio_object.object_name)
+        minio.remove_bucket(bucket_name)
+    return minio

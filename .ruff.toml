@@ -38,6 +38,11 @@ src = ["src"]
 ]
 
 
+[flake8-annotations]
+# Whether to suppress ANN401 for dynamically typed *args and **kwargs arguments
+allow-star-arg-any = true
+
+
 [flake8-bugbear]
 # Allow default arguments like, e.g., `data: List[str] = fastapi.Query(None)`.
 extend-immutable-calls = ["fastapi.Depends"]
