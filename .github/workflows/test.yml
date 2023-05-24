@@ -29,4 +29,6 @@ jobs:
         run: docker compose --file envs/ci/test/docker-compose.yml up --attach pytest --exit-code-from pytest
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/test/.env
         uses: ./.github/actions/docker/update-buildx-cache

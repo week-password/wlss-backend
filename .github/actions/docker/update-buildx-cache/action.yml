@@ -14,6 +14,6 @@ runs:
     - name: Update buildx cache
       shell: bash
       run: |
-        set -o allexport; source envs/ci/lint/.env; set +o allexport;  # export environment variables from dotenv file
+        set -o allexport; source ${ENV_FILE}; set +o allexport;  # export environment variables from dotenv file
         rm -rf ${BUILDX_CACHE_SRC}
         mv ${BUILDX_CACHE_DEST} ${BUILDX_CACHE_SRC}

@@ -29,6 +29,8 @@ jobs:
         run: docker compose --file envs/ci/lint/docker-compose.yml run mypy
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
   ruff:
@@ -57,6 +59,8 @@ jobs:
         run: docker compose --file envs/ci/lint/docker-compose.yml run ruff
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
   flake8:
@@ -76,6 +80,8 @@ jobs:
         run: docker compose --file envs/ci/lint/docker-compose.yml run flake8
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
   pylint:
@@ -95,6 +101,8 @@ jobs:
         run: docker compose --file envs/ci/lint/docker-compose.yml run pylint
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
   black:
@@ -114,4 +122,6 @@ jobs:
         run: docker compose --file envs/ci/lint/docker-compose.yml run black
 
       - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
