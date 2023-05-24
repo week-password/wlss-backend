@@ -22,6 +22,9 @@ jobs:
             mypy-${{ runner.os }}-${{ github.ref_name }}
             mypy-${{ runner.os }}-${{ github.event.repository.default_branch }}
 
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
+
       - name: Build mypy
         run: docker compose --file envs/ci/lint/docker-compose.yml build mypy
 
@@ -52,6 +55,9 @@ jobs:
             ruff-${{ runner.os }}-${{ github.ref_name }}
             ruff-${{ runner.os }}-${{ github.event.repository.default_branch }}
 
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
+
       - name: Build ruff
         run: docker compose --file envs/ci/lint/docker-compose.yml build ruff
 
@@ -72,6 +78,9 @@ jobs:
 
       - name: Cache Docker layers
         uses: ./.github/actions/docker/use-buildx-cache
+
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
 
       - name: Build flake8
         run: docker compose --file envs/ci/lint/docker-compose.yml build flake8
@@ -94,6 +103,9 @@ jobs:
       - name: Cache Docker layers
         uses: ./.github/actions/docker/use-buildx-cache
 
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
+
       - name: Build pylint
         run: docker compose --file envs/ci/lint/docker-compose.yml build pylint
 
@@ -114,6 +126,9 @@ jobs:
 
       - name: Cache Docker layers
         uses: ./.github/actions/docker/use-buildx-cache
+
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
 
       - name: Build black
         run: docker compose --file envs/ci/lint/docker-compose.yml build black

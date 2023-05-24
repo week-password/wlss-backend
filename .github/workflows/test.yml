@@ -22,6 +22,9 @@ jobs:
             pytest-${{ runner.os }}-${{ github.ref_name }}
             pytest-${{ runner.os }}-${{ github.event.repository.default_branch }}
 
+      - name: Create .env file
+        run: source envs/ci/test/env.sh
+
       - name: Build pytest
         run: docker compose --file envs/ci/test/docker-compose.yml build
 

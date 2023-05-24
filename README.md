@@ -41,22 +41,27 @@ poetry shell
 
 To run application you need to do all steps from [First time setup](#first-time-setup) section.
 
-1. Run services.
+1. Create `.env` file.
+```bash
+source envs/local/dev/env.sh
+```
+
+2. Run services.
 ```bash
 docker compose --file=envs/local/dev/docker-compose.yml up --detach
 ```
 
-2. Apply migrations.
+3. Apply migrations.
 ```bash
 WLSS_ENV=local/dev alembic upgrade head
 ```
 
-3. Run FastAPI.
+4. Run FastAPI.
 ```bash
 WLSS_ENV=local/dev uvicorn src.app:app
 ```
 
-4. Check health status.
+5. Check health status.
 ```bash
 curl --request GET http://localhost:8000/health
 ```
@@ -93,12 +98,17 @@ pylint src tests
 
 To run tests you need to do all steps from [First time setup](#first-time-setup) section.
 
-1. Run services.
+1. Create `.env` file.
+```bash
+source envs/local/test/env.sh
+```
+
+2. Run services.
 ```bash
 docker compose --file=envs/local/test/docker-compose.yml up --detach
 ```
 
-2. Apply migrations.
+3. Apply migrations.
 ```bash
 WLSS_ENV=local/test alembic upgrade head
 ```
