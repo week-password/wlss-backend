@@ -26,7 +26,7 @@ class Config(BaseSettings):
     POSTGRES_PORT: str
     POSTGRES_USER: str
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         """Pydantic's special class to configure pydantic models."""
 
         allow_mutation = False  # app config should be immutable

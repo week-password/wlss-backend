@@ -10,7 +10,7 @@ class Entity(BaseModel):
     bucket: str
     key: str
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         """Pydantic's special class to configure pydantic models."""
 
         orm_mode = True

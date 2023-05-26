@@ -125,6 +125,7 @@ disable =
 
 load-plugins =
     pylint_per_file_ignores,  # This pylint plugin will enable per-file-ignores in your project
+    pylint_pydantic,  # A Pylint plugin to help Pylint understand the Pydantic.
     pylint.extensions.bad_builtin,  # It can be used for finding prohibited used builtins, such as map or filter, for which other alternatives exists.
     pylint.extensions.broad_try_clause,  # Maximum number of statements allowed in a try clause.
     pylint.extensions.check_elif,  # Used when an else statement is immediately followed by an if statement and does not contain statements that would be unrelated to it.
