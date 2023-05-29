@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 import pytest
 from alembic.config import main as alembic
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 
 from src.app import app
 from src.shared.database import get_session, POSTGRES_CONNECTION_URL
 from src.shared.minio import get_minio
 from tests.utils.database import set_autoincrement_counters
+
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def pytest_sessionstart(session: AsyncSession):

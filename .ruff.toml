@@ -15,6 +15,11 @@ src = ["src"]
 
 [per-file-ignores]
 
+# ignore checks that are raised only when using FastAPI routes
+"src/**/routes.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
 # files with fixtures
 "tests/**/conftest.py" = [
     "ARG001",  # Unused function argument: {name}
@@ -48,6 +53,24 @@ allow-star-arg-any = true
 extend-immutable-calls = ["fastapi.Depends"]
 
 
+[flake8-type-checking]
+
+# Exempt certain modules from needing to be moved into type-checking blocks.
+exempt-modules = []
+
+# Exempt classes that list any of the enumerated classes
+# as a base class from needing to be moved into type-checking blocks.
+runtime-evaluated-base-classes = [
+    # classes inherited from classes listed below
+    # can contain type definitions which are used at runtime
+    "pydantic.BaseSettings",
+    "src.shared.database.Base",
+]
+
+# Enforce TC001, TC002, and TC003 rules even when valid runtime imports are present for the same module.
+strict = true
+
+
 [isort]
 
 # A list of modules to consider first-party, regardless of whether they
@@ -59,3 +82,6 @@ lines-after-imports = 2
 
 # Order imports by type, which is determined by case, in addition to alphabetically.
 order-by-type = false
+
+# Add the specified import line to all files.
+required-imports = ["from __future__ import annotations"]

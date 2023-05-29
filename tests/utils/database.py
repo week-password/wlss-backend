@@ -1,5 +1,7 @@
 """Database utilities."""
 
+from __future__ import annotations
+
 from sqlalchemy import text
 
 from src.shared.database import async_engine, Base

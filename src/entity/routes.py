@@ -1,5 +1,7 @@
 """Routes for dummy Entity model."""
 
+from __future__ import annotations
+
 import io
 from typing import Annotated
 

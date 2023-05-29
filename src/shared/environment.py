@@ -1,11 +1,17 @@
 """Utilities for working with environment variables."""
 
+from __future__ import annotations
+
 import os
-from typing import Final
+from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
 from src import PROJECT_ROOT
+
+
+if TYPE_CHECKING:
+    from typing import Final
 
 
 def load_environment() -> None:  # pragma: no cover

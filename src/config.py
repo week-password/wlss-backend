@@ -1,11 +1,17 @@
 """Application configuration stuff."""
 
-from typing import Final
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from pydantic import BaseSettings
 
 from src.shared.environment import load_environment
 from src.shared.types import UrlSchema
+
+
+if TYPE_CHECKING:
+    from typing import Final
 
 
 load_environment()

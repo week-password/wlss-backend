@@ -1,5 +1,7 @@
 """Pydantic schemas for Entity dummy model."""
 
+from __future__ import annotations
+
 from pydantic.main import BaseModel
 
 
