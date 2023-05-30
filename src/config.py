@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, TypeVar
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, validator
 
 from src.shared.environment import load_environment
 from src.shared.types import UrlSchema
@@ -13,11 +13,16 @@ from src.shared.types import UrlSchema
 if TYPE_CHECKING:
     from typing import Final
 
+    from pydantic.fields import ModelField
+
+
+T = TypeVar("T", bound=Any)
+
 
 load_environment()
 
 
-class Config(BaseSettings):
+class _Config(BaseSettings):
     """Application config."""
 
     MINIO_HOST: str
@@ -37,5 +42,19 @@ class Config(BaseSettings):
 
         allow_mutation = False  # app config should be immutable
 
+    @validator("*")
+    def validate_types(cls: type[_Config], value: T, field: ModelField) -> T:  # pragma: no cover
+        """Validate fields of particular types. Mostly it is used to add some constraints to builtin python types."""
+        if field.type_ is str:
+            if value.startswith(" ") or value.endswith(" "):
+                # leading / trailing whitespaces are disallowed since they're not significant
+                msg = "String should not have leading or trailing whitespaces."
+                raise ValueError(msg)
+            if not value:
+                # empty string is disallowed since it's exactly the same as missing value
+                msg = "String value should not be blank"
+                raise ValueError(msg)
+        return value
 
-CONFIG: Final = Config()
+
+CONFIG: Final = _Config()

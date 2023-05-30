@@ -98,5 +98,11 @@ tmp
 # utilities
 utils
 
+# validator
+validator
+
+# whitespaces
+whitespaces
+
 # project id, stands for "Wish List Sharing Service"
 wlss

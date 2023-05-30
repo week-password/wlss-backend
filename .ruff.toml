@@ -85,3 +85,9 @@ order-by-type = false
 
 # Add the specified import line to all files.
 required-imports = ["from __future__ import annotations"]
+
+
+[pep8-naming]
+
+# Indicate that the method should be treated as a class method (in addition to the builtin @classmethod).
+classmethod-decorators = ["pydantic.validator"]
