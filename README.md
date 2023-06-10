@@ -163,6 +163,24 @@ black --line-length=120 migrations
 ```
 
 
+## Deploy
+
+_Only users with write access are able to deploy._
+
+1. Fetch the last version of the `test` tag.
+```bash
+git fetch origin +refs/tags/test:refs/tags/test
+```
+
+2. Checkout to branch/commit you want to deploy.
+
+3. Create and push new version of the `test` tag.
+```bash
+git tag --annotate --force test --message ''
+git push origin test --force
+```
+
+
 ## Troubleshooting
 
 ***

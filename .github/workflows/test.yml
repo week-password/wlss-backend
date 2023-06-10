@@ -1,7 +1,10 @@
 name: Test
 run-name: Test commit "${{ github.sha }}"
 
-on: push
+on:
+  push:
+    branches:
+      - "*"
 jobs:
   pytest:
     name: Pytest

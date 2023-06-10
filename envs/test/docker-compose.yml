@@ -1,0 +1,62 @@
+version: "3.8"
+
+name: wlss-test
+
+services:
+  app:
+    build:
+      context: ../..  # path from the corrent file to the project root dir
+      dockerfile: envs/test/Dockerfile  # path from the project root dir to the Dockerfile
+    env_file:
+      - .env
+    environment:
+      - WLSS_ENV=test
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      bash -c "
+        alembic upgrade head
+        gunicorn --config=envs/test/gunicorn/config.py
+      "
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    healthcheck:
+      # see: https://github.com/peter-evans/docker-compose-healthcheck#waiting-for-postgresql-to-be-healthy
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    env_file:
+      - .env
+    healthcheck:
+      # see: https://github.com/rodrigobdz/docker-compose-healthchecks#minio
+      # see: https://github.com/minio/minio/blob/c9d502e6fadf2c2cbb1e2ce7a9dc8de7dfed1d34/docs/orchestration/docker-swarm/docker-compose-secrets.yaml#L25-L29
+      test: ["CMD", "curl", "-f", "${MINIO_SCHEMA}://${MINIO_HOST}:${MINIO_PORT}/minio/health/live"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - minio:/data
+    command: server /data --console-address ":9001"
+
+  nginx:
+    image: nginx:1.23.3-alpine
+    ports:
+      - 8080:8080
+    depends_on:
+      - app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  postgres:
+  minio:

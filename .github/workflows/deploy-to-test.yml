@@ -1,0 +1,30 @@
+name: Deploy to Test stand
+run-name: Deploy commit "${{ github.sha }}"
+
+on:
+  push:
+    tags:
+      - test
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Run deploy script via ssh
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.TEST_SSH_HOST }}
+          username: ${{ secrets.TEST_SSH_USERNAME }}
+          password: ${{ secrets.TEST_SSH_PASSWORD }}
+          script: |
+            cd /wlss-backend
+            docker compose -f envs/test/docker-compose.yml down
+
+            # fetch tag even if it was force pushed and checkout
+            git fetch origin +refs/tags/test:refs/tags/test
+            git checkout test
+
+            docker compose -f envs/test/docker-compose.yml up --build --detach

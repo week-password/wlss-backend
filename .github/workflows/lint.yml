@@ -1,7 +1,10 @@
 name: Lint
 run-name: Lint commit "${{ github.sha }}"
 
-on: push
+on:
+  push:
+    branches:
+      - "*"
 jobs:
   mypy:
     name: Mypy

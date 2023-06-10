@@ -18,7 +18,7 @@ python = "~3.11"
 
 alembic = {extras = ["tz"], version = "1.10.4"}
 asyncpg = "0.27.0"  # asynchronous postgresql driver used by sqlalchemy
-fastapi = "0.95.0"
+fastapi = {extras = ["all"], version = "0.95.0" }  # we need "all" at least for uvicorn
 minio = "7.1.14"
 python-dotenv = "1.0.0"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.12"}
@@ -33,7 +33,6 @@ optional = true
 black = "23.3.0"
 darglint = "1.8.1"  # Checks whether a docstring's description matches the actual function/method implementation
 dlint = "0.14.0"  # Tool for encouraging best coding practices and helping ensure Python code is secure.
-fastapi = {extras = ["all"], version = "0.95.0"}  # We use "all" here because fastapi TestClient doesn't work without it
 flake8 = "6.0.0"
 flake8-aaa = "0.14.0"  # Lints tests against the Arrange Act Assert pattern.
 flake8-absolute-import = "1.0.0.1"  # Plugin to require absolute imports.
@@ -56,6 +55,16 @@ pytest-cov = "4.0.0"
 pytest-env = "0.8.1"  # needed to set up default $WLSS_ENV for tests execution
 ruff = "0.0.261"
 types-ujson = "5.7.0.5"  # types for mypy
+
+
+[tool.poetry.group.deploy]
+
+optional = true
+
+
+[tool.poetry.group.deploy.dependencies]
+
+gunicorn = "20.1.0"
 
 
 [tool.pylint-per-file-ignores]
