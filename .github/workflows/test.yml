@@ -38,3 +38,19 @@ jobs:
         env:
           ENV_FILE: envs/ci/test/.env
         uses: ./.github/actions/docker/update-buildx-cache
+
+  pytest-badge:
+    name: Pytest badge
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [pytest]
+    steps:
+      - name: Create pytest badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.WLSS_BADGES_GIST_TOKEN }}
+          gistID: 4fc310fa76bff267f6b9f1c9d00c812b
+          filename: pytest.json
+          label: pytest
+          message: ${{ needs.pytest.result == 'success' && '100%' || 'failed' }}
+          color: ${{ needs.pytest.result == 'success' && vars.BADGE_COLOR_SUCCESS || vars.BADGE_COLOR_FAILURE }}

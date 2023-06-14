@@ -1,5 +1,11 @@
 # WLSS backend
 
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/birthdaysgift/4fc310fa76bff267f6b9f1c9d00c812b/raw/mypy.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/birthdaysgift/4fc310fa76bff267f6b9f1c9d00c812b/raw/ruff.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/birthdaysgift/4fc310fa76bff267f6b9f1c9d00c812b/raw/flake8.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/birthdaysgift/4fc310fa76bff267f6b9f1c9d00c812b/raw/pylint.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/birthdaysgift/4fc310fa76bff267f6b9f1c9d00c812b/raw/pytest.json)
+
 Backend application for [Wish List Sharing Service](https://github.com/week-password/wisher).
 
 ***

@@ -39,6 +39,23 @@ jobs:
           ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
+  mypy-badge:
+    name: Mypy badge
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [mypy]
+    steps:
+      - name: Create mypy badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.WLSS_BADGES_GIST_TOKEN }}
+          gistID: 4fc310fa76bff267f6b9f1c9d00c812b
+          filename: mypy.json
+          label: mypy
+          message: ${{ needs.mypy.result == 'success' && 'passed' || 'failed' }}
+          color: ${{ needs.mypy.result == 'success' && vars.BADGE_COLOR_SUCCESS || vars.BADGE_COLOR_FAILURE }}
+
+
   ruff:
     name: Ruff
     runs-on: ubuntu-22.04
@@ -72,6 +89,22 @@ jobs:
           ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
+  ruff-badge:
+    name: Ruff badge
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [ruff]
+    steps:
+      - name: Create ruff badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.WLSS_BADGES_GIST_TOKEN }}
+          gistID: 4fc310fa76bff267f6b9f1c9d00c812b
+          filename: ruff.json
+          label: ruff
+          message: ${{ needs.ruff.result == 'success' && 'passed' || 'failed' }}
+          color: ${{ needs.ruff.result == 'success' && vars.BADGE_COLOR_SUCCESS || vars.BADGE_COLOR_FAILURE }}
+
   flake8:
     name: Flake8
     runs-on: ubuntu-22.04
@@ -96,6 +129,22 @@ jobs:
           ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
 
+  flake8-badge:
+    name: Flake8 badge
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [flake8]
+    steps:
+      - name: Create flake8 badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.WLSS_BADGES_GIST_TOKEN }}
+          gistID: 4fc310fa76bff267f6b9f1c9d00c812b
+          filename: flake8.json
+          label: flake8
+          message: ${{ needs.flake8.result == 'success' && 'passed' || 'failed' }}
+          color: ${{ needs.flake8.result == 'success' && vars.BADGE_COLOR_SUCCESS || vars.BADGE_COLOR_FAILURE }}
+
   pylint:
     name: Pylint
     runs-on: ubuntu-22.04
@@ -119,6 +168,22 @@ jobs:
         env:
           ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
+
+  pylint-badge:
+    name: Pylint badge
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [pylint]
+    steps:
+      - name: Create pylint badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.WLSS_BADGES_GIST_TOKEN }}
+          gistID: 4fc310fa76bff267f6b9f1c9d00c812b
+          filename: pylint.json
+          label: pylint
+          message: ${{ needs.pylint.result == 'success' && 'passed' || 'failed' }}
+          color: ${{ needs.pylint.result == 'success' && vars.BADGE_COLOR_SUCCESS || vars.BADGE_COLOR_FAILURE }}
 
   black:
     name: Black
