@@ -37,6 +37,9 @@ fastapi
 # file get (used by `minio` library)
 fget
 
+# get fixture value (used by `pytest` library)
+getfixturevalue
+
 # health check
 healthcheck
 

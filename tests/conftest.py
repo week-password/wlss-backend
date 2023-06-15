@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
 import pytest
@@ -38,17 +39,17 @@ def anyio_backend():
 
 
 @pytest.fixture
-async def client(db):
+async def client(db_empty):
     """Async client."""
     def override_get_session():
-        yield db
+        yield db_empty
     app.dependency_overrides[get_session] = override_get_session
     async with AsyncClient(app=app, base_url="http://") as async_client:
         yield async_client
 
 
 @pytest.fixture
-async def db():
+async def db_empty():
     """Empty database session."""
     # this solution is from sqlalchemy docs:
     # https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
@@ -65,7 +66,7 @@ async def db():
 
 
 @pytest.fixture
-async def minio():
+async def minio_empty():
     """Empty minio."""
     minio = next(get_minio())
     for _, bucket_name in minio.BUCKETS:
@@ -73,3 +74,16 @@ async def minio():
             minio.remove_object(bucket_name, minio_object.object_name)
         minio.remove_bucket(bucket_name)
     return minio
+
+
+@pytest.fixture
+def f(request):
+    """Load fixtures declared via 'fixtures' mark and put it into 'f' as its attributes."""
+    fixtures = SimpleNamespace()
+    marker = request.node.get_closest_marker("fixtures")
+    if not marker:
+        return fixtures
+    for fixture_alias, fixture_name in marker.args[0].items():
+        fixture = request.getfixturevalue(fixture_name)
+        setattr(fixtures, fixture_alias, fixture)
+    return fixtures
