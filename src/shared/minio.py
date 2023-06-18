@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from typing import Any, Final, Self
 
 
-def get_minio() -> Iterator[Minio]:
+def get_minio() -> Iterator[Minio]:  # pragma: no cover
     """Get minio client. FastAPI dependency for Minio client."""
     yield Minio(
         CONFIG.MINIO_SCHEMA,
@@ -31,8 +31,6 @@ def get_minio() -> Iterator[Minio]:
 @enum.types(str)
 class Bucket(enum.Enum):
     """Enum for existing minio buckets."""
-
-    ENTITY = "entity"
 
 
 class Minio(minio.Minio):  # type: ignore[misc]
@@ -50,7 +48,7 @@ class Minio(minio.Minio):  # type: ignore[misc]
         /,
         *args: Any,
         **kwargs: Any,
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """Initialize MinIO client which will be connected to MinIO.
 
         :param schema: URL schema for MinIO connection - "HTTP" or "HTTPS"

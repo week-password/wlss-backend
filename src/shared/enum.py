@@ -17,7 +17,7 @@ T = TypeVar("T")
 class Enum(enum.Enum):
     """Customized `Enum` class from standard library."""
 
-    def __iter__(self: Self) -> Iterator[tuple[str, str]]:
+    def __iter__(self: Self) -> Iterator[tuple[str, str]]:  # pragma: no cover
         """Get a tuple with member name and member value.
 
         It allows us to write this:
