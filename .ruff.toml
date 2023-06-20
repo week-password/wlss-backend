@@ -20,6 +20,11 @@ src = ["src"]
     "TCH",  # Move import into a type-checking block
 ]
 
+# ignore checks that are raised only when using Pydantic models
+"src/**/schemas.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
 # files with fixtures
 "tests/**/conftest.py" = [
     "ARG001",  # Unused function argument: {name}

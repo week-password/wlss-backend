@@ -25,6 +25,9 @@ dotenv
 # enumeration (pylint spellcheck)
 enum
 
+# enumerations
+enums
+
 # environment
 env
 
@@ -54,6 +57,9 @@ minio
 
 # default username and password for MinIO
 minioadmin
+
+# OpenAPI Specification
+openapi
 
 # ORM - Object-Relational Mapping
 orm
