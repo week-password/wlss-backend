@@ -8,9 +8,26 @@
 
 Backend application for [Wish List Sharing Service](https://github.com/week-password/wisher).
 
+
+## Table of Contents
+
+[System requirements](#system-requirements)
+
+[First time setup](#first-time-setup)
+
+[Run app](#run-app)
+
+[Run linters](#run-linters)
+
+[Run tests](#run-tests)
+
+[Working with migrations](#working-with-migrations)
+
+[Troubleshooting](#troubleshooting)
+
 ***
 
-## System requirements
+## [#](#table-of-contents) System requirements
 
 To develop this project you need to have the following software installed.
 
@@ -21,7 +38,7 @@ To develop this project you need to have the following software installed.
 
 ***
 
-## First time setup
+## [#](#table-of-contents) First time setup
 
 Before start to setup project you have to meet [System requirements](#system-requirements).
 
@@ -43,7 +60,7 @@ poetry shell
 ```
 
 
-## Run app
+## [#](#table-of-contents) Run app
 
 To run application you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -73,7 +90,7 @@ curl --request GET http://localhost:8000/health
 ```
 
 
-## Run linters
+## [#](#table-of-contents) Run linters
 
 To run linters you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -100,7 +117,7 @@ pylint src tests
 ```
 
 
-## Run tests
+## [#](#table-of-contents) Run tests
 
 To run tests you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -134,7 +151,7 @@ coverage html
 WLSS_ENV=local/test pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
 ```
 
-## Working with migrations
+## [#](#table-of-contents) Working with migrations
 
 Following examples will use `local/test` environment, but you can use any other value for `$WLSS_ENV` you need.
 
@@ -169,7 +186,7 @@ black --line-length=120 migrations
 ```
 
 
-## Deploy
+## [#](#table-of-contents) Deploy
 
 _Only users with write access are able to deploy._
 
@@ -187,7 +204,7 @@ git push origin test --force
 ```
 
 
-## Troubleshooting
+## [#](#table-of-contents) Troubleshooting
 
 ***
 
