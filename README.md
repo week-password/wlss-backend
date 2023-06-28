@@ -27,7 +27,7 @@ Backend application for [Wish List Sharing Service](https://github.com/week-pass
 
 ***
 
-## [#](#table-of-contents) System requirements
+## [System requirements](#table-of-contents)
 
 To develop this project you need to have the following software installed.
 
@@ -38,7 +38,7 @@ To develop this project you need to have the following software installed.
 
 ***
 
-## [#](#table-of-contents) First time setup
+## [First time setup](#table-of-contents)
 
 Before start to setup project you have to meet [System requirements](#system-requirements).
 
@@ -60,7 +60,7 @@ poetry shell
 ```
 
 
-## [#](#table-of-contents) Run app
+## [Run app](#table-of-contents)
 
 To run application you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -90,7 +90,7 @@ curl --request GET http://localhost:8000/health
 ```
 
 
-## [#](#table-of-contents) Run linters
+## [Run linters](#table-of-contents)
 
 To run linters you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -117,7 +117,7 @@ pylint src tests
 ```
 
 
-## [#](#table-of-contents) Run tests
+## [Run tests](#table-of-contents)
 
 To run tests you need to do all steps from [First time setup](#first-time-setup) section.
 
@@ -151,7 +151,7 @@ coverage html
 WLSS_ENV=local/test pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
 ```
 
-## [#](#table-of-contents) Working with migrations
+## [Working with migrations](#table-of-contents)
 
 Following examples will use `local/test` environment, but you can use any other value for `$WLSS_ENV` you need.
 
@@ -186,7 +186,7 @@ black --line-length=120 migrations
 ```
 
 
-## [#](#table-of-contents) Deploy
+## [Deploy](#table-of-contents)
 
 _Only users with write access are able to deploy._
 
@@ -204,7 +204,7 @@ git push origin test --force
 ```
 
 
-## [#](#table-of-contents) Troubleshooting
+## [Troubleshooting](#table-of-contents)
 
 ***
 
