@@ -42,7 +42,7 @@ jobs:
   mypy-badge:
     name: Mypy badge
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (success() || failure()) && github.ref_name == 'develop' }}
     needs: [mypy]
     steps:
       - name: Create mypy badge
@@ -92,7 +92,7 @@ jobs:
   ruff-badge:
     name: Ruff badge
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (success() || failure()) && github.ref_name == 'develop' }}
     needs: [ruff]
     steps:
       - name: Create ruff badge
@@ -132,7 +132,7 @@ jobs:
   flake8-badge:
     name: Flake8 badge
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (success() || failure()) && github.ref_name == 'develop' }}
     needs: [flake8]
     steps:
       - name: Create flake8 badge
@@ -172,7 +172,7 @@ jobs:
   pylint-badge:
     name: Pylint badge
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (success() || failure()) && github.ref_name == 'develop' }}
     needs: [pylint]
     steps:
       - name: Create pylint badge

@@ -42,7 +42,7 @@ jobs:
   pytest-badge:
     name: Pytest badge
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (success() || failure()) && github.ref_name == 'develop' }}
     needs: [pytest]
     steps:
       - name: Create pytest badge
