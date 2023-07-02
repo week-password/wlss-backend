@@ -81,7 +81,7 @@ WLSS_ENV=local/dev alembic upgrade head
 
 4. Run FastAPI.
 ```bash
-WLSS_ENV=local/dev uvicorn src.app:app
+WLSS_ENV=local/dev uvicorn src.app:app --reload
 ```
 
 5. Check health status.
