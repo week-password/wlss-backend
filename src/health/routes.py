@@ -7,7 +7,7 @@ from fastapi import APIRouter, status
 from src.health import enums, schemas
 
 
-router = APIRouter()
+router = APIRouter(tags=["service"])
 
 
 @router.get(
@@ -28,7 +28,6 @@ router = APIRouter()
     response_model=schemas.Health,
     status_code=status.HTTP_200_OK,
     summary="Check health.",
-    tags=["service"],
 )
 async def get_health() -> schemas.Health:
     """Classic health check function."""
