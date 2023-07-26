@@ -1170,6 +1170,18 @@ files = [
 ]
 
 [[package]]
+name = "overrides"
+version = "7.3.1"
+description = "A decorator to automatically detect mismatch when overriding a method."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "overrides-7.3.1-py3-none-any.whl", hash = "sha256:6187d8710a935d09b0bcef8238301d6ee2569d2ac1ae0ec39a8c7924e27f58ca"},
+    {file = "overrides-7.3.1.tar.gz", hash = "sha256:8b97c6c1e1681b78cbc9424b138d880f0803c2254c5ebaabdde57bb6c62093f2"},
+]
+
+[[package]]
 name = "packaging"
 version = "23.1"
 description = "Core utilities for Python packages"
@@ -2178,4 +2190,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "a1a1bf49fc205786b565dcabd7801fadf6bcc745e61920f9cb9f38cf4031a478"
+content-hash = "b879d9c7ed4bd92f0eb8c501200870642174df6a8986ec014887e588999935d0"

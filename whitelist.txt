@@ -13,8 +13,14 @@ async
 # Python standart library for asynchronous code (pylint spellcheck)
 asyncio
 
+# Auth - short for both Authorization and Authentication (pylint spellcheck)
+auth
+
 # auto increment
 autoincrement
+
+# class method (pylint spellcheck)
+classmethod
 
 # configuration component
 config
@@ -40,6 +46,9 @@ fastapi
 # file get (used by `minio` library)
 fget
 
+# full match (used by `re` library)
+fullmatch
+
 # get fixture value (used by `pytest` library)
 getfixturevalue
 
@@ -57,6 +66,9 @@ minio
 
 # default username and password for MinIO
 minioadmin
+
+# MyPy - static type checker for python (pylint spellcheck)
+mypy
 
 # OpenAPI Specification
 openapi
@@ -109,6 +121,9 @@ utils
 
 # validator
 validator
+
+# validators
+validators
 
 # whitespaces
 whitespaces

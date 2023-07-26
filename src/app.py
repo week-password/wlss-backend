@@ -12,6 +12,10 @@ app = FastAPI(
     description="Backend API for Wish List Sharing Service.",
     openapi_tags=[
         {
+            "name": "auth",
+            "description": "Auth-related functionality for Signing Up/In/Out.",
+        },
+        {
             "name": "service",
             "description": "Maintenace related functionality.",
         },
