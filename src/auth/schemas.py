@@ -10,7 +10,7 @@ from pydantic import root_validator
 from src.account.fields import Email, Login
 from src.account.schemas import Account
 from src.auth.fields import Password
-from src.profile.fields import Name
+from src.profile.fields import Description, Name
 from src.profile.schemas import Profile
 from src.shared.schemas import HTTPError, Schema
 
@@ -34,6 +34,7 @@ class _NewProfile(Schema):
     """Profile data for an account which is going to be created during sign up process."""
 
     name: Name
+    description: Description | None
 
 
 class NewAccountWithProfile(Schema):

@@ -35,7 +35,7 @@ router = APIRouter(tags=["auth"])
                         "profile": {
                             "account_id": 42,
                             "avatar": None,
-                            "description": None,
+                            "description": "Who da heck is John Doe?",
                             "name": "John Doe",
                         },
                     },
@@ -59,6 +59,7 @@ def create_account(
                 },
                 "profile": {
                     "name": "John Doe",
+                    "description": "Who da heck is John Doe?",
                 },
             },
         ),
