@@ -23,6 +23,8 @@ Backend application for [Wish List Sharing Service](https://github.com/week-pass
 
 [Working with migrations](#working-with-migrations)
 
+[Deploy](#deploy)
+
 [Troubleshooting](#troubleshooting)
 
 ***
