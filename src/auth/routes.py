@@ -47,7 +47,7 @@ router = APIRouter(tags=["auth"])
     status_code=status.HTTP_201_CREATED,
     summary="Sign Up - create a new account.",
 )
-def create_account(
+async def create_account(
     new_account: Annotated[  # noqa: ARG001
         schemas.NewAccountWithProfile,
         Body(
@@ -98,7 +98,7 @@ def create_account(
     status_code=status.HTTP_201_CREATED,
     summary="Sign In - create tokens for new device.",
 )
-def create_tokens(
+async def create_tokens(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
     credentials: Annotated[  # noqa: ARG001
         schemas.Credentials,
@@ -168,7 +168,7 @@ def create_tokens(
     status_code=status.HTTP_200_OK,
     summary="Refresh tokens for one device.",
 )
-def refresh_tokens(
+async def refresh_tokens(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
     device_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],  # noqa: ARG001
     tokens: Annotated[  # noqa: ARG001
@@ -200,7 +200,7 @@ def refresh_tokens(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Sign Out from one device.",
 )
-def remove_device_tokens(
+async def remove_device_tokens(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
     device_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],  # noqa: ARG001
     access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
@@ -222,7 +222,7 @@ def remove_device_tokens(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Sign Out from all devices.",
 )
-def remove_all_tokens(
+async def remove_all_tokens(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
     access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
 ) -> None:
