@@ -18,3 +18,21 @@ class Account(Schema):
     created_at: datetime
     email: Email
     login: Login
+
+
+class AccountId(Schema):
+    """Account Id."""
+
+    id: PositiveInt  # noqa: A003
+
+
+class AccountLogin(Schema):
+    """Account login."""
+
+    login: Login
+
+
+class AccountEmail(Schema):
+    """Account email."""
+
+    email: Email
