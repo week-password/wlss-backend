@@ -37,3 +37,7 @@ services:
   black:
     <<: *app-build
     entrypoint: black --line-length=120 --check migrations
+
+  poetry:
+    <<: *app-build
+    entrypoint: poetry lock --check
