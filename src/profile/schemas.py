@@ -16,3 +16,11 @@ class Profile(Schema):
     avatar: Avatar | None
     description: Description | None
     name: Name
+
+
+class ProfileUpdate(Schema):
+    """Data for Profile update."""
+
+    avatar: Avatar | None
+    description: Description | None
+    name: Name
