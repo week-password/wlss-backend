@@ -17,6 +17,11 @@ class Profile(Schema):
     description: Description | None
     name: Name
 
+    class Config:
+        """Pydantic's special class to configure pydantic models."""
+
+        orm_mode = True
+
 
 class ProfileUpdate(Schema):
     """Data for Profile update."""

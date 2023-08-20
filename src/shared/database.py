@@ -55,4 +55,5 @@ async def get_session() -> AsyncIterator[AsyncSession]:  # pragma: no cover
             await session.rollback()
             raise
         finally:
+            await session.commit()
             await session.close()

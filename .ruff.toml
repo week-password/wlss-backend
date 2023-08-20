@@ -1,7 +1,20 @@
+# A list of rule codes or prefixes that are unsupported by Ruff,
+# but should be preserved when (e.g.) validating # noqa directives.
+external = [
+    # darglint
+    "DAR101",
+    "DAR201",
+
+    # flake8-rst-docstrings
+    "RST214",
+    "RST215"
+]
+
 ignore = [
     "D203",  # ignores D203 (one-blank-line-before-class) since we use D211 (no-blank-line-before-class)
     "D213",  # ignores D213 (multi-line-summary-second-line) since we use D212 (multi-line-summary-first-line)
     "S101",  # ignores S101 since we don't use python optimizations with "-O"
+    "RSE102",  # ignores RSE102 (unnecessary-paren-on-raise-exception) since we think that empty parens is more clear
 ]
 
 line-length = 120

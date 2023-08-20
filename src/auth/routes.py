@@ -8,10 +8,12 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, Path, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth import schemas
+from src.auth import controllers, schemas
 from src.auth.security import get_token
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
 
 
 router = APIRouter(tags=["auth"])
@@ -48,7 +50,7 @@ router = APIRouter(tags=["auth"])
     summary="Sign Up - create a new account.",
 )
 async def create_account(
-    new_account: Annotated[  # noqa: ARG001
+    new_account: Annotated[
         schemas.NewAccountWithProfile,
         Body(
             example={
@@ -64,8 +66,10 @@ async def create_account(
             },
         ),
     ],
-) -> None:
+    session: AsyncSession = Depends(get_session),
+) -> schemas.AccountWithProfile:
     """Create a new account with profile."""
+    return await controllers.create_account(new_account, session)
 
 
 @router.post(

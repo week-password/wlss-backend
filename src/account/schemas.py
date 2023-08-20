@@ -19,6 +19,11 @@ class Account(Schema):
     email: Email
     login: Login
 
+    class Config:
+        """Pydantic's special class to configure pydantic models."""
+
+        orm_mode = True
+
 
 class AccountId(Schema):
     """Account Id."""

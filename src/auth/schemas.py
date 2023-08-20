@@ -18,7 +18,7 @@ from src.shared.schemas import Schema
 DictT = TypeVar("DictT", bound=dict[str, Any])
 
 
-class _NewAccount(Schema):
+class NewAccount(Schema):
     """Account data which is going to be created during sign up process."""
 
     email: Email
@@ -26,7 +26,7 @@ class _NewAccount(Schema):
     password: Password
 
 
-class _NewProfile(Schema):
+class NewProfile(Schema):
     """Profile data for an account which is going to be created during sign up process."""
 
     name: Name
@@ -36,8 +36,8 @@ class _NewProfile(Schema):
 class NewAccountWithProfile(Schema):
     """Account and corresponding profile data which are going to be created during sign up process."""
 
-    account: _NewAccount
-    profile: _NewProfile
+    account: NewAccount
+    profile: NewProfile
 
 
 class AccountWithProfile(Schema):

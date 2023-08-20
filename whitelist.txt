@@ -22,11 +22,17 @@ autoincrement
 # auto use (from pytest library)
 autouse
 
+# library for password hashing
+bcrypt
+
 # class method (pylint spellcheck)
 classmethod
 
 # configuration component
 config
+
+# package from python standard library (pylint spellcheck)
+datetime
 
 # designates files with `.env` extension
 dotenv
@@ -46,6 +52,9 @@ env
 # environments
 envs
 
+# equals
+eq
+
 # fastapi framework
 fastapi
 
@@ -55,8 +64,14 @@ fget
 # full match (used by `re` library)
 fullmatch
 
+# generate salt
+gensalt
+
 # get fixture value (used by `pytest` library)
 getfixturevalue
+
+# hash password
+hashpw
 
 # health check
 healthcheck
@@ -75,6 +90,12 @@ minioadmin
 
 # MyPy - static type checker for python (pylint spellcheck)
 mypy
+
+# sqlalchemy column property nullable
+nullable
+
+# on update
+onupdate
 
 # OpenAPI Specification
 openapi
@@ -109,9 +130,13 @@ sessionstart
 
 # python library
 sqlalchemy
+sqlalchemy's
 
 # source
 src
+
+# standard library
+stdlib
 
 # table name
 tablename
@@ -122,14 +147,23 @@ testclient
 # temporary
 tmp
 
+# time zone
+tz
+
 # utilities
 utils
+
+# function from `datetime` python package (pylint spellcheck)
+utcnow
 
 # validator
 validator
 
 # validators
 validators
+
+# unit-test (python library)
+unittest
 
 # whitespaces
 whitespaces

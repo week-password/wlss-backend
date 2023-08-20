@@ -13,7 +13,7 @@ class Schema(BaseModel):
     class Config:
         """Pydantic's special class to configure pydantic models."""
 
-        json_encoders = {datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}  # pragma: no cover
+        json_encoders = {datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}
 
 
 class HTTPError(Schema):

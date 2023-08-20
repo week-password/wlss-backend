@@ -27,7 +27,7 @@ class StrField(str):
     @classmethod
     def __get_validators__(
         cls: type[StrField],
-    ) -> Generator[Callable[[str], str | StrField], None, None]:  # pragma: no cover
+    ) -> Generator[Callable[[str], str | StrField], None, None]:
         """Pydantic's special method. Can be overridden in sub-classes."""
         yield cls._validate_length
         yield cls._validate_regexp

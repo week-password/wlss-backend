@@ -39,3 +39,13 @@ class NotAllowedException(HTTPException):
     description = "Requested action not allowed."
     details = "Provided tokens or credentials don't grant you enough access rights."
     status_code = status.HTTP_403_FORBIDDEN
+
+
+class BadRequestException(HTTPException):
+    """Exception for 400 BAD REQUEST error."""
+
+    action: str
+
+    description = "Request is not correct."
+    details = "Request is not correct and cannot be handled."
+    status_code = status.HTTP_400_BAD_REQUEST
