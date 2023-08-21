@@ -232,3 +232,27 @@ jobs:
         env:
           ENV_FILE: envs/ci/lint/.env
         uses: ./.github/actions/docker/update-buildx-cache
+
+  models:
+    name: Models
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
+
+      - name: Create .env file
+        run: source envs/ci/lint/env.sh
+
+      - name: Build models
+        run: docker compose --file envs/ci/lint/docker-compose.yml build models
+
+      - name: Run models
+        run: docker compose --file envs/ci/lint/docker-compose.yml run models
+
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache

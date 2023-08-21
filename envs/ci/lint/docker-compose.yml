@@ -41,3 +41,7 @@ services:
   poetry:
     <<: *app-build
     entrypoint: poetry lock --check
+
+  models:
+    <<: *app-build
+    entrypoint: python envs/ci/lint/scripts/db/registered_models.py
