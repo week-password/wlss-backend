@@ -1,0 +1,41 @@
+version: "3.8"
+
+name: wlss-ci-db
+
+services:
+  app-build: &app-build
+    build:
+      context: ../../..  # path from the corrent file to the project root dir
+      dockerfile: envs/ci/db/Dockerfile  # path from the project root dir to the Dockerfile
+      cache_from:
+        - type=local,src=${BUILDX_CACHE_SRC}
+      cache_to:
+        - type=local,dest=${BUILDX_CACHE_DEST}
+
+  alembic:
+    <<: *app-build
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - WLSS_ENV=ci/db
+    entrypoint: |
+      bash -c "
+        alembic upgrade head
+        alembic check
+      "
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    healthcheck:
+      # see: https://github.com/peter-evans/docker-compose-healthcheck#waiting-for-postgresql-to-be-healthy
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

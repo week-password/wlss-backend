@@ -1,0 +1,31 @@
+name: Database
+run-name: Check database for commit "${{ github.sha }}"
+
+on:
+  push:
+    branches:
+      - "*"
+jobs:
+  alembic:
+    name: Alembic
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
+
+      - name: Create .env file
+        run: source envs/ci/db/env.sh
+
+      - name: Build alembic
+        run: docker compose --file envs/ci/db/docker-compose.yml build
+
+      - name: Run alembic
+        run: docker compose --file envs/ci/db/docker-compose.yml up --attach alembic --exit-code-from alembic
+
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/db/.env
+        uses: ./.github/actions/docker/update-buildx-cache
