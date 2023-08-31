@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /wlss-backend
 
 RUN apt-get update \
     # we need 'enchant-2' for pylint's spellchecker

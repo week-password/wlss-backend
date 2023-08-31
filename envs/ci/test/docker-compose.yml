@@ -23,7 +23,7 @@ services:
       - WLSS_ENV=ci/test
     volumes:
       # bind .pytest_cache to the host in order to store pytest cache in GitHub Cache
-      - ../../../.pytest_cache:/app/.pytest_cache  # host path is relative to the current docker-compose file
+      - ../../../.pytest_cache:/wlss-backend/.pytest_cache  # host path is relative to the current docker-compose file
     entrypoint: pytest --cov=src
 
   postgres:

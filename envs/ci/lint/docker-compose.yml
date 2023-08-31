@@ -16,14 +16,14 @@ services:
     <<: *app-build
     volumes:
       # bind .mypy_cache to the host in order to store mypy cache in GitHub Cache
-      - ../../../.mypy_cache:/app/.mypy_cache  # host path is relative to the current docker-compose file
+      - ../../../.mypy_cache:/wlss-backend/.mypy_cache  # host path is relative to the current docker-compose file
     entrypoint: mypy
 
   ruff:
     <<: *app-build
     volumes:
       # bind .ruff_cache to the host in order to store ruff cache in GitHub Cache
-      - ../../../.ruff_cache:/app/.ruff_cache  # host path is relative to the current docker-compose file
+      - ../../../.ruff_cache:/wlss-backend/.ruff_cache  # host path is relative to the current docker-compose file
     entrypoint: ruff check src tests
 
   flake8:
