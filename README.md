@@ -53,7 +53,7 @@ source envs/local/dev/scripts/git/iam.sh
 
 2. Create virtual environment and install dependencies.
 ```bash
-poetry install --with dev
+poetry install --with app,lint,test
 ```
 
 3. Activate virtual environment.

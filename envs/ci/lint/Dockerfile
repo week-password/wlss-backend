@@ -12,6 +12,8 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
 
-RUN poetry install --with=dev
+# we also need to install 'test' dependencies here, because linters check tests code as well
+# otherwise linters will report 'module not found' errors for tests code
+RUN poetry install --with=app,lint,test
 
 COPY . ./

@@ -16,6 +16,14 @@ version = "0.0.0"
 
 python = "~3.11"
 
+
+[tool.poetry.group.app]
+
+optional = true
+
+
+[tool.poetry.group.app.dependencies]
+
 alembic = {extras = ["tz"], version = "1.10.4"}
 asyncpg = "0.27.0"  # asynchronous postgresql driver used by sqlalchemy
 fastapi = {extras = ["all"], version = "0.95.0" }  # we need "all" at least for uvicorn
@@ -25,11 +33,12 @@ python-dotenv = "1.0.0"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.12"}
 
 
-[tool.poetry.group.dev]
+[tool.poetry.group.lint]
 
 optional = true
 
-[tool.poetry.group.dev.dependencies]
+
+[tool.poetry.group.lint.dependencies]
 
 black = "23.3.0"
 darglint = "1.8.1"  # Checks whether a docstring's description matches the actual function/method implementation
@@ -51,11 +60,20 @@ pyenchant = "3.2.2"  # needed for pylint's spellchecker
 pylint = "2.17.2"
 pylint-per-file-ignores = "1.2.0"  # A pylint plugin to ignore error codes per file.
 pylint-pydantic = "0.1.8"  # A Pylint plugin to help Pylint understand the Pydantic.
+ruff = "0.0.261"
+types-ujson = "5.7.0.5"  # types for mypy
+
+
+[tool.poetry.group.test]
+
+optional = true
+
+
+[tool.poetry.group.test.dependencies]
+
 pytest = "7.3.0"
 pytest-cov = "4.0.0"
 pytest-env = "0.8.1"  # needed to set up default $WLSS_ENV for tests execution
-ruff = "0.0.261"
-types-ujson = "5.7.0.5"  # types for mypy
 
 
 [tool.poetry.group.deploy]

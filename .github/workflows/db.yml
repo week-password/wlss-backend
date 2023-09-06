@@ -15,6 +15,8 @@ jobs:
 
       - name: Cache Docker layers
         uses: ./.github/actions/docker/use-buildx-cache
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-db'  # prefix should match directory which contains Dockerfile used for build
 
       - name: Create .env file
         run: source envs/ci/db/env.sh
