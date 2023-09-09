@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -29,9 +30,11 @@ _USER: Final = CONFIG.POSTGRES_USER
 
 
 POSTGRES_CONNECTION_URL: Final = f"postgresql+asyncpg://{_USER}:{_PASSWORD}@{_HOST}:{_PORT}/{_DB}"
+POSTGRES_CONNECTION_URL_SYNC: Final = f"postgresql+psycopg2://{_USER}:{_PASSWORD}@{_HOST}:{_PORT}/{_DB}"
 
 # will allow us to connect to the database
 async_engine = create_async_engine(POSTGRES_CONNECTION_URL)
+sync_engine = create_engine(POSTGRES_CONNECTION_URL_SYNC)  # needed for some cases when we cannot use async python code
 
 # will allow us to send SQL queries to database associated with engine
 async_session = async_scoped_session(async_sessionmaker(bind=async_engine), scopefunc=asyncio.current_task)

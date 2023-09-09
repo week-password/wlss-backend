@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from sqlalchemy import text
 
-from src.shared.database import async_engine, Base
+from src.shared.database import Base, sync_engine
 
 
-async def set_autoincrement_counters() -> None:
+def set_autoincrement_counters() -> None:
     """Set initial value for all auto-incremented sequences in db tables.
 
     This is needed to avoid conflicts between rows created by fixtures
@@ -26,5 +26,11 @@ async def set_autoincrement_counters() -> None:
     queries = ""
     for tablename in Base.metadata.tables:
         queries += f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 10000;"  # pylint: disable=consider-using-join
-    async with async_engine.connect() as connection:
-        await connection.execute(text(queries))
+
+    # we avoid executing of empty query since this will give us an error from sqlalchemy
+    if not queries:
+        return
+
+    with sync_engine.connect() as connection:
+        connection.execute(text(queries))
+        connection.commit()
