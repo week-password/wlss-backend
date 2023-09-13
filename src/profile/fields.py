@@ -15,7 +15,7 @@ class Description(StrField):
     FIELD_NAME = "Profile Description"
     LENGTH_MAX = 1000
     LENGTH_MIN = 1
-    REGEXP = r".*"
+    REGEXP = r".{1,1000}"
 
 
 class Name(StrField):
