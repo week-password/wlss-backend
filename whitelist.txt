@@ -19,6 +19,9 @@ auth
 # auto increment
 autoincrement
 
+# auto use (from pytest library)
+autouse
+
 # class method (pylint spellcheck)
 classmethod
 

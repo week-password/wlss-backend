@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import asyncio
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
 
 import pytest
-from alembic.config import main as alembic
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 
@@ -17,18 +15,9 @@ from src.shared.minio import get_minio
 from tests.utils.database import set_autoincrement_counters
 
 
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
-
-
-def pytest_sessionstart(session: AsyncSession):
-    """Pytest initialization hook.
-
-    Called after the Session object has been created and before performing collection and entering the run test loop.
-
-    :param session: The pytest session object.
-    """
-    alembic(["upgrade", "head"])
+@pytest.fixture(scope="session", autouse=True)
+def _initialize_db():
+    """Prepare database before test run."""
     set_autoincrement_counters()
 
 
