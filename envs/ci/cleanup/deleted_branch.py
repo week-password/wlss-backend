@@ -25,10 +25,6 @@ def main():
     for run in repository.get_workflow_runs(branch=DELETED_BRANCH_NAME):
         run.delete()
 
-    # clean up the old runs of this workflow as well
-    for run in repository.get_workflow_runs(event="delete"):
-        run.delete()
-
 
 if __name__ == "__main__":
     main()

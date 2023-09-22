@@ -64,3 +64,29 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python envs/ci/cleanup/rebased_branch.py
+
+  previous-runs:
+    # This job is used to remove old runs of cleanup workflow itself.
+
+    # we don't want to remove failed runs of cleanup workflow to make their troubleshooting possible
+    if: ${{ needs.cleanup-on-delete.result != 'failure' && needs.cleanup-on-force-push.result != 'failure' }}
+    name: Previous cleanup runs
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r ./envs/ci/cleanup/requirements.txt
+
+      - name: Run script
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 ./envs/ci/cleanup/previous_runs.py
