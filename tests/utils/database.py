@@ -24,8 +24,8 @@ def set_autoincrement_counters() -> None:
     So this function just sets autoincrement counter for `id` columns in all database tables.
     """
     queries = ""
-    for tablename in Base.metadata.tables:
-        queries += f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 10000;"  # pylint: disable=consider-using-join
+    # for tablename in Base.metadata.tables:
+    #     queries += f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 10000;"  # pylint: disable=consider-using-join
 
     # we avoid executing of empty query since this will give us an error from sqlalchemy
     if not queries:
