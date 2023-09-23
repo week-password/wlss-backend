@@ -38,7 +38,7 @@ def test_query(f):
 
         # join our ranked tables to get correct mapping between ip and id according to roles
         .select_from(RankedFloatingIP)
-        .join(RankedInstance, RankedInstance.role_rank == RankedFloatingIP.role_rank)
+        .join(RankedInstance, RankedInstance.c.role_rank == RankedFloatingIP.c.role_rank)
 
         # join our models to have them in query result
         .join(FloatingIP, FloatingIP.ip == RankedFloatingIP.c.ip)
