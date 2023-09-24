@@ -6,7 +6,7 @@ from typing import Any, TYPE_CHECKING, TypeVar
 
 from pydantic import BaseSettings, validator
 
-from src.shared.environment import load_environment
+from src.shared.environment import get_dotenv_path
 from src.shared.types import UrlSchema
 
 
@@ -17,9 +17,6 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound=Any)
-
-
-load_environment()
 
 
 class _Config(BaseSettings):
@@ -41,6 +38,7 @@ class _Config(BaseSettings):
         """Pydantic's special class to configure pydantic models."""
 
         allow_mutation = False  # app config should be immutable
+        env_file = get_dotenv_path()
 
     @validator("*")
     def validate_types(cls: type[_Config], value: T, field: ModelField) -> T:  # pragma: no cover

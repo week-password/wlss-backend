@@ -8,6 +8,9 @@ exclude =
     __pycache__,
 
 ignore =
+   # line break before binary operator
+   W503
+
     # options below are ignored because they are already implemented in ruff
     # if you want to ignored another error for some reason, please do it in a separate section above
     # =========

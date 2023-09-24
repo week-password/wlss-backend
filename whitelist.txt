@@ -31,6 +31,9 @@ config
 # designates files with `.env` extension
 dotenv
 
+# development (pylint spellcheck)
+dev
+
 # enumeration (pylint spellcheck)
 enum
 
