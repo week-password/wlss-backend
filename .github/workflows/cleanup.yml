@@ -67,6 +67,7 @@ jobs:
 
   previous-runs:
     # This job is used to remove old runs of cleanup workflow itself.
+    needs: [cleanup-on-delete, cleanup-on-force-push]
 
     # we don't want to remove failed runs of cleanup workflow to make their troubleshooting possible
     if: ${{ needs.cleanup-on-delete.result != 'failure' && needs.cleanup-on-force-push.result != 'failure' }}
