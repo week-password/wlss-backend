@@ -30,8 +30,11 @@ jobs:
       - name: Create .env file
         run: source envs/ci/test/env.sh
 
-      - name: Build pytest
+      - name: Build images
         run: docker compose --file envs/ci/test/docker-compose.yml build
+
+      - name: Pull images
+        run: docker compose --file envs/ci/test/docker-compose.yml pull --ignore-buildable
 
       - name: Run pytest
         run: docker compose --file envs/ci/test/docker-compose.yml up --attach pytest --exit-code-from pytest

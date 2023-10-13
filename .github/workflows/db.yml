@@ -21,8 +21,11 @@ jobs:
       - name: Create .env file
         run: source envs/ci/db/env.sh
 
-      - name: Build alembic
+      - name: Build images
         run: docker compose --file envs/ci/db/docker-compose.yml build
+
+      - name: Pull images
+        run: docker compose --file envs/ci/db/docker-compose.yml pull --ignore-buildable
 
       - name: Run alembic
         run: docker compose --file envs/ci/db/docker-compose.yml up --attach alembic --exit-code-from alembic
