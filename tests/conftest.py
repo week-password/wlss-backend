@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
 from httpx import AsyncClient
