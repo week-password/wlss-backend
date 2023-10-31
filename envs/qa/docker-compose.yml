@@ -1,16 +1,16 @@
 version: "3.8"
 
-name: wlss-test
+name: wlss-qa
 
 services:
   app:
     build:
       context: ../..  # path from the corrent file to the project root dir
-      dockerfile: envs/test/Dockerfile  # path from the project root dir to the Dockerfile
+      dockerfile: envs/qa/Dockerfile  # path from the project root dir to the Dockerfile
     env_file:
       - .env
     environment:
-      - WLSS_ENV=test
+      - WLSS_ENV=qa
     depends_on:
       postgres:
         condition: service_healthy
@@ -19,7 +19,7 @@ services:
     entrypoint: >
       bash -c "
         alembic upgrade head
-        gunicorn --config=envs/test/gunicorn/config.py
+        gunicorn --config=envs/qa/gunicorn/config.py
       "
 
   postgres:

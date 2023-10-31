@@ -192,17 +192,17 @@ black --line-length=120 migrations
 
 _Only users with write access are able to deploy._
 
-1. Fetch the last version of the `test` tag.
+1. Fetch the last version of the `deployed/qa` tag.
 ```bash
-git fetch origin +refs/tags/test:refs/tags/test
+git fetch origin +refs/tags/deployed/qa:refs/tags/deployed/qa
 ```
 
 2. Checkout to branch/commit you want to deploy.
 
-3. Create and push new version of the `test` tag.
+3. Create and push new version of the `deployed/qa` tag.
 ```bash
-git tag --annotate --force test --message ''
-git push origin test --force
+git tag --annotate --force deployed/qa --message ''
+git push origin deployed/qa --force
 ```
 
 
