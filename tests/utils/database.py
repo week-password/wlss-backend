@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from sqlalchemy import text
 
-from src.shared.database import Base, sync_engine
+from src.shared.database import sync_engine
 
 
 def set_autoincrement_counters() -> None:
     """Set initial value for all auto-incremented sequences in db tables.
 
-    This is needed to avoid conflicts between rows created by fixtures
-    and values created by the app itself.
+    This is needed to avoid conflicts between db objects created by fixtures
+    and db objects created by the app itself.
 
     For example:
         fixture creates a new user with id = 1
@@ -23,9 +23,12 @@ def set_autoincrement_counters() -> None:
 
     So this function just sets autoincrement counter for `id` columns in all database tables.
     """
+    with sync_engine.connect() as connection:
+        sequences = connection.execute(text("SELECT sequencename FROM pg_sequences;")).all()
+
     queries = ""
-    for tablename in Base.metadata.tables:
-        queries += f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 10000;"  # pylint: disable=consider-using-join
+    for sequence_name, *_ in sequences:
+        queries += f"ALTER SEQUENCE {sequence_name} RESTART WITH 10000;"
 
     # we avoid executing of empty query since this will give us an error from sqlalchemy
     if not queries:
