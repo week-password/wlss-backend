@@ -8,7 +8,6 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth import swagger as auth_swagger
 from src.auth.security import get_token
 from src.profile import schemas
 from src.shared import swagger as shared_swagger
@@ -34,7 +33,7 @@ router = APIRouter(tags=["profile"])
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -66,7 +65,7 @@ def get_profile(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },

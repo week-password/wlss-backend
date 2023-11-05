@@ -9,7 +9,7 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth import schemas, swagger
+from src.auth import schemas
 from src.auth.security import get_token
 from src.shared import swagger as shared_swagger
 
@@ -90,7 +90,7 @@ async def create_account(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -160,7 +160,7 @@ async def create_tokens(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -192,7 +192,7 @@ async def refresh_tokens(
         status.HTTP_204_NO_CONTENT: {
             "description": "All tokens for particular device are removed. User has been signed out from this device.",
         },
-        status.HTTP_401_UNAUTHORIZED: swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -214,7 +214,7 @@ async def remove_device_tokens(
         status.HTTP_204_NO_CONTENT: {
             "description": "All account tokens are removed. User has been signed out from all devices.",
         },
-        status.HTTP_401_UNAUTHORIZED: swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },

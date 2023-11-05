@@ -12,14 +12,10 @@ from src.account.schemas import Account
 from src.auth.fields import Password
 from src.profile.fields import Description, Name
 from src.profile.schemas import Profile
-from src.shared.schemas import HTTPError, Schema
+from src.shared.schemas import Schema
 
 
 DictT = TypeVar("DictT", bound=dict[str, Any])
-
-
-class NotAuthenticatedResponse(HTTPError):  # noqa: N818
-    """Schema for 401 UNAUTHORIZED response."""
 
 
 class _NewAccount(Schema):

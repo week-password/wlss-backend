@@ -8,7 +8,6 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth import swagger as auth_swagger
 from src.auth.security import get_token
 from src.friendship import schemas
 from src.shared import swagger as shared_swagger
@@ -58,7 +57,7 @@ router = APIRouter(tags=["friendship"])
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -91,7 +90,7 @@ async def get_friends(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
     },
     response_model=schemas.FriendshipRequest,
@@ -115,7 +114,7 @@ async def create_friendship_request(
         status.HTTP_204_NO_CONTENT: {
             "description": "Friendship request has been removed (same as cancelled).",
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -153,7 +152,7 @@ async def cancel_friendship_request(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -186,7 +185,7 @@ async def accept_friendship_request(
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
@@ -237,7 +236,7 @@ async def reject_friendship_request() -> None:
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },

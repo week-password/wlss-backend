@@ -2,11 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-
-if TYPE_CHECKING:
-    from typing import Any, Self
+from fastapi import status
 
 
 class HTTPException(Exception):  # noqa: N818
@@ -14,11 +10,15 @@ class HTTPException(Exception):  # noqa: N818
 
     description = "Unknown error occured."
     details = "Please contact backend maintenance team."
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    def __init__(self: Self, details: str = "") -> None:  # pragma: no cover
-        """Initialize object."""
-        self.details = details
-        super().__init__()
+
+class NotAuthenticatedException(HTTPException):
+    """Exception for 401 UNAUTHORIZED error."""
+
+    description = "Request initiator is not authenticated."
+    details = "Your credentials or tokens are invalid or missing."
+    status_code = status.HTTP_401_UNAUTHORIZED
 
 
 class NotFoundException(HTTPException):
@@ -28,11 +28,7 @@ class NotFoundException(HTTPException):
 
     description = "Requested resource not found."
     details = "Requested resource doesn't exist or has been deleted."
-
-    def __init__(self: Self, resource: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-        """Initialize object."""
-        self.resource = resource
-        super().__init__(*args, **kwargs)
+    status_code = status.HTTP_404_NOT_FOUND
 
 
 class NotAllowedException(HTTPException):
@@ -42,8 +38,4 @@ class NotAllowedException(HTTPException):
 
     description = "Requested action not allowed."
     details = "Provided tokens or credentials don't grant you enough access rights."
-
-    def __init__(self: Self, action: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-        """Initialize object."""
-        self.action = action
-        super().__init__(*args, **kwargs)
+    status_code = status.HTTP_403_FORBIDDEN

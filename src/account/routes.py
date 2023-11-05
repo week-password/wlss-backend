@@ -9,7 +9,6 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.account import schemas
 from src.account.fields import Login
-from src.auth import swagger as auth_swagger
 from src.auth.security import get_token
 from src.shared import swagger as shared_swagger
 
@@ -31,7 +30,7 @@ router = APIRouter(tags=["account"])
                 },
             },
         },
-        status.HTTP_401_UNAUTHORIZED: auth_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
     response_model=schemas.AccountId,
