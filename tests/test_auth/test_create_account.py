@@ -45,7 +45,7 @@ async def test_create_account_returns_201_with_correct_body(f):
         },
         "profile": {
             "account_id": dirty_equals.IsPositiveInt,
-            "avatar": None,
+            "avatar_id": None,
             "description": "I'm the best guy for your mocks.",
             "name": "John Doe",
         },
@@ -90,7 +90,7 @@ async def test_create_account_creates_objects_in_db_correctly(f):
         assert profiles == [
             Profile(
                 account_id=dirty_equals.IsPositiveInt,
-                avatar=None,
+                avatar_id=None,
                 description="I'm the best guy for your mocks.",
                 name="John Doe",
                 updated_at=datetime(2023, 10, 30, 20, 0, tzinfo=timezone.utc),

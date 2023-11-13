@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import PositiveInt
 
 from src.shared.schemas import Schema
-from src.wish.fields import Avatar, Description, Title
+from src.wish.fields import Description, Title
 
 
 class Wish(Schema):
@@ -16,7 +17,7 @@ class Wish(Schema):
     id: PositiveInt  # noqa: A003
 
     account_id: PositiveInt
-    avatar: Avatar | None
+    avatar_id: UUID | None
     created_at: datetime
     description: Description
     title: Title
@@ -31,7 +32,7 @@ class Wishes(Schema):
 class NewWish(Schema):
     """Wish which is going to be created."""
 
-    avatar: Avatar | None
+    avatar_id: UUID | None
     description: Description
     title: Title
 
@@ -39,7 +40,7 @@ class NewWish(Schema):
 class WishUpdate(Schema):
     """Update info for wish."""
 
-    avatar: Avatar | None
+    avatar_id: UUID | None
     description: Description
     title: Title
 

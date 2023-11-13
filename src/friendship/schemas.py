@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import PositiveInt
 
@@ -66,7 +67,7 @@ class FriendAccount(Schema):
 class FriendProfile(Schema):
     """Profile info of someone's friend."""
 
-    avatar: profile_fields.Avatar
+    avatar_id: UUID | None
     description: profile_fields.Description
     name: profile_fields.Name
 

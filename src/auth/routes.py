@@ -36,7 +36,7 @@ router = APIRouter(tags=["auth"])
                         },
                         "profile": {
                             "account_id": 42,
-                            "avatar": None,
+                            "avatar_id": None,
                             "description": "Who da heck is John Doe?",
                             "name": "John Doe",
                         },

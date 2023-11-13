@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.shared.database import Base
@@ -25,7 +27,7 @@ class Profile(Base):  # pylint: disable=too-few-public-methods
 
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), autoincrement=False, primary_key=True)
 
-    avatar: Mapped[str | None] = mapped_column(String, unique=True)
+    avatar_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), unique=True)
     description: Mapped[String | None] = mapped_column(String)
     name: Mapped[str] = mapped_column(String, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(

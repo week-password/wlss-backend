@@ -36,7 +36,7 @@ router = APIRouter(tags=["friendship"])
                                 "profile": {
                                     "name": "John Doe",
                                     "description": "Who da heck is John Doe?",
-                                    "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                                    "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
                                 },
                             },
                             {
@@ -49,7 +49,7 @@ router = APIRouter(tags=["friendship"])
                                 "profile": {
                                     "name": "Alan Fresco",
                                     "description": "Who da heck is Alan Fresco?",
-                                    "avatar": "/files/595f1db3-cdc6-4ef7-bbb4-33c4cedfe172",
+                                    "avatar_id": "595f1db3-cdc6-4ef7-bbb4-33c4cedfe172",
                                 },
                             },
                         ],

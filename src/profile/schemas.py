@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from uuid import UUID
+
 from pydantic import PositiveInt
 
-from src.profile.fields import Avatar, Description, Name
+from src.profile.fields import Description, Name
 from src.shared.schemas import Schema
 
 
@@ -13,7 +15,7 @@ class Profile(Schema):
 
     account_id: PositiveInt
 
-    avatar: Avatar | None
+    avatar_id: UUID | None
     description: Description | None
     name: Name
 
@@ -26,6 +28,6 @@ class Profile(Schema):
 class ProfileUpdate(Schema):
     """Data for Profile update."""
 
-    avatar: Avatar | None
+    avatar_id: UUID | None
     description: Description | None
     name: Name

@@ -27,7 +27,7 @@ router = APIRouter(tags=["wish"])
                     "example": {
                         "id": 17,
                         "account_id": 42,
-                        "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                        "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
                         "title": "Horse",
                         "description": "I'm gonna take my horse to the old town road.",
                         "created_at": "2023-06-17T11:47:02.823Z",
@@ -51,7 +51,7 @@ async def create_wish(
             example={
                 "title": "Horse",
                 "description": "I'm gonna take my horse to the old town road.",
-                "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
             },
         ),
     ],
@@ -71,7 +71,7 @@ async def create_wish(
                     "example": {
                         "id": 17,
                         "account_id": 42,
-                        "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                        "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
                         "title": "Horse",
                         "description": "I'm gonna take my horse to the old town road.",
                         "created_at": "2023-06-17T11:47:02.823Z",
@@ -94,7 +94,7 @@ async def update_wish(
         schemas.WishUpdate,
         Body(
             example={
-                "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
                 "title": "Horse",
                 "description": "I'm gonna take my horse to the old town road.",
             },
@@ -141,7 +141,7 @@ async def delete_wish(
                             {
                                 "id": 17,
                                 "account_id": 42,
-                                "avatar": "/files/0b928aaa-521f-47ec-8be5-396650e2a187",
+                                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
                                 "title": "Horse",
                                 "description": "I'm gonna take my horse to the old town road.",
                                 "created_at": "2023-06-17T11:47:02.823Z",
@@ -149,7 +149,7 @@ async def delete_wish(
                             {
                                 "id": 21,
                                 "account_id": 42,
-                                "avatar": "/files/92f97bc4-c3d3-4980-86c8-0131c1bedffc",
+                                "avatar_id": "92f97bc4-c3d3-4980-86c8-0131c1bedffc",
                                 "title": "Sleep",
                                 "description": "I need some sleep. Time to put the old horse down.",
                                 "created_at": "2023-10-11T18:31:42.715Z",

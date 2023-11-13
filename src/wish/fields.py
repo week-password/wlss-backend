@@ -5,10 +5,6 @@ from __future__ import annotations
 from src.shared.fields import StrField
 
 
-class Avatar(str):
-    """Avatar value field."""
-
-
 class Description(StrField):
     """Description value field."""
 
