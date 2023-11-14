@@ -16,6 +16,59 @@ if TYPE_CHECKING:
     from pydantic import PositiveInt
 
 
+class IntField(int):
+    """Integer field for Pydantic models."""
+
+    FIELD_NAME: str = "Value"
+    VALUE_MIN: int
+    VALUE_MAX: int
+
+    def __init_subclass__(cls: type[IntField]) -> None:  # pragma: no cover
+        """Validate subclass for the presence of required class attributes and other constraints."""
+        if not hasattr(cls, "VALUE_MIN") or not hasattr(cls, "VALUE_MAX"):
+            msg = "VALUE_MIN or VALUE_MAX should be defined in a subclass."
+            raise RuntimeError(msg)
+        if cls.VALUE_MIN > cls.VALUE_MAX:
+            msg = "VALUE_MIN cannot be greater than VALUE_MAX"
+            raise RuntimeError(msg)
+
+    @classmethod
+    def __get_validators__(cls: type[IntField]) -> Generator[Callable[[int], int | IntField], None, None]:
+        """Pydantic's special method. Can be overridden in sub-classes."""
+        yield cls._validate_value
+        yield cls.cast_type
+
+    @classmethod
+    @final
+    def _validate_value(cls: type[IntField], value: int) -> int:  # pragma: no cover
+        if value < cls.VALUE_MIN:
+            msg = f"{cls.FIELD_NAME} should not be less than {cls.VALUE_MIN}."
+            raise ValueError(msg)
+        if value > cls.VALUE_MAX:
+            msg = f"{cls.FIELD_NAME} should not be greater than {cls.VALUE_MAX}."
+            raise ValueError(msg)
+        return value
+
+    @classmethod
+    def cast_type(cls: type[IntField], value: int) -> IntField:  # pragma: no cover
+        """Cast value type to the corresponding class after all validations are completed.
+
+        Can be overridden in sub-classes.
+
+        :param value: string value after all validations
+        :return: instance of the class which string value have been cast to
+        """
+        return cls(value)
+
+    @classmethod
+    def __modify_schema__(cls: type[IntField], field_schema: dict[str, Any]) -> None:  # pragma: no cover
+        """Pydantic's special method to modify field representation in OpenAPI schema."""
+        field_schema.update({
+            "value_max": cls.VALUE_MAX,
+            "value_min": cls.VALUE_MIN,
+        })
+
+
 class StrField(str):
     """String field for Pydantic models."""
 

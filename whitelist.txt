@@ -64,6 +64,18 @@ fget
 # full match (used by `re` library)
 fullmatch
 
+# jfif - image format
+jfif
+
+# jif - image format
+jif
+
+# jpe - image format
+jpe
+
+# jpg - image format
+jpg
+
 # generate salt
 gensalt
 
@@ -90,6 +102,9 @@ minioadmin
 
 # MyPy - static type checker for python (pylint spellcheck)
 mypy
+
+# name of (function from `varname` package)
+nameof
 
 # sqlalchemy column property nullable
 nullable
@@ -162,8 +177,14 @@ validator
 # validators
 validators
 
+# variable name (`varname` python package)
+varname
+
 # unit-test (python library)
 unittest
+
+# webp - image format
+webp
 
 # whitespaces
 whitespaces

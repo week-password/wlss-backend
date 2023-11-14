@@ -33,6 +33,7 @@ overrides = "7.3.1"
 psycopg2-binary = "2.9.7"  # used for some special cases when we cannot work with database via async code
 python-dotenv = "1.0.0"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.12"}
+varname = "0.12.0"
 
 
 [tool.poetry.group.lint]
