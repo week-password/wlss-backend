@@ -6,6 +6,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from src.shared.datetime import DATETIME_FORMAT
+
 
 class Schema(BaseModel):
     """Customized 'BaseModel' class from pydantic."""
@@ -13,7 +15,7 @@ class Schema(BaseModel):
     class Config:
         """Pydantic's special class to configure pydantic models."""
 
-        json_encoders = {datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}
+        json_encoders = {datetime: lambda v: v.strftime(DATETIME_FORMAT)}
 
 
 class HTTPError(Schema):

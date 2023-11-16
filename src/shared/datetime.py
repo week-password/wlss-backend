@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from typing import Final
+
+
+DATETIME_FORMAT: Final = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 def utcnow() -> datetime:
@@ -10,15 +18,10 @@ def utcnow() -> datetime:
 
     There are two reasons of having this function instead of just using `datetime.now(tz=timezone.utc)` everywhere:
 
-        1. We're using `freezgun` library which cannot mock datetime in sqlalchemy's column definitions, like:
-        ```python
-        created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-        ```
-        because class level attributes are evaluated at compile time. This happens before `freezegun`
-        has patched datetime.datetime.now, so the column default functions still point to the stdlib implementation.
-        See this SO answer for details: https://stackoverflow.com/a/58776798/8431075
+        1. We have to provide a callable to sqlalchemy column definition which should return timezone-aware datetime.
 
-        That's why we should wrap datetime.utcnow to another function.
+           It means that we can not provide just `default=datetime.now` because it is not using UTC timezone.
+           We also can not use `default=datetime.utcnow` because it returns timezone-naive datetime object.
 
         2. Simply `utcnow()` is shorter than `datetime.now(tz=timezone.utc)`
 

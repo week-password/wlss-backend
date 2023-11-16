@@ -75,7 +75,6 @@ optional = true
 [tool.poetry.group.test.dependencies]
 
 dirty-equals = "0.6.0"
-freezegun = "1.2.2"
 pytest = "7.3.0"
 pytest-cov = "4.0.0"
 pytest-env = "0.8.1"  # needed to set up default $WLSS_ENV for tests execution
