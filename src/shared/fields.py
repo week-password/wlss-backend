@@ -40,6 +40,14 @@ class IntField(int):
 
     @classmethod
     @final
+    def _validate_type(cls: type[IntField], value: Any) -> int:  # noqa: ANN401  # pragma: no cover
+        if not isinstance(value, int):
+            msg = "value is not a valid int"
+            raise TypeError(msg)
+        return value
+
+    @classmethod
+    @final
     def _validate_value(cls: type[IntField], value: int) -> int:  # pragma: no cover
         if value < cls.VALUE_MIN:
             msg = f"{cls.FIELD_NAME} should not be less than {cls.VALUE_MIN}."
@@ -82,6 +90,7 @@ class StrField(str):
         cls: type[StrField],
     ) -> Generator[Callable[[str], str | StrField], None, None]:
         """Pydantic's special method. Can be overridden in sub-classes."""
+        yield cls._validate_type
         yield cls._validate_length
         yield cls._validate_regexp
         yield cls.cast_type
@@ -94,6 +103,14 @@ class StrField(str):
         if cls.LENGTH_MIN > cls.LENGTH_MAX:
             msg = "LENGTH_MIN cannot be greater than LENGTH_MAX"
             raise RuntimeError(msg)
+
+    @classmethod
+    @final
+    def _validate_type(cls: type[StrField], value: Any) -> str:  # noqa: ANN401  # pragma: no cover
+        if not isinstance(value, str):
+            msg = "value is not a valid str"
+            raise TypeError(msg)
+        return value
 
     @classmethod
     @final
@@ -165,6 +182,14 @@ class SecretStrField(SecretStr):
         yield cls._validate_length
         yield cls._validate_regexp
         yield cls.cast_type
+
+    @classmethod
+    @final
+    def _validate_type(cls: type[SecretStrField], value: Any) -> str:  # noqa: ANN401  # pragma: no cover
+        if not isinstance(value, str):
+            msg = "value is not a valid str"
+            raise TypeError(msg)
+        return value
 
     @classmethod
     @final

@@ -121,6 +121,9 @@ orm
 # PostgreSQL
 postgre
 
+# pragma directive used by coverage tool (pylint spellcheck)
+pragma
+
 # python library
 pydantic
 pydantic's
