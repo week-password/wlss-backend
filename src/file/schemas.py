@@ -5,7 +5,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from src.file.enums import Extension, MimeType
-from src.file.fields import Name, Size
+from src.file.fields import Size
 from src.shared.schemas import Schema
 
 
@@ -16,5 +16,4 @@ class File(Schema):
 
     extension: Extension
     mime_type: MimeType
-    name: Name
     size: Size
