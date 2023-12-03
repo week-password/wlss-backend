@@ -27,6 +27,9 @@ router = APIRouter(tags=["file"])
                 "application/json": {
                     "example": {
                         "id": "47b3d7a9-d7d3-459a-aac1-155997775a0e",
+                        "extension": "png",
+                        "mime_type": "image/png",
+                        "size": 2048,
                     },
                 },
             },
