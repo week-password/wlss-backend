@@ -10,6 +10,13 @@ from src.profile.fields import Description, Name
 from src.shared.schemas import Schema
 
 
+class NewProfile(Schema):
+    """Profile data for an account which is going to be created during sign up process."""
+
+    name: Name
+    description: Description | None
+
+
 class Profile(Schema):
     """Account profile."""
 

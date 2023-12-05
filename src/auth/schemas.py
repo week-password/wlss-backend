@@ -7,44 +7,11 @@ from uuid import UUID
 
 from pydantic import root_validator
 
-from src.account.fields import Email, Login
-from src.account.schemas import Account
-from src.auth.fields import Password
-from src.profile.fields import Description, Name
-from src.profile.schemas import Profile
+from src.account.fields import Email, Login, Password
 from src.shared.schemas import Schema
 
 
 DictT = TypeVar("DictT", bound=dict[str, Any])
-
-
-class NewAccount(Schema):
-    """Account data which is going to be created during sign up process."""
-
-    email: Email
-    login: Login
-    password: Password
-
-
-class NewProfile(Schema):
-    """Profile data for an account which is going to be created during sign up process."""
-
-    name: Name
-    description: Description | None
-
-
-class NewAccountWithProfile(Schema):
-    """Account and corresponding profile data which are going to be created during sign up process."""
-
-    account: NewAccount
-    profile: NewProfile
-
-
-class AccountWithProfile(Schema):
-    """Account and corresponding profile which have been created during sign up process."""
-
-    account: Account
-    profile: Profile
 
 
 class Credentials(Schema):

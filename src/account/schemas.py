@@ -6,8 +6,17 @@ from datetime import datetime
 
 from pydantic import PositiveInt
 
-from src.account.fields import Email, Login
+from src.account.fields import Email, Login, Password
+from src.profile.schemas import NewProfile, Profile
 from src.shared.schemas import Schema
+
+
+class NewAccount(Schema):
+    """Account data which is going to be created during sign up process."""
+
+    email: Email
+    login: Login
+    password: Password
 
 
 class Account(Schema):
@@ -23,6 +32,20 @@ class Account(Schema):
         """Pydantic's special class to configure pydantic models."""
 
         orm_mode = True
+
+
+class NewAccountWithProfile(Schema):
+    """Account and corresponding profile data which are going to be created during sign up process."""
+
+    account: NewAccount
+    profile: NewProfile
+
+
+class AccountWithProfile(Schema):
+    """Account and corresponding profile which have been created during sign up process."""
+
+    account: Account
+    profile: Profile
 
 
 class AccountId(Schema):

@@ -17,8 +17,8 @@ from src.shared.datetime import utcnow
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from src.auth.fields import Password
-    from src.auth.schemas import NewAccount
+    from src.account.fields import Password
+    from src.account.schemas import NewAccount
 
 
 class Account(Base):  # pylint: disable=too-few-public-methods

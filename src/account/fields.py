@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.shared.fields import StrField
+from src.shared.fields import SecretStrField, StrField
 
 
 class Email(StrField):
@@ -21,3 +21,11 @@ class Login(StrField):
     LENGTH_MAX = 50
     LENGTH_MIN = 1
     REGEXP = r"[A-Za-z0-9\-_]*"
+
+
+class Password(SecretStrField):
+    """Password value field."""
+
+    FIELD_NAME = "Password"
+    LENGTH_MIN = 8
+    LENGTH_MAX = 500

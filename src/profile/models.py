@@ -17,7 +17,7 @@ from src.shared.datetime import utcnow
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from src.auth.schemas import NewProfile
+    from src.profile.schemas import NewProfile
 
 
 class Profile(Base):  # pylint: disable=too-few-public-methods
