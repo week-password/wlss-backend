@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, Query, status
-from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth.security import get_token
+from src.auth.dependencies import get_access_token
+from src.auth.schemas import AccessTokenPayload
 from src.shared import swagger as shared_swagger
 from src.wish import schemas
 
@@ -55,7 +55,7 @@ async def create_wish(
             },
         ),
     ],
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Create a wish."""
 
@@ -100,7 +100,7 @@ async def update_wish(
             },
         ),
     ],
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Update wish info."""
 
@@ -123,7 +123,7 @@ async def update_wish(
 async def delete_wish(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
     wish_id: Annotated[PositiveInt, Path(example=17)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Delete wish."""
 
@@ -169,7 +169,7 @@ async def delete_wish(
 )
 async def get_account_wishes(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get wishes owned by particular account."""
 
@@ -209,7 +209,7 @@ async def create_wish_booking(
             },
         ),
     ],
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Create wish booking."""
 
@@ -248,7 +248,7 @@ async def create_wish_booking(
 )
 def get_wish_bookings(
     wish_ids: Annotated[list[PositiveInt], Query(example=[42, 18], alias="wish_id")],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get wish bookings for particular wishes."""
 
@@ -270,6 +270,6 @@ def get_wish_bookings(
 )
 async def delete_wish_booking(
     booking_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Delete wish booking."""

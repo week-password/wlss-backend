@@ -34,6 +34,11 @@ src = ["src"]
     "TCH",  # Move import into a type-checking block
 ]
 
+# ignore checks that are raised only when using FastAPI dependencies
+"src/**/dependencies.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
 # ignore checks that are raised only when using Pydantic models
 "src/**/schemas.py" = [
     "TCH",  # Move import into a type-checking block

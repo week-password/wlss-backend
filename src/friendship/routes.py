@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
-from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth.security import get_token
+from src.auth.dependencies import get_access_token
+from src.auth.schemas import AccessTokenPayload
 from src.friendship import schemas
 from src.shared import swagger as shared_swagger
 
@@ -67,7 +67,7 @@ router = APIRouter(tags=["friendship"])
 )
 async def get_friends(
     account_id: Annotated[PositiveInt, Path(example=15)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get all Account friends."""
 
@@ -102,7 +102,7 @@ async def create_friendship_request(
         schemas.NewFriendshipRequest,
         Body(example={"account_id": 42, "friend_id": 18}),
     ],
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Create new friendship request."""
 
@@ -124,7 +124,7 @@ async def create_friendship_request(
 )
 async def cancel_friendship_request(
     request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Cancel friendship request."""
 
@@ -162,7 +162,7 @@ async def cancel_friendship_request(
 )
 async def accept_friendship_request(
     request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Accept friendship request."""
 
@@ -246,6 +246,6 @@ async def reject_friendship_request() -> None:
 )
 async def get_friendship_requests(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get all friendship requests related to particular account."""

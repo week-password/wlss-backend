@@ -7,9 +7,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, status, UploadFile
 from fastapi.responses import FileResponse
-from fastapi.security import HTTPAuthorizationCredentials
 
-from src.auth.security import get_token
+from src.auth.dependencies import get_access_token
+from src.auth.schemas import AccessTokenPayload
 from src.file import schemas
 from src.shared import swagger as shared_swagger
 
@@ -43,7 +43,7 @@ router = APIRouter(tags=["file"])
 )
 async def create_file(
     new_file: UploadFile,  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Create file."""
 
@@ -65,6 +65,6 @@ async def create_file(
 )
 async def get_file(
     file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get file."""

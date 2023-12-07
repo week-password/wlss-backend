@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
-from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import PositiveInt
 
-from src.auth.security import get_token
+from src.auth.dependencies import get_access_token
+from src.auth.schemas import AccessTokenPayload
 from src.profile import schemas
 from src.shared import swagger as shared_swagger
 
@@ -43,7 +43,7 @@ router = APIRouter(tags=["profile"])
 )
 def get_profile(
     account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Get Profile info."""
 
@@ -85,6 +85,6 @@ def update_profile(
             },
         ),
     ],
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
 ) -> None:
     """Update profile info."""

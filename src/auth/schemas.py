@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID
 
-from pydantic import root_validator
+from pydantic import PositiveInt, root_validator
 
 from src.account.fields import Email, Login, Password
 from src.shared.schemas import Schema
@@ -38,16 +39,38 @@ class Credentials(Schema):
         return values
 
 
-class Tokens(Schema):
-    """Account tokens attached to a particular device."""
+class Session(Schema):
+    """Auth session attached to particular account."""
 
-    device_id: UUID
+    id: UUID  # noqa: A003
+
+    account_id: PositiveInt
+
+
+class Tokens(Schema):
+    """Generated access and refresh tokens for particular auth session."""
+
     access_token: str
     refresh_token: str
 
 
-class RefreshToken(Schema):
-    """Refresh token for a particular device."""
+class SessionWithTokens(Schema):
+    """Auth session with tokens generated for it."""
 
-    device_id: UUID
-    refresh_token: str
+    session: Session
+    tokens: Tokens
+
+
+class AccessTokenPayload(Schema):
+    """Access token payload schema."""
+
+    account_id: PositiveInt
+    created_at: datetime
+    session_id: PositiveInt
+
+
+class RefreshTokenPayload(Schema):
+    """Refresh token payload schema."""
+
+    created_at: datetime
+    session_id: PositiveInt
