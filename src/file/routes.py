@@ -5,13 +5,17 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, status, UploadFile
+from fastapi import APIRouter, Depends, Path, status
 from fastapi.responses import FileResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.dependencies import get_access_token
 from src.auth.schemas import AccessTokenPayload
-from src.file import schemas
+from src.file import controllers, schemas
+from src.file.dependencies import get_new_file
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
+from src.shared.minio import get_minio, Minio
 
 
 router = APIRouter(tags=["file"])
@@ -21,7 +25,7 @@ router = APIRouter(tags=["file"])
     "/files",
     description="Upload new file.",
     responses={
-        status.HTTP_200_OK: {
+        status.HTTP_201_CREATED: {
             "description": "File uploaded, file info returned.",
             "content": {
                 "application/json": {
@@ -36,16 +40,20 @@ router = APIRouter(tags=["file"])
         },
         status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
+        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE: shared_swagger.responses[status.HTTP_413_REQUEST_ENTITY_TOO_LARGE],
     },
     response_model=schemas.File,
     status_code=status.HTTP_201_CREATED,
     summary="Upload file.",
 )
 async def create_file(
-    new_file: UploadFile,  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],
+    new_file: Annotated[schemas.NewFile, Depends(get_new_file)],
+    minio: Minio = Depends(get_minio),
+    session: AsyncSession = Depends(get_session),
+) -> schemas.File:
     """Create file."""
+    return await controllers.create_file(access_token, new_file, minio, session)
 
 
 @router.get(

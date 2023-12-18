@@ -49,3 +49,13 @@ class BadRequestException(HTTPException):
     description = "Request is not correct."
     details = "Request is not correct and cannot be handled."
     status_code = status.HTTP_400_BAD_REQUEST
+
+
+class TooLargeException(HTTPException):
+    """Exception for 413 REQUEST ENTITY TOO LARGE error."""
+
+    resource: str
+
+    description = "Request payload is too large."
+    details = "Request payload is too large, and cannot be handled."
+    status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE

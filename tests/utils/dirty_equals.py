@@ -8,6 +8,7 @@ things we wanted them to check in tests for our application.
 
 from __future__ import annotations
 
+import uuid
 from datetime import timezone
 from typing import TYPE_CHECKING
 
@@ -104,3 +105,55 @@ class UtcDatetimeStr(dirty_equals.IsDatetime):
             raise AssertionError(msg) from None
 
         assert like_equals, "Example value from `like` argument is not correct."
+
+
+class UuidStr(dirty_equals.IsUUID):
+    """Customized dirty_equals.IsUUID to check UUID in a string format."""
+
+    def __init__(self: Self, *, like: str | None = None) -> None:
+        """Initialize object.
+
+        :param like: example value (required)
+
+        :raises AssertionError: `like` value is not correct
+        """
+        assert like is not None, "Provide correct example value in `like` argument."
+
+        self._like = like
+        super().__init__(version=4)
+
+        assert isinstance(self._like, str), f"`like` argument has type {type(self._like)}, but expected {str}."
+
+        like_equals = self.equals(self._like)
+        assert like_equals, "Example value from `like` argument is not correct."
+
+    def equals(self: Self, other: Any) -> bool:  # noqa: ANN401
+        """Return True if `self` "dirty equals" to `other` or False otherwise."""
+        return super().equals(other) and isinstance(other, str)
+
+
+class UUID(dirty_equals.IsUUID):
+    """Customized dirty_equals.IsUUID to check UUID."""
+
+    def __init__(self: Self, *, like: uuid.UUID | None = None) -> None:
+        """Initialize object.
+
+        :param like: example value (required)
+
+        :raises AssertionError: `like` value is not correct
+        """
+        assert like is not None, "Provide correct example value in `like` argument."
+
+        self._like = like
+        super().__init__(version=4)
+
+        assert isinstance(self._like, uuid.UUID), (
+            f"`like` argument has type {type(self._like)}, but expected {uuid.UUID}."
+        )
+
+        like_equals = self.equals(self._like)
+        assert like_equals, "Example value from `like` argument is not correct."
+
+    def equals(self: Self, other: Any) -> bool:  # noqa: ANN401
+        """Return True if `self` "dirty equals" to `other` or False otherwise."""
+        return super().equals(other) and isinstance(other, uuid.UUID)

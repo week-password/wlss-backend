@@ -46,4 +46,17 @@ responses = {  # pylint: disable=consider-using-namedtuple-or-dataclass
             },
         },
     },
+    status.HTTP_413_REQUEST_ENTITY_TOO_LARGE: {
+        "description": "Request payload is too large.",
+        "model": schemas.TooLargeResponse,
+        "content": {
+            "application/json": {
+                "example": {
+                    "resource": "<requested resource description will be here>",
+                    "description": exceptions.TooLargeException.description,
+                    "details": exceptions.TooLargeException.details,
+                },
+            },
+        },
+    },
 }

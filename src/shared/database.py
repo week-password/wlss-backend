@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
@@ -14,7 +15,7 @@ from src.config import CONFIG
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
-    from typing import Final
+    from typing import Any, Final, Self
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -57,3 +58,14 @@ async def get_session() -> AsyncIterator[AsyncSession]:  # pragma: no cover
         finally:
             await session.commit()
             await session.close()
+
+
+# We couldn't figure out why this pylint error is raised here.
+# We're going to resolve it once we will face some kind of a bug related to it.
+class DbEnum(sqlalchemy.Enum):  # pylint: disable=too-many-ancestors
+    """Customized sqlalchemy's Enum class."""
+
+    def __init__(self: Self, *args: Any, **kwargs: Any) -> None:
+        """Initialize enum with automatic values unpacking."""
+        kwargs["values_callable"] = lambda enum_members: [member.value for member in enum_members]
+        super().__init__(*args, **kwargs)

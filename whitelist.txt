@@ -40,6 +40,10 @@ dotenv
 # development (pylint spellcheck)
 dev
 
+
+# end of file
+EOF
+
 # enumeration (pylint spellcheck)
 enum
 
@@ -60,6 +64,9 @@ fastapi
 
 # file get (used by `minio` library)
 fget
+
+# file put (used by `minio` library)
+fput
 
 # full match (used by `re` library)
 fullmatch

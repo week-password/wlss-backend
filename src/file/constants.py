@@ -12,3 +12,6 @@ if TYPE_CHECKING:
 BYTE: Final = 1
 KILOBYTE: Final = 1024 * BYTE
 MEGABYTE: Final = 1024 * KILOBYTE
+
+
+EOF_BYTE = b""

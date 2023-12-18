@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.profile.fields import Description, Name
@@ -28,7 +27,7 @@ class Profile(Base):  # pylint: disable=too-few-public-methods
 
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), autoincrement=False, primary_key=True)
 
-    avatar_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), unique=True)
+    avatar_id: Mapped[UUID | None] = mapped_column(ForeignKey("file.id"), unique=True)
     description: Mapped[str | None] = mapped_column(String(length=Description.LENGTH_MAX))
     name: Mapped[str] = mapped_column(String(length=Name.LENGTH_MAX), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
