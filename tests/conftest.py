@@ -61,7 +61,6 @@ async def minio_empty():
     for _, bucket_name in minio.BUCKETS:
         for minio_object in minio.list_objects(bucket_name, recursive=True):
             minio.remove_object(bucket_name, minio_object.object_name)
-        minio.remove_bucket(bucket_name)
     return minio
 
 
