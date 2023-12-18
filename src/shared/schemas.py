@@ -39,3 +39,9 @@ class NotAllowedResponse(HTTPError):  # noqa: N818
     """Schema for 403 FORBIDDEN error."""
 
     action: str
+
+
+class TooLargeResponse(HTTPError):  # noqa: N818
+    """Schema for 413 REQUEST ENTITY TOO LARGE error."""
+
+    resource: str

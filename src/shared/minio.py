@@ -7,13 +7,16 @@ from typing import TYPE_CHECKING
 import minio
 
 from src.config import CONFIG
+from src.file.constants import MEGABYTE
 from src.shared import enum
 from src.shared.types import UrlSchema
 
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from pathlib import Path
     from typing import Any, Final, Self
+    from uuid import UUID
 
 
 def get_minio() -> Iterator[Minio]:  # pragma: no cover
@@ -32,11 +35,17 @@ def get_minio() -> Iterator[Minio]:  # pragma: no cover
 class Bucket(enum.Enum):
     """Enum for existing minio buckets."""
 
+    FILES = "files"
+
+    def __str__(self: Self) -> str:
+        """Convert enum member to string."""
+        return str(self.value)
+
 
 class Minio(minio.Minio):  # type: ignore[misc]
     """Minio client class. Used to extend minio.Minio functionality."""
 
-    BUCKETS: Final[list[Bucket]] = list(Bucket)
+    BUCKETS: Final[tuple[Bucket, ...]] = tuple(Bucket)
 
     def __init__(
         self: Self,
@@ -67,3 +76,7 @@ class Minio(minio.Minio):  # type: ignore[misc]
         for _, bucket_name in self.BUCKETS:
             if not self.bucket_exists(bucket_name):
                 self.make_bucket(bucket_name)
+
+    def upload_file(self: Self, file_id: UUID, file_path: Path) -> None:
+        """Upload a new file."""
+        self.fput_object(str(Bucket.FILES), str(file_id), file_path, part_size=(10 * MEGABYTE))
