@@ -10,6 +10,7 @@ from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
+from src.profile.fields import Description, Name
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -28,8 +29,8 @@ class Profile(Base):  # pylint: disable=too-few-public-methods
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), autoincrement=False, primary_key=True)
 
     avatar_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), unique=True)
-    description: Mapped[String | None] = mapped_column(String)
-    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(String(length=Description.LENGTH_MAX))
+    name: Mapped[str] = mapped_column(String(length=Name.LENGTH_MAX), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
     )

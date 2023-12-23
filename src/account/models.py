@@ -10,6 +10,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, LargeBinary, select, Strin
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.account.exceptions import DuplicateAccountException
+from src.account.fields import Email, Login
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -29,8 +30,8 @@ class Account(Base):  # pylint: disable=too-few-public-methods
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # noqa: A003
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    login: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(String(length=Email.LENGTH_MAX), nullable=False, unique=True)
+    login: Mapped[str] = mapped_column(String(length=Login.LENGTH_MAX), nullable=False, unique=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
     )
