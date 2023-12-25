@@ -193,7 +193,10 @@ async def accept_friendship_request(
     status_code=status.HTTP_200_OK,
     summary="Reject friendship request.",
 )
-async def reject_friendship_request() -> None:
+async def reject_friendship_request(
+    request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+) -> None:
     """Reject friendship request."""
 
 
