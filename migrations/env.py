@@ -107,14 +107,9 @@ def run_migrations_online() -> None:
 
 @write_hooks.register("check_empty_migration")
 def check_empty_migration(revision_path, options):
-    from pathlib import Path
     from textwrap import dedent
 
-    MIGRATIONS_DIR = Path(__file__).parent
-
-    migration_files = list(MIGRATIONS_DIR.glob("versions/*.py"))
-
-    with migration_files[-1].open() as f:
+    with open(revision_path) as f:
         empty_upgrade = dedent(
             """
             def upgrade() -> None:
@@ -136,10 +131,16 @@ def check_empty_migration(revision_path, options):
             print(
                 dedent(
                     """
-                    You've created an empty migration file.
-
-                    Maybe you forgot to register your model in alembic.ini config?
-                    Double check 'models_packages' option in configuration file.
+                    +---------------------------- WARNING -----------------------------+
+                    |                                                                  |
+                    | You've created an empty migration file.                          |
+                    |                                                                  |
+                    | Maybe you forgot to register your model in alembic.ini config?   |
+                    |                                                                  |
+                    | Double check 'models_packages' option in configuration file.     |
+                    | Remove empty migration and create a new one.                     |
+                    |                                                                  |
+                    +---------------------------- WARNING -----------------------------+
                     """
                 )
             )
