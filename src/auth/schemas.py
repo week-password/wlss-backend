@@ -6,9 +6,8 @@ from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID
 
-from pydantic import PositiveInt, root_validator
+from pydantic import model_validator, PositiveInt
 
-from src.account.fields import Email, Login, Password
 from src.shared.schemas import Schema
 
 
@@ -18,20 +17,20 @@ DictT = TypeVar("DictT", bound=dict[str, Any])
 class Credentials(Schema):
     """Account credentials for sign in process. Can be a pair of password and email or password and login."""
 
-    email: Email | None
-    login: Login | None
-    password: Password
+    email: str | None = None
+    login: str | None = None
+    password: str
 
-    @classmethod  # to silent mypy error, because mypy doesn't recognize root_validator as a classmethod
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod  # to silent mypy error, because mypy doesn't recognize model_validator as a classmethod
     def _require_login_or_email(cls: type[Credentials], values: DictT) -> DictT:  # pragma: no cover
         if not (values["login"] or values["email"]):
             msg = "Either 'login' or 'email' is required."
             raise ValueError(msg)
         return values
 
-    @classmethod  # to silent mypy error, because mypy doesn't recognize root_validator as a classmethod
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod  # to silent mypy error, because mypy doesn't recognize model_validator as a classmethod
     def _forbid_login_and_email_together(cls: type[Credentials], values: DictT) -> DictT:  # pragma: no cover
         if values["login"] and values["email"]:
             msg = "You cannot use 'login' and 'email' together. Choose one of them."

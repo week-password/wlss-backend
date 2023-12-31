@@ -8,7 +8,6 @@ from uuid import UUID
 from pydantic import PositiveInt
 
 from src.friendship.enums import FriendshipRequestStatus
-from src.profile import fields as profile_fields
 from src.shared.schemas import Schema
 
 
@@ -67,9 +66,9 @@ class FriendAccount(Schema):
 class FriendProfile(Schema):
     """Profile info of someone's friend."""
 
-    avatar_id: UUID | None
-    description: profile_fields.Description
-    name: profile_fields.Name
+    avatar_id: UUID | None = None
+    description: str
+    name: str
 
 
 class FriendFriendship(Schema):

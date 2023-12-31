@@ -4,16 +4,15 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING, TypeVar
 
-from pydantic import BaseSettings, validator
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.shared.environment import get_dotenv_path
-from src.shared.types import UrlSchema
+from src.shared.types import UrlSchema  # noqa: TCH001
 
 
 if TYPE_CHECKING:
     from typing import Final
-
-    from pydantic.fields import ModelField
 
 
 T = TypeVar("T", bound=Any)
@@ -34,16 +33,13 @@ class _Config(BaseSettings):
     POSTGRES_PORT: str
     POSTGRES_USER: str
 
-    class Config:
-        """Pydantic's special class to configure pydantic models."""
+    model_config = SettingsConfigDict(env_file=get_dotenv_path(), extra="allow", frozen=True)
 
-        allow_mutation = False  # app config should be immutable
-        env_file = get_dotenv_path()
-
-    @validator("*")
-    def validate_types(cls: type[_Config], value: T, field: ModelField) -> T:  # pragma: no cover
+    @field_validator("*")
+    @classmethod
+    def validate_types(cls: type[_Config], value: T) -> T:  # pragma: no cover
         """Validate fields of particular types. Mostly it is used to add some constraints to builtin python types."""
-        if field.type_ is str:
+        if isinstance(value, str):
             if value.startswith(" ") or value.endswith(" "):
                 # leading / trailing whitespaces are disallowed since they're not significant
                 msg = "String should not have leading or trailing whitespaces."

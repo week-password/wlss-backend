@@ -10,7 +10,6 @@ from sqlalchemy import DateTime, ForeignKey, Integer, LargeBinary, select, Strin
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.account.exceptions import DuplicateAccountException
-from src.account.fields import Email, Login
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -18,7 +17,6 @@ from src.shared.datetime import utcnow
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from src.account.fields import Password
     from src.account.schemas import NewAccount
 
 
@@ -30,8 +28,8 @@ class Account(Base):  # pylint: disable=too-few-public-methods
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # noqa: A003
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    email: Mapped[str] = mapped_column(String(length=Email.LENGTH_MAX), nullable=False, unique=True)
-    login: Mapped[str] = mapped_column(String(length=Login.LENGTH_MAX), nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(String(length=200), nullable=False, unique=True)
+    login: Mapped[str] = mapped_column(String(length=50), nullable=False, unique=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
     )
@@ -49,7 +47,7 @@ class Account(Base):  # pylint: disable=too-few-public-methods
         if account_with_same_login is not None:
             raise DuplicateAccountException()
 
-        account = Account(**account_data.dict(exclude={"password"}))
+        account = Account(**account_data.model_dump(exclude={"password"}))
         session.add(account)
         await session.flush()
         return account
@@ -68,7 +66,7 @@ class PasswordHash(Base):  # pylint: disable=too-few-public-methods
     value: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
 
     @staticmethod
-    async def create(session: AsyncSession, password: Password, account_id: int) -> PasswordHash:
+    async def create(session: AsyncSession, password: str, account_id: int) -> PasswordHash:
         """Create a password hash object."""
         hash_value = PasswordHash._generate_hash(password)
         password_hash = PasswordHash(value=hash_value, account_id=account_id)
@@ -77,9 +75,8 @@ class PasswordHash(Base):  # pylint: disable=too-few-public-methods
         return password_hash
 
     @staticmethod
-    def _generate_hash(password: Password) -> bytes:
+    def _generate_hash(password: str) -> bytes:
         """Generate hash for password."""
         salt = bcrypt.gensalt()
-        raw_password = password.get_secret_value()
-        byte_password = raw_password.encode("utf-8")
+        byte_password = password.encode("utf-8")
         return bcrypt.hashpw(byte_password, salt)

@@ -22,6 +22,6 @@ async def create_account(request_data: NewAccountWithProfile, session: AsyncSess
     profile = await Profile.create(session, request_data.profile, account_id=account.id)
     await PasswordHash.create(session, request_data.account.password, account_id=account.id)
     return schemas.AccountWithProfile(
-        account=schemas.Account.from_orm(account),
-        profile=profile_schemas.Profile.from_orm(profile),
+        account=schemas.Account.model_validate(account, from_attributes=True),
+        profile=profile_schemas.Profile.model_validate(profile, from_attributes=True),
     )

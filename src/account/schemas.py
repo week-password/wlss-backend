@@ -6,7 +6,6 @@ from datetime import datetime
 
 from pydantic import PositiveInt
 
-from src.account.fields import Email, Login, Password
 from src.profile.schemas import NewProfile, Profile
 from src.shared.schemas import Schema
 
@@ -14,9 +13,9 @@ from src.shared.schemas import Schema
 class NewAccount(Schema):
     """Account data which is going to be created during sign up process."""
 
-    email: Email
-    login: Login
-    password: Password
+    email: str
+    login: str
+    password: str
 
 
 class Account(Schema):
@@ -25,13 +24,8 @@ class Account(Schema):
     id: PositiveInt  # noqa: A003
 
     created_at: datetime
-    email: Email
-    login: Login
-
-    class Config:
-        """Pydantic's special class to configure pydantic models."""
-
-        orm_mode = True
+    email: str
+    login: str
 
 
 class NewAccountWithProfile(Schema):
@@ -57,10 +51,10 @@ class AccountId(Schema):
 class AccountLogin(Schema):
     """Account login."""
 
-    login: Login
+    login: str
 
 
 class AccountEmail(Schema):
     """Account email."""
 
-    email: Email
+    email: str

@@ -8,7 +8,6 @@ from uuid import UUID
 from pydantic import PositiveInt
 
 from src.shared.schemas import Schema
-from src.wish.fields import Description, Title
 
 
 class Wish(Schema):
@@ -17,10 +16,10 @@ class Wish(Schema):
     id: PositiveInt  # noqa: A003
 
     account_id: PositiveInt
-    avatar_id: UUID | None
+    avatar_id: UUID | None = None
     created_at: datetime
-    description: Description
-    title: Title
+    description: str
+    title: str
 
 
 class Wishes(Schema):
@@ -32,17 +31,17 @@ class Wishes(Schema):
 class NewWish(Schema):
     """Wish which is going to be created."""
 
-    avatar_id: UUID | None
-    description: Description
-    title: Title
+    avatar_id: UUID | None = None
+    description: str
+    title: str
 
 
 class WishUpdate(Schema):
     """Update info for wish."""
 
-    avatar_id: UUID | None
-    description: Description
-    title: Title
+    avatar_id: UUID | None = None
+    description: str
+    title: str
 
 
 class WishBooking(Schema):
