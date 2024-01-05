@@ -40,6 +40,10 @@ class MimeType(Enum):
     IMAGE_PNG = "image/png"
     IMAGE_WEBP = "image/webp"
 
+    def __str__(self: Self) -> str:
+        """Convert enum member to string."""
+        return self.value
+
 
 _extension_mime_type = {
     Extension.GIF: MimeType.IMAGE_GIF,

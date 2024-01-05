@@ -80,3 +80,7 @@ class Minio(minio.Minio):  # type: ignore[misc]
     def upload_file(self: Self, file_id: UUID, file_path: Path) -> None:
         """Upload a new file."""
         self.fput_object(str(Bucket.FILES), str(file_id), file_path, part_size=(10 * MEGABYTE))
+
+    def download_file(self: Self, file_id: UUID, file_path: Path) -> None:
+        """Download file."""
+        self.fget_object(str(Bucket.FILES), str(file_id), file_path)

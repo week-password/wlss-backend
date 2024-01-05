@@ -56,6 +56,9 @@ env
 # environments
 envs
 
+# exception (used by `sqlalchemy` library)
+exc
+
 # equals
 eq
 

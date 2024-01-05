@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.auth.dependencies import get_access_token
 from src.auth.schemas import AccessTokenPayload
 from src.file import controllers, schemas
-from src.file.dependencies import get_new_file
+from src.file.dependencies import get_new_file, get_tmp_dir
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
 from src.shared.minio import get_minio, Minio
@@ -72,7 +72,11 @@ async def create_file(
     summary="Get file.",
 )
 async def get_file(
-    file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],
+    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],
+    tmp_dir: Annotated[Path, Depends(get_tmp_dir)],
+    minio: Minio = Depends(get_minio),
+    session: AsyncSession = Depends(get_session),
 ) -> None:
     """Get file."""
+    return await controllers.get_file(file_id, access_token, tmp_dir, minio, session)

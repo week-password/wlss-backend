@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 import src.routes
-from src.shared.exceptions import BadRequestException, TooLargeException
+from src.shared.exceptions import BadRequestException, NotFoundException, TooLargeException
 
 
 if TYPE_CHECKING:
@@ -40,6 +40,19 @@ async def handle_bad_request(_: Request, exception: BadRequestException) -> JSON
         status_code=exception.status_code,
         content={
             "action": exception.action,
+            "description": exception.description,
+            "details": exception.details,
+        },
+    )
+
+
+@app.exception_handler(NotFoundException)
+async def handle_not_found(_: Request, exception: NotFoundException) -> JSONResponse:
+    """Handle NotFoundException."""
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={
+            "resource": exception.resource,
             "description": exception.description,
             "details": exception.details,
         },

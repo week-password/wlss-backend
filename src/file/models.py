@@ -6,11 +6,13 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, Integer
+from sqlalchemy import DateTime, Integer, select
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.file.enums import Extension, MimeType
+from src.file.exceptions import FileNotFound
 from src.shared.database import Base, DbEnum
 from src.shared.datetime import utcnow
 
@@ -21,7 +23,7 @@ if TYPE_CHECKING:
     from src.file.schemas import NewFile
 
 
-class File(Base):  # pylint: disable=too-few-public-methods
+class File(Base):
     """File database model."""
 
     __tablename__ = "file"
@@ -46,4 +48,14 @@ class File(Base):  # pylint: disable=too-few-public-methods
         )
         session.add(file)
         await session.flush()
+        return file
+
+    @staticmethod
+    async def get(session: AsyncSession, file_id: UUID) -> File:
+        """Get file by id."""
+        query = select(File).where(File.id == file_id)
+        try:
+            file = (await session.execute(query)).scalar_one()
+        except NoResultFound:
+            raise FileNotFound() from None
         return file

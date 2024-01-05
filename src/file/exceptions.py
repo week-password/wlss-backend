@@ -2,7 +2,19 @@
 
 from __future__ import annotations
 
-from src.shared.exceptions import TooLargeException
+from fastapi import status
+
+from src.shared.exceptions import NotFoundException, TooLargeException
+
+
+class FileNotFound(NotFoundException):
+    """Exception raised when requested file wasn't found."""
+
+    resource: str = "file"
+
+    description = "Requested file not found."
+    details = "Requested file doesn't exist or has been deleted."
+    status_code = status.HTTP_404_NOT_FOUND
 
 
 class FileTooLarge(TooLargeException):
