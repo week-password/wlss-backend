@@ -55,7 +55,7 @@ async def create_session(
     credentials: Annotated[  # noqa: ARG001
         schemas.Credentials,
         Body(
-            examples={
+            openapi_examples={
                 "With login": {
                     "description": "Sign In via login and password.",
                     "value": {
