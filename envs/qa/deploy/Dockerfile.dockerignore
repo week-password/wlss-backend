@@ -14,4 +14,4 @@ __pycache__
 .ruff_cache
 
 # prevent production environment variables to be in the image pushed to some public docker repository
-envs/qa/.env
+envs/qa/deploy/.env

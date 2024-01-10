@@ -3,8 +3,8 @@ name: wlss-qa
 services:
   app:
     build:
-      context: ../..  # path from the corrent file to the project root dir
-      dockerfile: envs/qa/Dockerfile  # path from the project root dir to the Dockerfile
+      context: ../../..  # path from the corrent file to the project root dir
+      dockerfile: envs/qa/deploy/Dockerfile  # path from the project root dir to the Dockerfile
     environment:
       - WLSS_ENV=qa
     depends_on:
@@ -13,11 +13,11 @@ services:
       minio:
         condition: service_healthy
     volumes:
-      - .env:/wlss-backend/envs/qa/.env
+      - .env:/wlss-backend/envs/qa/deploy/.env
     entrypoint: >
       bash -c "
         alembic upgrade head
-        gunicorn --config=envs/qa/gunicorn/config.py
+        gunicorn --config=envs/qa/deploy/gunicorn/config.py
       "
 
   postgres:
