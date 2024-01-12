@@ -61,6 +61,11 @@ poetry install --with app,lint,test
 poetry shell
 ```
 
+4. Upgrade pip within virtual environment.
+```bash
+pip install --upgrade pip
+```
+
 
 ## [Run app](#table-of-contents)
 
