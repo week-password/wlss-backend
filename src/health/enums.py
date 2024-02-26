@@ -1,5 +1,3 @@
-"""Enumerations for 'health' package."""
-
 from __future__ import annotations
 
 from src.shared import enum

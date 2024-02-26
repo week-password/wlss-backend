@@ -26,6 +26,8 @@ POSTGRES_HOST="postgres"
 POSTGRES_PASSWORD=""  # provide correct value here
 POSTGRES_PORT="5432"
 POSTGRES_USER=""  # provide correct value here
+
+SECRET_KEY="keyboardcat"
 EOF
 
 # ======================================================================================================================

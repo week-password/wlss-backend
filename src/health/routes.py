@@ -1,5 +1,3 @@
-"""Health endpoints."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter, status
@@ -30,5 +28,4 @@ router = APIRouter(tags=["service"])
     summary="Check health.",
 )
 async def get_health() -> schemas.Health:
-    """Classic health check function."""
     return schemas.Health(status=enums.HealthStatus.OK)

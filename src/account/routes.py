@@ -1,5 +1,3 @@
-"""Account related endpoints."""
-
 from __future__ import annotations
 
 from typing import Annotated
@@ -8,8 +6,8 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account import controllers, schemas
-from src.auth.dependencies import get_access_token
-from src.auth.schemas import AccessTokenPayload
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
 
@@ -66,7 +64,6 @@ async def create_account(
     ],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.AccountWithProfile:
-    """Create a new account with profile."""
     return await controllers.create_account(new_account, session)
 
 
@@ -92,13 +89,14 @@ async def create_account(
     summary="Get Account Id.",
 )
 async def get_account_id(
-    account_login: Annotated[str, Path(example="john_doe")],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get Account Id by Login."""
+    account_login: Annotated[str, Path(example="john_doe")],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.AccountId:
+    return await controllers.get_account_id(account_login, current_account, session)
 
 
-@router.get(
+@router.post(
     "/accounts/logins/match",
     description="Check if account with provided login exists.",
     responses={
@@ -114,12 +112,13 @@ async def get_account_id(
     summary="Check login uniqueness.",
 )
 async def match_account_login(
-    account_login: Annotated[schemas.AccountLogin, Body(example={"login": "john_doe"})],  # noqa: ARG001
+    account_login: Annotated[schemas.AccountLogin, Body(example={"login": "john_doe"})],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Check account login uniqueness."""
+    await controllers.match_account_login(account_login, session)
 
 
-@router.get(
+@router.post(
     "/accounts/emails/match",
     description="Check if account with provided email exists.",
     responses={
@@ -135,6 +134,7 @@ async def match_account_login(
     summary="Check email uniqueness.",
 )
 async def match_account_email(
-    account_email: Annotated[schemas.AccountEmail, Body(example={"email": "john.doe@mail.com"})],  # noqa: ARG001
+    account_email: Annotated[schemas.AccountEmail, Body(example={"email": "john.doe@mail.com"})],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Check account email uniqueness."""
+    await controllers.match_account_email(account_email, session)

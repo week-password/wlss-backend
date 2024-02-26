@@ -1,5 +1,3 @@
-"""Utilities for working with date and time."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

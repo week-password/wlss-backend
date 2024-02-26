@@ -1,10 +1,11 @@
-"""Application configuration stuff."""
-
 from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING, TypeVar
 
-from pydantic import field_validator
+from pydantic import (
+    field_validator,
+    PositiveInt,  # noqa: TCH002
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.shared.environment import get_dotenv_path
@@ -19,7 +20,8 @@ T = TypeVar("T", bound=Any)
 
 
 class _Config(BaseSettings):
-    """Application config."""
+    DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION: PositiveInt = 1
+    DAYS_BEFORE_REFRESH_TOKEN_EXPIRATION: PositiveInt = 60
 
     MINIO_HOST: str
     MINIO_PORT: str
@@ -32,6 +34,8 @@ class _Config(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_PORT: str
     POSTGRES_USER: str
+
+    SECRET_KEY: str
 
     model_config = SettingsConfigDict(env_file=get_dotenv_path(), extra="allow", frozen=True)
 

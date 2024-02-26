@@ -26,6 +26,8 @@ POSTGRES_HOST="localhost"
 POSTGRES_PASSWORD="postgres"
 POSTGRES_PORT="5433"
 POSTGRES_USER="postgres"
+
+SECRET_KEY="keyboardcat"
 EOF
 
 # ======================================================================================================================

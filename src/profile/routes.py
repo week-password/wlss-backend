@@ -1,16 +1,16 @@
-"""Profile related endpoints."""
-
 from __future__ import annotations
 
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
 from pydantic import PositiveInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.dependencies import get_access_token
-from src.auth.schemas import AccessTokenPayload
-from src.profile import schemas
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
+from src.profile import controllers, schemas
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
 
 
 router = APIRouter(tags=["profile"])
@@ -41,15 +41,16 @@ router = APIRouter(tags=["profile"])
     status_code=status.HTTP_200_OK,
     summary="Get Profile info.",
 )
-def get_profile(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get Profile info."""
+async def get_profile(
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Profile:
+    return await controllers.get_profile(account_id, current_account, session)
 
 
 @router.put(
-    "/account/{account_id}/profile",
+    "/accounts/{account_id}/profile",
     description="Update Profile info.",
     responses={
         status.HTTP_200_OK: {
@@ -73,9 +74,9 @@ def get_profile(
     status_code=status.HTTP_200_OK,
     summary="Update Profile info.",
 )
-def update_profile(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    profile_update: Annotated[  # noqa: ARG001
+async def update_profile(
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    profile_update: Annotated[
         schemas.ProfileUpdate,
         Body(
             example={
@@ -85,6 +86,7 @@ def update_profile(
             },
         ),
     ],
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Update profile info."""
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Profile:
+    return await controllers.update_profile(account_id, profile_update, current_account, session)

@@ -8,6 +8,8 @@ exclude =
     __pycache__,
 
 ignore =
+   # missing docstring
+   D
    # line break before binary operator
    W503
 

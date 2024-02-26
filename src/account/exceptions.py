@@ -1,13 +1,19 @@
-"""Exceptions related to account functionality."""
-
 from __future__ import annotations
 
-from src.shared.exceptions import BadRequestException
+from fastapi import status
+
+from src.shared.exceptions import BadRequestException, NotFoundException
+
+
+class AccountNotFoundError(NotFoundException):
+    resource: str = "Account"
+
+    description = "Requested resource not found."
+    details = "Requested resource doesn't exist or has been deleted."
+    status_code = status.HTTP_404_NOT_FOUND
 
 
 class DuplicateAccountException(BadRequestException):
-    """Exception raised when such account already exists."""
-
     action = "create account"
 
     description = "Account already exists."

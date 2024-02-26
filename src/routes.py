@@ -1,5 +1,3 @@
-"""Main app router combining all entities routers."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter

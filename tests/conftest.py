@@ -10,8 +10,9 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 
 from src.app import app
+from src.config import CONFIG
 from src.shared.database import get_session, POSTGRES_CONNECTION_URL
-from src.shared.minio import get_minio
+from src.shared.minio import Minio
 from tests.utils.database import set_autoincrement_counters
 
 
@@ -42,7 +43,7 @@ async def db_empty():
     """Empty database session."""
     # this solution is from sqlalchemy docs:
     # https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
-    async_engine = create_async_engine(POSTGRES_CONNECTION_URL)
+    async_engine = create_async_engine(POSTGRES_CONNECTION_URL, connect_args={"server_settings": {"jit": "off"}})
     connection = await async_engine.connect()
     transaction = await connection.begin()
     async_session = async_scoped_session(async_sessionmaker(bind=connection), scopefunc=asyncio.current_task)
@@ -57,7 +58,13 @@ async def db_empty():
 @pytest.fixture
 async def minio_empty():
     """Empty minio."""
-    minio = next(get_minio())
+    minio = Minio(
+        CONFIG.MINIO_SCHEMA,
+        CONFIG.MINIO_HOST,
+        CONFIG.MINIO_PORT,
+        CONFIG.MINIO_ROOT_USER,
+        CONFIG.MINIO_ROOT_PASSWORD,
+    )
     for _, bucket_name in minio.BUCKETS:
         for minio_object in minio.list_objects(bucket_name, recursive=True):
             minio.remove_object(bucket_name, minio_object.object_name)

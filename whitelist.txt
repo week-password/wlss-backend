@@ -31,6 +31,9 @@ classmethod
 # configuration component
 config
 
+# check password (from `bcrypt` library)
+checkpw
+
 # package from python standard library (pylint spellcheck)
 datetime
 
@@ -39,6 +42,9 @@ dotenv
 
 # development (pylint spellcheck)
 dev
+
+# End Of File
+EOF
 
 # enumeration (pylint spellcheck)
 enum
@@ -60,6 +66,9 @@ fastapi
 
 # file get (used by `minio` library)
 fget
+
+# file put (used by `minio` library)
+fput
 
 # full match (used by `re` library)
 fullmatch
@@ -133,6 +142,9 @@ pylint
 
 # Python library for testing (pylint spellcheck)
 pytest
+
+# right partition (string method)
+rpartition
 
 # schemas
 schemas

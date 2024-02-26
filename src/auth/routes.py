@@ -1,5 +1,3 @@
-"""Auth related endpoints."""
-
 from __future__ import annotations
 
 from typing import Annotated
@@ -7,10 +5,13 @@ from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, Path, status
 from pydantic import PositiveInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth import schemas
-from src.auth.dependencies import get_access_token, get_refresh_token
+from src.account.models import Account
+from src.auth import controllers, schemas
+from src.auth.dependencies import get_account_from_access_token, get_account_from_refresh_token
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
 
 
 router = APIRouter(tags=["auth"])
@@ -52,7 +53,7 @@ router = APIRouter(tags=["auth"])
     summary="Sign In - create tokens for new session.",
 )
 async def create_session(
-    credentials: Annotated[  # noqa: ARG001
+    credentials: Annotated[
         schemas.Credentials,
         Body(
             openapi_examples={
@@ -87,8 +88,9 @@ async def create_session(
             },
         ),
     ],
-) -> None:
-    """Create new auth session and generate tokens for particular account."""
+    session: AsyncSession = Depends(get_session),
+) -> schemas.SessionWithTokens:
+    return await controllers.create_session(credentials, session)
 
 
 @router.post(
@@ -120,11 +122,12 @@ async def create_session(
     summary="Generate new access and refresh tokens for particular auth session",
 )
 async def refresh_tokens(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    session_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],  # noqa: ARG001
-    refresh_token: Annotated[schemas.RefreshTokenPayload, Depends(get_refresh_token)],  # noqa: ARG001
-) -> None:
-    """Refresh tokens."""
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    session_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],
+    current_account: Annotated[Account, Depends(get_account_from_refresh_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Tokens:
+    return await controllers.refresh_tokens(account_id, session_id, current_account, session)
 
 
 @router.delete(
@@ -142,11 +145,12 @@ async def refresh_tokens(
     summary="Sign Out for particular auth session.",
 )
 async def delete_session(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    session_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],  # noqa: ARG001
-    access_token: Annotated[schemas.AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    session_id: Annotated[UUID, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Remove particular auth session."""
+    return await controllers.delete_session(account_id, session_id, current_account, session)
 
 
 @router.delete(
@@ -164,7 +168,8 @@ async def delete_session(
     summary="Sign Out from all sessions.",
 )
 async def delete_all_sessions(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[schemas.AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Remove all auth sessions related to account."""
+    return await controllers.delete_all_sessions(account_id, current_account, session)

@@ -1,16 +1,16 @@
-"""Friendship related endpoints."""
-
 from __future__ import annotations
 
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
 from pydantic import PositiveInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.dependencies import get_access_token
-from src.auth.schemas import AccessTokenPayload
-from src.friendship import schemas
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
+from src.friendship import controllers, schemas
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
 
 
 router = APIRouter(tags=["friendship"])
@@ -66,10 +66,11 @@ router = APIRouter(tags=["friendship"])
     summary="Get friends.",
 )
 async def get_friends(
-    account_id: Annotated[PositiveInt, Path(example=15)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get all Account friends."""
+    account_id: Annotated[PositiveInt, Path(example=15)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Friends:
+    return await controllers.get_friends(account_id, current_account, session)
 
 
 @router.post(
@@ -98,13 +99,14 @@ async def get_friends(
     summary="Create friendship request.",
 )
 async def create_friendship_request(
-    new_friendship_request: Annotated[  # noqa: ARG001
+    new_friendship_request: Annotated[
         schemas.NewFriendshipRequest,
-        Body(example={"account_id": 42, "friend_id": 18}),
+        Body(example={"sender_id": 42, "receiver_id": 18}),
     ],
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Create new friendship request."""
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.FriendshipRequest:
+    return await controllers.create_friendship_request(new_friendship_request, current_account, session)
 
 
 @router.delete(
@@ -123,10 +125,11 @@ async def create_friendship_request(
     summary="Cancel friendship request.",
 )
 async def cancel_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    request_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Cancel friendship request."""
+    return await controllers.cancel_friendship_request(request_id, current_account, session)
 
 
 @router.put(
@@ -161,10 +164,11 @@ async def cancel_friendship_request(
     summary="Accept friendship request.",
 )
 async def accept_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Accept friendship request."""
+    request_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Friendships:
+    return await controllers.accept_friendship_request(request_id, current_account, session)
 
 
 @router.put(
@@ -194,10 +198,11 @@ async def accept_friendship_request(
     summary="Reject friendship request.",
 )
 async def reject_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Reject friendship request."""
+    request_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.FriendshipRequest:
+    return await controllers.reject_friendship_request(request_id, current_account, session)
 
 
 @router.get(
@@ -248,7 +253,8 @@ async def reject_friendship_request(
     summary="Get friendship requests.",
 )
 async def get_friendship_requests(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get all friendship requests related to particular account."""
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.FriendshipRequests:
+    return await controllers.get_friendship_requests(account_id, current_account, session)

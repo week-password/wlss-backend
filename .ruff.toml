@@ -11,6 +11,7 @@ external = [
 ]
 
 ignore = [
+    "D",  # ignores missing docstring
     "D203",  # ignores D203 (one-blank-line-before-class) since we use D211 (no-blank-line-before-class)
     "D213",  # ignores D213 (multi-line-summary-second-line) since we use D212 (multi-line-summary-first-line)
     "S101",  # ignores S101 since we don't use python optimizations with "-O"

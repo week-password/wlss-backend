@@ -3,14 +3,13 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import bcrypt
+import dirty_equals
 import pytest
 from sqlalchemy import select
 
 from src.account.models import Account, PasswordHash
 from src.profile.models import Profile
 from src.shared.database import Base
-from src.shared.datetime import utcnow
-from tests.utils.dirty_equals import PositiveInt, UtcDatetime, UtcDatetimeStr
 from tests.utils.mocks.models import __eq__
 
 
@@ -35,13 +34,13 @@ async def test_create_account_returns_201_with_correct_body(f):
     assert result.status_code == 201
     assert result.json() == {
         "account": {
-            "id": PositiveInt(like=42),
-            "created_at": UtcDatetimeStr(like="2023-06-17T11:47:02.823Z"),
+            "id": dirty_equals.IsPositiveInt,
+            "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
             "email": "john.doe@mail.com",
             "login": "john_doe",
         },
         "profile": {
-            "account_id": PositiveInt(like=42),
+            "account_id": dirty_equals.IsPositiveInt,
             "avatar_id": None,
             "description": "I'm the best guy for your mocks.",
             "name": "John Doe",
@@ -75,28 +74,29 @@ async def test_create_account_creates_objects_in_db_correctly(f):
         accounts = (await f.db.execute(select(Account))).scalars().all()
         assert accounts == [
             Account(
-                created_at=UtcDatetime(like=utcnow()),
+                created_at=dirty_equals.IsDatetime(enforce_tz=True),
                 email="john.doe@mail.com",
-                id=PositiveInt(like=42),
+                id=dirty_equals.IsPositiveInt,
                 login="john_doe",
-                updated_at=UtcDatetime(like=utcnow()),
+                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
             ),
         ]
         profiles = (await f.db.execute(select(Profile))).scalars().all()
         assert profiles == [
             Profile(
-                account_id=PositiveInt(like=42),
+                account_id=dirty_equals.IsPositiveInt,
                 avatar_id=None,
                 description="I'm the best guy for your mocks.",
                 name="John Doe",
-                updated_at=UtcDatetime(like=utcnow()),
+                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
             ),
         ]
         password_hashes = (await f.db.execute(select(PasswordHash))).scalars().all()
         assert password_hashes == [
             PasswordHash(
-                account_id=PositiveInt(like=42),
-                updated_at=UtcDatetime(like=utcnow()),
+                account_id=dirty_equals.IsPositiveInt,
+                created_at=dirty_equals.IsDatetime(enforce_tz=True),
+                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
                 value=b"password-hash",
             ),
         ]

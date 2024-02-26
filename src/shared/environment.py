@@ -1,5 +1,3 @@
-"""Utilities for working with environment variables."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Schemas for account related functionality."""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -19,8 +17,6 @@ class NewAccount(Schema):
 
 
 class Account(Schema):
-    """Existing account model."""
-
     id: PositiveInt  # noqa: A003
 
     created_at: datetime
@@ -29,32 +25,22 @@ class Account(Schema):
 
 
 class NewAccountWithProfile(Schema):
-    """Account and corresponding profile data which are going to be created during sign up process."""
-
     account: NewAccount
     profile: NewProfile
 
 
 class AccountWithProfile(Schema):
-    """Account and corresponding profile which have been created during sign up process."""
-
     account: Account
     profile: Profile
 
 
 class AccountId(Schema):
-    """Account Id."""
-
     id: PositiveInt  # noqa: A003
 
 
 class AccountLogin(Schema):
-    """Account login."""
-
     login: str
 
 
 class AccountEmail(Schema):
-    """Account email."""
-
     email: str

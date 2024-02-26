@@ -1,5 +1,3 @@
-"""Enumerations for file functionality."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -15,8 +13,6 @@ if TYPE_CHECKING:
 
 @types(str)
 class Extension(Enum):
-    """Enum for available file extensions."""
-
     GIF = "gif"
     JFIF = "jfif"
     JIF = "jif"
@@ -33,8 +29,6 @@ class Extension(Enum):
 
 
 class MimeType(Enum):
-    """Enum for available mime-types."""
-
     IMAGE_GIF = "image/gif"
     IMAGE_JPEG = "image/jpeg"
     IMAGE_PNG = "image/png"

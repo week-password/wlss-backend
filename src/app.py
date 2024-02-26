@@ -1,5 +1,3 @@
-"""Main fastapi application."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -8,7 +6,13 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 import src.routes
-from src.shared.exceptions import BadRequestException
+from src.shared.exceptions import (
+    BadRequestException,
+    NotAllowedException,
+    NotAuthenticatedException,
+    NotFoundException,
+    TooLargeException,
+)
 
 
 if TYPE_CHECKING:
@@ -35,11 +39,57 @@ app.include_router(src.routes.router)
 
 @app.exception_handler(BadRequestException)
 async def handle_bad_request(_: Request, exception: BadRequestException) -> JSONResponse:
-    """Handle BadRequestException."""
     return JSONResponse(
         status_code=exception.status_code,
         content={
             "action": exception.action,
+            "description": exception.description,
+            "details": exception.details,
+        },
+    )
+
+
+@app.exception_handler(NotAllowedException)
+async def handle_not_allowed(_: Request, exception: NotAllowedException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={
+            "action": exception.action,
+            "description": exception.description,
+            "details": exception.details,
+        },
+    )
+
+
+@app.exception_handler(NotAuthenticatedException)
+async def handle_not_authenticated(_: Request, exception: NotAuthenticatedException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={
+            "description": exception.description,
+            "details": exception.details,
+        },
+    )
+
+
+@app.exception_handler(NotFoundException)
+async def handle_not_found(_: Request, exception: NotFoundException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={
+            "resource": exception.resource,
+            "description": exception.description,
+            "details": exception.details,
+        },
+    )
+
+
+@app.exception_handler(TooLargeException)
+async def handle_too_large(_: Request, exception: TooLargeException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={
+            "resource": exception.resource,
             "description": exception.description,
             "details": exception.details,
         },

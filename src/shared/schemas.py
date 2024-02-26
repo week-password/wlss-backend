@@ -1,5 +1,3 @@
-"""Pydantic models shared by different application components."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel

@@ -1,17 +1,19 @@
-"""File related endpoints."""
-
 from __future__ import annotations
 
+import pathlib
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, status, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 from fastapi.responses import FileResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.dependencies import get_access_token
-from src.auth.schemas import AccessTokenPayload
-from src.file import schemas
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
+from src.file import controllers, schemas
+from src.file.dependencies import get_new_file, get_tmp_dir
 from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
 
 
 router = APIRouter(tags=["file"])
@@ -42,10 +44,12 @@ router = APIRouter(tags=["file"])
     summary="Upload file.",
 )
 async def create_file(
-    new_file: UploadFile,  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Create file."""
+    background_tasks: BackgroundTasks,
+    new_file: Annotated[schemas.NewFile, Depends(get_new_file)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.File:
+    return await controllers.create_file(background_tasks, new_file, current_account, session)
 
 
 @router.get(
@@ -64,7 +68,10 @@ async def create_file(
     summary="Get file.",
 )
 async def get_file(
-    file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get file."""
+    background_tasks: BackgroundTasks,
+    file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    tmp_dir: Annotated[pathlib.Path, Depends(get_tmp_dir)],
+    session: AsyncSession = Depends(get_session),
+) -> FileResponse:
+    return await controllers.get_file(background_tasks, file_id, current_account, tmp_dir, session)

@@ -1,16 +1,16 @@
-"""Wish related endpoints."""
-
 from __future__ import annotations
 
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, Query, status
 from pydantic import PositiveInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.dependencies import get_access_token
-from src.auth.schemas import AccessTokenPayload
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
 from src.shared import swagger as shared_swagger
-from src.wish import schemas
+from src.shared.database import get_session
+from src.wish import controllers, schemas
 
 
 router = APIRouter(tags=["wish"])
@@ -44,8 +44,8 @@ router = APIRouter(tags=["wish"])
     summary="Create a wish.",
 )
 async def create_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    new_wish: Annotated[  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    new_wish: Annotated[
         schemas.NewWish,
         Body(
             example={
@@ -55,9 +55,10 @@ async def create_wish(
             },
         ),
     ],
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Create a wish."""
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Wish:
+    return await controllers.create_wish(account_id, new_wish, current_account, session)
 
 
 @router.put(
@@ -88,9 +89,9 @@ async def create_wish(
     summary="Update particular wish.",
 )
 async def update_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    wish_id: Annotated[PositiveInt, Path(example=17)],  # noqa: ARG001
-    wish_update: Annotated[  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    wish_id: Annotated[PositiveInt, Path(example=17)],
+    wish_update: Annotated[
         schemas.WishUpdate,
         Body(
             example={
@@ -100,9 +101,10 @@ async def update_wish(
             },
         ),
     ],
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Update wish info."""
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Wish:
+    return await controllers.update_wish(account_id, wish_id, wish_update, current_account, session)
 
 
 @router.delete(
@@ -121,11 +123,12 @@ async def update_wish(
     summary="Delete particular wish.",
 )
 async def delete_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    wish_id: Annotated[PositiveInt, Path(example=17)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    wish_id: Annotated[PositiveInt, Path(example=17)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Delete wish."""
+    return await controllers.delete_wish(account_id, wish_id, current_account, session)
 
 
 @router.get(
@@ -168,10 +171,11 @@ async def delete_wish(
     summary="Get account wishes.",
 )
 async def get_account_wishes(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Get wishes owned by particular account."""
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.Wishes:
+    return await controllers.get_account_wishes(account_id, current_account, session)
 
 
 @router.post(
@@ -199,8 +203,8 @@ async def get_account_wishes(
     summary="Book particular wish.",
 )
 async def create_wish_booking(
-    account_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    new_wish_booking: Annotated[  # noqa: ARG001
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    new_wish_booking: Annotated[
         schemas.NewWishBooking,
         Body(
             example={
@@ -209,13 +213,14 @@ async def create_wish_booking(
             },
         ),
     ],
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
-    """Create wish booking."""
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.WishBooking:
+    return await controllers.create_wish_booking(account_id, new_wish_booking, current_account, session)
 
 
 @router.get(
-    "/bookings",
+    "/accounts/{account_id}/wishes/bookings",
     description="Get wish bookings info for particular wishes.",
     responses={
         status.HTTP_200_OK: {
@@ -246,11 +251,14 @@ async def create_wish_booking(
     response_model=schemas.WishBookings,
     summary="Get wish bookings.",
 )
-def get_wish_bookings(
-    wish_ids: Annotated[list[PositiveInt], Query(example=[42, 18], alias="wish_id")],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
-) -> None:
+async def get_wish_bookings(
+    account_id: Annotated[PositiveInt, Path(example=42)],
+    wish_ids: Annotated[list[PositiveInt], Query(example=[42, 18], alias="wish_id")],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> schemas.WishBookings:
     """Get wish bookings for particular wishes."""
+    return await controllers.get_wish_bookings(account_id, wish_ids, current_account, session)
 
 
 @router.delete(
@@ -269,7 +277,8 @@ def get_wish_bookings(
     summary="Delete wish booking.",
 )
 async def delete_wish_booking(
-    booking_id: Annotated[PositiveInt, Path(example=42)],  # noqa: ARG001
-    access_token: Annotated[AccessTokenPayload, Depends(get_access_token)],  # noqa: ARG001
+    booking_id: Annotated[PositiveInt, Path(example=42)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
 ) -> None:
-    """Delete wish booking."""
+    return await controllers.delete_wish_booking(booking_id, current_account, session)
