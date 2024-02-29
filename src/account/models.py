@@ -1,19 +1,22 @@
 from __future__ import annotations
 
 import typing
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 import bcrypt
-from sqlalchemy import DateTime, delete, ForeignKey, Integer, LargeBinary, select, String
+from sqlalchemy import delete, ForeignKey, LargeBinary, select
 from sqlalchemy.orm import Mapped, mapped_column
+from wlss.account.types import AccountEmail, AccountLogin
+from wlss.shared.types import Id, UtcDatetime
 
+from src.account.columns import AccountEmailColumn, AccountLoginColumn
 from src.account.exceptions import AccountNotFoundError, DuplicateAccountException
 from src.auth.exceptions import SessionNotFoundError
 from src.auth.models import Session
 from src.friendship.exceptions import FriendshipRequestNotFoundError
 from src.friendship.models import Friendship, FriendshipRequest
 from src.profile.models import Profile
+from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 from src.wish.exceptions import WishBookingNotFoundError, WishNotFoundError
@@ -25,9 +28,9 @@ if TYPE_CHECKING:
     from typing import Self
     from uuid import UUID
 
-    from pydantic import PositiveInt
     from sqlalchemy import Row
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.account.types import AccountPassword
 
     from src.account.schemas import NewAccount
     from src.auth import schemas as auth_schemas
@@ -38,14 +41,12 @@ class Account(Base):
 
     __tablename__ = "account"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # noqa: A003
+    id: Mapped[Id] = mapped_column(IdColumn, primary_key=True)  # noqa: A003
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    email: Mapped[str] = mapped_column(String(length=200), nullable=False, unique=True)
-    login: Mapped[str] = mapped_column(String(length=50), nullable=False, unique=True)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
+    email: Mapped[AccountEmail] = mapped_column(AccountEmailColumn, nullable=False, unique=True)
+    login: Mapped[AccountLogin] = mapped_column(AccountLoginColumn, nullable=False, unique=True)
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     @staticmethod
     async def create(session: AsyncSession, account_data: NewAccount) -> Account:
@@ -59,13 +60,16 @@ class Account(Base):
         if account_with_same_login is not None:
             raise DuplicateAccountException()
 
-        account = Account(**account_data.model_dump(exclude={"password"}))
+        account = Account(
+            email=account_data.email,
+            login=account_data.login,
+        )
         session.add(account)
         await session.flush()
         return account
 
     @classmethod
-    async def get(cls: type[Account], session: AsyncSession, account_id: PositiveInt) -> Account:
+    async def get(cls: type[Account], session: AsyncSession, account_id: Id) -> Account:
         query = select(Account).where(Account.id == account_id)
         row = (await session.execute(query)).one_or_none()
         if row is None:
@@ -73,7 +77,7 @@ class Account(Base):
         return typing.cast(Account, row.Account)
 
     @classmethod
-    async def get_by_login(cls: type[Account], session: AsyncSession, login: str) -> Account:
+    async def get_by_login(cls: type[Account], session: AsyncSession, login: AccountLogin) -> Account:
         query = select(Account).where(Account.login == login)
         row = (await session.execute(query)).first()
         if row is None:
@@ -81,7 +85,7 @@ class Account(Base):
         return typing.cast(Account, row.Account)
 
     @classmethod
-    async def get_by_email(cls: type[Account], session: AsyncSession, email: str) -> Account:
+    async def get_by_email(cls: type[Account], session: AsyncSession, email: AccountEmail) -> Account:
         query = select(Account).where(Account.email == email)
         row = (await session.execute(query)).first()
         if row is None:
@@ -151,7 +155,7 @@ class Account(Base):
     async def get_friendship_request(
         cls: type[Account],
         session: AsyncSession,
-        request_id: int,
+        request_id: Id,
     ) -> FriendshipRequest:
         query = select(FriendshipRequest).where(FriendshipRequest.id == request_id)
         row = (await session.execute(query)).one_or_none()
@@ -178,7 +182,7 @@ class Account(Base):
         await session.flush()
         return wish
 
-    async def get_wish(self: Self, session: AsyncSession, wish_id: PositiveInt) -> Wish:
+    async def get_wish(self: Self, session: AsyncSession, wish_id: Id) -> Wish:
         query = select(Wish).where((Wish.id == wish_id) & (Wish.account_id == self.id))
         row = (await session.execute(query)).one_or_none()
         if row is None:
@@ -190,12 +194,12 @@ class Account(Base):
         rows = (await session.execute(query)).all()
         return [typing.cast(Wish, row.Wish) for row in rows]
 
-    async def has_friend(self: Self, session: AsyncSession, friend_id: int) -> bool:
+    async def has_friend(self: Self, session: AsyncSession, friend_id: Id) -> bool:
         query = select(Friendship).where((Friendship.account_id == self.id) & (Friendship.friend_id == friend_id))
         row = (await session.execute(query)).one_or_none()
         return row is not None
 
-    async def get_wish_booking(self: Self, session: AsyncSession, booking_id: int) -> WishBooking:
+    async def get_wish_booking(self: Self, session: AsyncSession, booking_id: Id) -> WishBooking:
         query = select(WishBooking).where((WishBooking.id == booking_id) & (WishBooking.account_id == self.id))
         row = (await session.execute(query)).one_or_none()
         if row is None:
@@ -207,16 +211,14 @@ class PasswordHash(Base):
 
     __tablename__ = "password_hash"
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), primary_key=True)
+    account_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), primary_key=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
     value: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
 
     @staticmethod
-    async def create(session: AsyncSession, password: str, account_id: int) -> PasswordHash:
+    async def create(session: AsyncSession, password: AccountPassword, account_id: Id) -> PasswordHash:
         hash_value = PasswordHash._generate_hash(password)
         password_hash = PasswordHash(value=hash_value, account_id=account_id)
         session.add(password_hash)
@@ -224,11 +226,11 @@ class PasswordHash(Base):
         return password_hash
 
     @staticmethod
-    def _generate_hash(password: str) -> bytes:
+    def _generate_hash(password: AccountPassword) -> bytes:
         salt = bcrypt.gensalt()
-        byte_password = password.encode("utf-8")
+        byte_password = password.value.encode("utf-8")
         return bcrypt.hashpw(byte_password, salt)
 
-    async def check_password(self: Self, password: str) -> None:
-        if not bcrypt.checkpw(password.encode("utf-8"), self.value):
+    async def check_password(self: Self, password: AccountPassword) -> None:
+        if not bcrypt.checkpw(password.value.encode("utf-8"), self.value):
             raise AccountNotFoundError()

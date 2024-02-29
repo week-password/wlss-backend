@@ -6,9 +6,12 @@ from uuid import UUID
 import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
+from wlss.wish.types import WishDescription, WishTitle
 
 from src.shared.database import Base
 from src.wish.models import Wish
+from tests.utils.dirty_equals import IsId, IsUtcDatetime, IsUtcDatetimeSerialized
 from tests.utils.mocks.models import __eq__
 
 
@@ -30,7 +33,7 @@ async def test_create_wish_returns_201_with_correct_response(f):
         "id": dirty_equals.IsInt,
         "account_id": 1,
         "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
-        "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "created_at": IsUtcDatetimeSerialized,
         "description": "I'm gonna take my horse to the old town road.",
         "title": "Horse",
     }
@@ -53,13 +56,13 @@ async def test_create_wish_creates_objects_in_db_correctly(f):
         wishes = (await f.db.execute(select(Wish))).scalars().all()
         assert wishes == [
             Wish(
-                id=dirty_equals.IsInt,
-                account_id=1,
+                id=IsId,
+                account_id=Id(1),
                 avatar_id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                description="I'm gonna take my horse to the old town road.",
-                title="Horse",
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                created_at=IsUtcDatetime,
+                description=WishDescription("I'm gonna take my horse to the old town road."),
+                title=WishTitle("Horse"),
+                updated_at=IsUtcDatetime,
             ),
         ]
 

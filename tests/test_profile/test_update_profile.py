@@ -3,12 +3,14 @@ from __future__ import annotations
 from unittest.mock import patch
 from uuid import UUID
 
-import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.profile.types import ProfileDescription, ProfileName
+from wlss.shared.types import Id
 
 from src.profile.models import Profile
 from src.shared.database import Base
+from tests.utils.dirty_equals import IsUtcDatetime
 from tests.utils.mocks.models import __eq__
 
 
@@ -51,10 +53,10 @@ async def test_update_profile_updates_profile_in_db_correctly(f):
         profiles = (await f.db.execute(select(Profile))).scalars().all()
         assert profiles == [
             Profile(
-                account_id=1,
+                account_id=Id(1),
                 avatar_id=UUID("2b41c87b-6f06-438b-9933-2a1568cc593b"),
-                description="Updated description.",
-                name="Updated name.",
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                description=ProfileDescription("Updated description."),
+                name=ProfileName("Updated name."),
+                updated_at=IsUtcDatetime,
             ),
         ]

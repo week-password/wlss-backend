@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
-from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account.models import Account
@@ -11,6 +10,7 @@ from src.auth.dependencies import get_account_from_access_token
 from src.friendship import controllers, schemas
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
+from src.shared.fields import IdField
 
 
 router = APIRouter(tags=["friendship"])
@@ -66,7 +66,7 @@ router = APIRouter(tags=["friendship"])
     summary="Get friends.",
 )
 async def get_friends(
-    account_id: Annotated[PositiveInt, Path(example=15)],
+    account_id: Annotated[IdField, Path(example=15)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.Friends:
@@ -125,7 +125,7 @@ async def create_friendship_request(
     summary="Cancel friendship request.",
 )
 async def cancel_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],
+    request_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> None:
@@ -164,7 +164,7 @@ async def cancel_friendship_request(
     summary="Accept friendship request.",
 )
 async def accept_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],
+    request_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.Friendships:
@@ -198,7 +198,7 @@ async def accept_friendship_request(
     summary="Reject friendship request.",
 )
 async def reject_friendship_request(
-    request_id: Annotated[PositiveInt, Path(example=42)],
+    request_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.FriendshipRequest:
@@ -253,7 +253,7 @@ async def reject_friendship_request(
     summary="Get friendship requests.",
 )
 async def get_friendship_requests(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.FriendshipRequests:

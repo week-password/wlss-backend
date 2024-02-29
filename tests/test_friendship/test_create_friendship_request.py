@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
 
 from src.friendship.enums import FriendshipRequestStatus
 from src.friendship.models import FriendshipRequest
 from src.shared.database import Base
+from tests.utils.dirty_equals import IsId, IsUtcDatetime, IsUtcDatetimeSerialized
 from tests.utils.mocks.models import __eq__
 
 
@@ -24,7 +25,7 @@ async def test_create_friendship_request_returns_201_with_correct_response(f):
     assert result.status_code == 201
     assert result.json() == {
         "id": 10000,
-        "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "created_at": IsUtcDatetimeSerialized,
         "receiver_id": 2,
         "sender_id": 1,
         "status": "PENDING",
@@ -44,12 +45,12 @@ async def test_create_friendship_request_creates_objects_in_db_correctly(f):
         friendship_requests = (await f.db.execute(select(FriendshipRequest))).scalars().all()
         assert friendship_requests == [
             FriendshipRequest(
-                id=dirty_equals.IsInt,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                receiver_id=2,
-                sender_id=1,
+                id=IsId,
+                created_at=IsUtcDatetime,
+                receiver_id=Id(2),
+                sender_id=Id(1),
                 status=FriendshipRequestStatus.PENDING,
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                updated_at=IsUtcDatetime,
             ),
         ]
 

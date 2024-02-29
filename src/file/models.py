@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import typing
 import uuid
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, Integer, select, String, UUID
+from sqlalchemy import Enum, select, String, UUID
 from sqlalchemy.orm import Mapped, mapped_column
+from wlss.file.types import FileSize
+from wlss.shared.types import UtcDatetime
 
 from src.file import exceptions
+from src.file.columns import FileSizeColumn
 from src.file.enums import Extension, MimeType
+from src.shared.columns import UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -26,14 +29,12 @@ class File(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)  # noqa: A003
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
     extension: Mapped[Extension] = mapped_column(Enum(Extension, name="extension_enum"), nullable=False)
     mime_type: Mapped[MimeType] = mapped_column(Enum(MimeType, name="mime_type_enum"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    size: Mapped[int] = mapped_column(Integer, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    size: Mapped[FileSize] = mapped_column(FileSizeColumn, nullable=False)
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     @classmethod
     async def create_file(cls: type[File], session: AsyncSession, new_file: NewFile) -> File:

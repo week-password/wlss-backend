@@ -1,27 +1,25 @@
 from __future__ import annotations
 
-from datetime import datetime
-
-from pydantic import PositiveInt
-
+from src.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
 from src.profile.schemas import NewProfile, Profile
+from src.shared.fields import IdField, UtcDatetimeField
 from src.shared.schemas import Schema
 
 
 class NewAccount(Schema):
     """Account data which is going to be created during sign up process."""
 
-    email: str
-    login: str
-    password: str
+    email: AccountEmailField
+    login: AccountLoginField
+    password: AccountPasswordField
 
 
 class Account(Schema):
-    id: PositiveInt  # noqa: A003
+    id: IdField  # noqa: A003
 
-    created_at: datetime
-    email: str
-    login: str
+    created_at: UtcDatetimeField
+    email: AccountEmailField
+    login: AccountLoginField
 
 
 class NewAccountWithProfile(Schema):
@@ -35,12 +33,12 @@ class AccountWithProfile(Schema):
 
 
 class AccountId(Schema):
-    id: PositiveInt  # noqa: A003
+    id: IdField  # noqa: A003
 
 
 class AccountLogin(Schema):
-    login: str
+    login: AccountLoginField
 
 
 class AccountEmail(Schema):
-    email: str
+    email: AccountEmailField

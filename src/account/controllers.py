@@ -9,6 +9,7 @@ from src.profile.models import Profile
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.account.types import AccountLogin
 
     from src.account.schemas import NewAccountWithProfile
 
@@ -21,7 +22,7 @@ async def create_account(request_data: NewAccountWithProfile, session: AsyncSess
 
 
 async def get_account_id(
-    account_login: str,
+    account_login: AccountLogin,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,
 ) -> schemas.AccountId:

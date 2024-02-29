@@ -34,7 +34,7 @@ async def get_account_from_access_token(
         raise InvalidCredentialsError()  # noqa: TRY200, B904
 
     datetime_now = datetime.now(tz=timezone.utc)
-    if datetime_now > payload.expires_at:
+    if datetime_now > payload.expires_at.value:
         raise TokenExpiredError()
 
     try:  # pylint: disable=too-many-try-statements
@@ -66,7 +66,7 @@ async def get_account_from_refresh_token(
         raise InvalidCredentialsError()  # noqa: TRY200, B904
 
     datetime_now = datetime.now(tz=timezone.utc)
-    if datetime_now > payload.expires_at:
+    if datetime_now > payload.expires_at.value:
         raise TokenExpiredError()
 
     try:  # pylint: disable=too-many-try-statements

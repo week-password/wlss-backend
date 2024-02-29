@@ -5,6 +5,9 @@ from uuid import UUID
 
 import jwt
 import pytest
+from wlss.account.types import AccountEmail, AccountLogin
+from wlss.profile.types import ProfileName
+from wlss.shared.types import Id
 
 from src.account.models import Account
 from src.auth.models import Session
@@ -21,14 +24,14 @@ async def db_with_two_accounts(db_empty):
 
     accounts = [
         Account(
-            id=1,
-            email="john.doe@mail.com",
-            login="john_doe",
+            id=Id(1),
+            email=AccountEmail("john.doe@mail.com"),
+            login=AccountLogin("john_doe"),
         ),
         Account(
-            id=2,
-            email="john.smith@mail.com",
-            login="john_smith",
+            id=Id(2),
+            email=AccountEmail("john.smith@mail.com"),
+            login=AccountLogin("john_smith"),
         ),
     ]
     session.add_all(accounts)
@@ -36,23 +39,23 @@ async def db_with_two_accounts(db_empty):
 
     auth_session = Session(
         id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-        account_id=1,
+        account_id=Id(1),
     )
     session.add(auth_session)
     await session.flush()
 
     profiles = [
         Profile(
-            account_id=1,
+            account_id=Id(1),
             avatar_id=None,
             description=None,
-            name="John Doe",
+            name=ProfileName("John Doe"),
         ),
         Profile(
-            account_id=2,
+            account_id=Id(2),
             avatar_id=None,
             description=None,
-            name="John Smith",
+            name=ProfileName("John Smith"),
         ),
     ]
     session.add_all(profiles)
@@ -66,7 +69,7 @@ async def db_with_two_accounts(db_empty):
 async def db_with_one_friendship_request(db_with_two_accounts):  # pylint: disable=redefined-outer-name
     session = db_with_two_accounts
 
-    friendship_request = FriendshipRequest(id=1, receiver_id=2, sender_id=1)
+    friendship_request = FriendshipRequest(id=Id(1), receiver_id=Id(2), sender_id=Id(1))
     session.add(friendship_request)
     await session.flush()
 
@@ -78,7 +81,12 @@ async def db_with_one_friendship_request(db_with_two_accounts):  # pylint: disab
 async def db_with_accepted_friendship_request(db_with_two_accounts):  # pylint: disable=redefined-outer-name
     session = db_with_two_accounts
 
-    friendship_request = FriendshipRequest(id=1, receiver_id=2, sender_id=1, status=FriendshipRequestStatus.ACCEPTED)
+    friendship_request = FriendshipRequest(
+        id=Id(1),
+        receiver_id=Id(2),
+        sender_id=Id(1),
+        status=FriendshipRequestStatus.ACCEPTED,
+    )
     session.add(friendship_request)
     await session.flush()
 
@@ -90,7 +98,7 @@ async def db_with_accepted_friendship_request(db_with_two_accounts):  # pylint: 
 async def db_with_friendship_request_from_another_user(db_with_two_accounts):  # pylint: disable=redefined-outer-name
     session = db_with_two_accounts
 
-    friendship_request = FriendshipRequest(id=1, receiver_id=1, sender_id=2)
+    friendship_request = FriendshipRequest(id=Id(1), receiver_id=Id(1), sender_id=Id(2))
     session.add(friendship_request)
     await session.flush()
 
@@ -105,36 +113,36 @@ async def db_with_three_accounts_and_three_friendship_requests(
     session = db_with_two_accounts
 
     account = Account(
-        id=3,
-        email="john.bloggs@mail.com",
-        login="john_bloggs",
+        id=Id(3),
+        email=AccountEmail("john.bloggs@mail.com"),
+        login=AccountLogin("john_bloggs"),
     )
     session.add(account)
     await session.flush()
 
     profile = Profile(
-        account_id=3,
+        account_id=Id(3),
         avatar_id=None,
         description=None,
-        name="John Bloggs",
+        name=ProfileName("John Bloggs"),
     )
     session.add(profile)
     await session.flush()
 
     friendship_requests = [
         FriendshipRequest(
-            sender_id=1,
-            receiver_id=2,
+            sender_id=Id(1),
+            receiver_id=Id(2),
             status=FriendshipRequestStatus.PENDING,
         ),
         FriendshipRequest(
-            sender_id=2,
-            receiver_id=3,
+            sender_id=Id(2),
+            receiver_id=Id(3),
             status=FriendshipRequestStatus.PENDING,
         ),
         FriendshipRequest(
-            sender_id=3,
-            receiver_id=1,
+            sender_id=Id(3),
+            receiver_id=Id(1),
             status=FriendshipRequestStatus.PENDING,
         ),
     ]
@@ -151,12 +159,12 @@ async def db_with_two_friendships(db_with_two_accounts):  # pylint: disable=rede
 
     friendships = [
         Friendship(
-            account_id=1,
-            friend_id=2,
+            account_id=Id(1),
+            friend_id=Id(2),
         ),
         Friendship(
-            account_id=2,
-            friend_id=1,
+            account_id=Id(2),
+            friend_id=Id(1),
         ),
     ]
     session.add_all(friendships)

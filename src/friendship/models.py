@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, delete, Enum, ForeignKey, Integer
+from sqlalchemy import delete, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+from wlss.shared.types import Id, UtcDatetime
 
 from src.friendship.enums import FriendshipRequestStatus
 from src.friendship.exceptions import CannotRejectFriendshipRequest
+from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -24,32 +25,28 @@ class Friendship(Base):  # pylint: disable=too-few-public-methods
 
     __tablename__ = "friendship"
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False, primary_key=True)
-    friend_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False, primary_key=True)
+    account_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), nullable=False, primary_key=True)
+    friend_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), nullable=False, primary_key=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
 
 class FriendshipRequest(Base):
 
     __tablename__ = "friendship_request"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # noqa: A003
+    id: Mapped[Id] = mapped_column(IdColumn, primary_key=True)  # noqa: A003
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    receiver_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False)
-    sender_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False)
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
+    receiver_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), nullable=False)
+    sender_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), nullable=False)
     status: Mapped[FriendshipRequestStatus] = mapped_column(
         Enum(FriendshipRequestStatus, name="friendship_request_status_enum"),
         default=FriendshipRequestStatus.PENDING,
         nullable=False,
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     @classmethod
     async def create(

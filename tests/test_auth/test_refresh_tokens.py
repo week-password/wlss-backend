@@ -7,6 +7,8 @@ import jwt
 import pytest
 
 from src.config import CONFIG
+from src.shared.datetime import DATETIME_FORMAT
+from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
@@ -30,21 +32,21 @@ async def test_refresh_tokens_returns_201_with_correct_response(f):
     access_token_payload = jwt.decode(json["access_token"], CONFIG.SECRET_KEY, "HS256")
     assert access_token_payload == {
         "account_id": 1,
-        "expires_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "expires_at": IsUtcDatetimeSerialized,
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     refresh_token_payload = jwt.decode(json["refresh_token"], CONFIG.SECRET_KEY, "HS256")
     assert refresh_token_payload == {
         "account_id": 1,
-        "expires_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "expires_at": IsUtcDatetimeSerialized,
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     access_token_expiration = datetime.strptime(  # noqa: DTZ007
-        access_token_payload["expires_at"], "%Y-%m-%dT%H:%M:%S.%fZ",
+        access_token_payload["expires_at"], DATETIME_FORMAT,
     )
     refresh_token_expiration = datetime.strptime(  # noqa: DTZ007
         refresh_token_payload["expires_at"],
-        "%Y-%m-%dT%H:%M:%S.%fZ",
+        DATETIME_FORMAT,
     )
     assert access_token_expiration < refresh_token_expiration
 

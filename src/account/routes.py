@@ -6,6 +6,7 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account import controllers, schemas
+from src.account.fields import AccountLoginField
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
 from src.shared import swagger as shared_swagger
@@ -89,7 +90,7 @@ async def create_account(
     summary="Get Account Id.",
 )
 async def get_account_id(
-    account_login: Annotated[str, Path(example="john_doe")],
+    account_login: Annotated[AccountLoginField, Path(example="john_doe")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.AccountId:

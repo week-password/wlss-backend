@@ -6,10 +6,12 @@ import dirty_equals
 import jwt
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
 
 from src.auth.models import Session
 from src.config import CONFIG
 from src.shared.database import Base
+from tests.utils.dirty_equals import IsUtcDatetime, IsUtcDatetimeSerialized
 from tests.utils.mocks.models import __eq__
 
 
@@ -32,13 +34,13 @@ async def test_create_session_returns_200_with_correct_response(f):
     access_token = result.json()["tokens"]["access_token"]
     assert jwt.decode(access_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
-        "expires_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "expires_at": IsUtcDatetimeSerialized,
         "session_id": dirty_equals.IsUUID(4),
     }
     refresh_token = result.json()["tokens"]["refresh_token"]
     assert jwt.decode(refresh_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
-        "expires_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "expires_at": IsUtcDatetimeSerialized,
         "session_id": dirty_equals.IsUUID(4),
     }
 
@@ -53,9 +55,9 @@ async def test_create_session_creates_session_in_db_correctly(f):
         assert rows == [
             Session(
                 id=dirty_equals.IsUUID(4),
-                account_id=1,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                account_id=Id(1),
+                created_at=IsUtcDatetime,
+                updated_at=IsUtcDatetime,
             ),
         ]
 

@@ -7,12 +7,12 @@ from src.profile import schemas
 
 
 if TYPE_CHECKING:
-    from pydantic import PositiveInt
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.shared.types import Id
 
 
 async def get_profile(
-    account_id: PositiveInt,
+    account_id: Id,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,
 ) -> schemas.Profile:
@@ -27,7 +27,7 @@ async def get_profile(
 
 
 async def update_profile(
-    account_id: PositiveInt,
+    account_id: Id,
     profile_update: schemas.ProfileUpdate,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,

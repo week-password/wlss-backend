@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import typing
-from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, update
+from sqlalchemy import ForeignKey, update
 from sqlalchemy.orm import Mapped, mapped_column
+from wlss.profile.types import ProfileDescription, ProfileName
+from wlss.shared.types import Id, UtcDatetime
 
+from src.profile.columns import ProfileDescriptionColumn, ProfileNameColumn
+from src.shared.columns import UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
@@ -25,19 +28,21 @@ class Profile(Base):
 
     __tablename__ = "profile"
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), primary_key=True)
+    account_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), primary_key=True)
 
     avatar_id: Mapped[UUID | None] = mapped_column(ForeignKey("file.id"), unique=True)
-    description: Mapped[str | None] = mapped_column(String(1000))
-    name: Mapped[str] = mapped_column(String(length=100), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=utcnow, nullable=False, onupdate=utcnow,
-    )
+    description: Mapped[ProfileDescription | None] = mapped_column(ProfileDescriptionColumn)
+    name: Mapped[ProfileName] = mapped_column(ProfileNameColumn, nullable=False)
+    updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     @staticmethod
-    async def create(session: AsyncSession, profile_data: NewProfile, account_id: int) -> Profile:
+    async def create(session: AsyncSession, profile_data: NewProfile, account_id: Id) -> Profile:
         """Create new profile object."""
-        profile = Profile(**profile_data.model_dump(), account_id=account_id)
+        profile = Profile(
+            account_id=account_id,
+            description=profile_data.description,
+            name=profile_data.name,
+        )
         session.add(profile)
         await session.flush()
         return profile

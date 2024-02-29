@@ -16,12 +16,12 @@ from src.wish.models import WishBooking
 
 
 if TYPE_CHECKING:
-    from pydantic import PositiveInt
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.shared.types import Id
 
 
 async def create_wish(
-    account_id: PositiveInt,
+    account_id: Id,
     new_wish: schemas.NewWish,
     current_account: Account,
     session: AsyncSession,
@@ -33,8 +33,8 @@ async def create_wish(
 
 
 async def update_wish(
-    account_id: PositiveInt,
-    wish_id: PositiveInt,
+    account_id: Id,
+    wish_id: Id,
     wish_update: schemas.WishUpdate,
     current_account: Account,
     session: AsyncSession,
@@ -47,8 +47,8 @@ async def update_wish(
 
 
 async def delete_wish(
-    account_id: PositiveInt,
-    wish_id: PositiveInt,
+    account_id: Id,
+    wish_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> None:
@@ -59,7 +59,7 @@ async def delete_wish(
 
 
 async def get_account_wishes(
-    account_id: PositiveInt,
+    account_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> schemas.Wishes:
@@ -74,7 +74,7 @@ async def get_account_wishes(
 
 
 async def create_wish_booking(
-    account_id: PositiveInt,
+    account_id: Id,
     new_wish_booking: schemas.NewWishBooking,
     current_account: Account,
     session: AsyncSession,
@@ -92,8 +92,8 @@ async def create_wish_booking(
 
 
 async def get_wish_bookings(
-    account_id: PositiveInt,
-    wish_ids: list[PositiveInt],
+    account_id: Id,
+    wish_ids: list[Id],
     current_account: Account,
     session: AsyncSession,
 ) -> schemas.WishBookings:
@@ -104,7 +104,7 @@ async def get_wish_bookings(
 
 
 async def delete_wish_booking(
-    booking_id: PositiveInt,
+    booking_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> None:

@@ -7,10 +7,12 @@ from unittest.mock import patch
 import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.file.types import FileSize
 
 from src.file.enums import Extension, MimeType
 from src.file.models import File
 from src.shared.database import Base
+from tests.utils.dirty_equals import IsUtcDatetime
 from tests.utils.mocks.models import __eq__
 
 
@@ -55,13 +57,13 @@ async def test_create_file_creates_file_in_db_correctly(f):
         files = (await f.db.execute(select(File))).scalars().all()
         assert files == [
             File(
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
+                created_at=IsUtcDatetime,
                 id=dirty_equals.IsUUID(4),
                 extension=Extension.PNG,
                 mime_type=MimeType.IMAGE_PNG,
                 name="image.png",
-                size=17,
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                size=FileSize(17),
+                updated_at=IsUtcDatetime,
             ),
         ]
 

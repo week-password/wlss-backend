@@ -7,7 +7,10 @@ external = [
 
     # flake8-rst-docstrings
     "RST214",
-    "RST215"
+    "RST215",
+
+    # flake8-spellcheck
+    "SC200",
 ]
 
 ignore = [

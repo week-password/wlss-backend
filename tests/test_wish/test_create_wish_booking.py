@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
 
 from src.shared.database import Base
 from src.wish.models import WishBooking
+from tests.utils.dirty_equals import IsId, IsUtcDatetime, IsUtcDatetimeSerialized
 from tests.utils.mocks.models import __eq__
 
 
@@ -27,7 +28,7 @@ async def test_create_wish_booking_returns_201_with_correct_response(f):
     assert result.status_code == 201
     assert result.json() == {
         "account_id": 1,
-        "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+        "created_at": IsUtcDatetimeSerialized,
         "wish_id": 1,
     }
 
@@ -49,11 +50,11 @@ async def test_create_wish_booking_creates_objects_in_db_correctly(f):
         wish_bookings = (await f.db.execute(select(WishBooking))).scalars().all()
         assert wish_bookings == [
             WishBooking(
-                id=dirty_equals.IsPositiveInt,
-                account_id=1,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
-                wish_id=1,
+                id=IsId,
+                account_id=Id(1),
+                created_at=IsUtcDatetime,
+                updated_at=IsUtcDatetime,
+                wish_id=Id(1),
             ),
         ]
 

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import dirty_equals
 import pytest
+
+from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
@@ -23,7 +24,7 @@ async def test_get_friends_returns_200_with_correct_response(f):
                     "name": "John Smith",
                 },
                 "friendship": {
-                    "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "created_at": IsUtcDatetimeSerialized,
                 },
             },
         ],

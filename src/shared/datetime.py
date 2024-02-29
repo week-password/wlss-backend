@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
+from wlss.shared.types import UtcDatetime
+
 
 if TYPE_CHECKING:
     from typing import Final
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 DATETIME_FORMAT: Final = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
-def utcnow() -> datetime:
+def utcnow() -> UtcDatetime:
     """Get timezone aware datetime with UTC timezone.
 
     There are two reasons of having this function instead of just using `datetime.now(tz=timezone.utc)` everywhere:
@@ -21,8 +23,8 @@ def utcnow() -> datetime:
            It means that we can not provide just `default=datetime.now` because it is not using UTC timezone.
            We also can not use `default=datetime.utcnow` because it returns timezone-naive datetime object.
 
-        2. Simply `utcnow()` is shorter than `datetime.now(tz=timezone.utc)`
+        2. Simply `utcnow()` is shorter than `UtcDatetime(datetime.now(tz=timezone.utc))`
 
     :returns: datetime
     """
-    return datetime.now(tz=timezone.utc)
+    return UtcDatetime(datetime.now(tz=timezone.utc))

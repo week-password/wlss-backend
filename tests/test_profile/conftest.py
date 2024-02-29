@@ -5,6 +5,10 @@ from uuid import UUID
 
 import jwt
 import pytest
+from wlss.account.types import AccountEmail, AccountLogin
+from wlss.file.types import FileSize
+from wlss.profile.types import ProfileName
+from wlss.shared.types import Id
 
 from src.account.models import Account
 from src.auth.models import Session
@@ -20,25 +24,25 @@ async def db_with_one_profile_and_one_file(db_empty):
     session = db_empty
 
     account = Account(
-        id=1,
-        email="john.doe@mail.com",
-        login="john_doe",
+        id=Id(1),
+        email=AccountEmail("john.doe@mail.com"),
+        login=AccountLogin("john_doe"),
     )
     session.add(account)
     await session.flush()
 
     auth_session = Session(
         id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-        account_id=1,
+        account_id=Id(1),
     )
     session.add(auth_session)
     await session.flush()
 
     profile = Profile(
-        account_id=1,
+        account_id=Id(1),
         avatar_id=None,
         description=None,
-        name="John Doe",
+        name=ProfileName("John Doe"),
     )
     session.add(profile)
     await session.flush()
@@ -48,7 +52,7 @@ async def db_with_one_profile_and_one_file(db_empty):
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
         name="image.png",
-        size=42,
+        size=FileSize(42),
     )
     session.add(file)
     await session.flush()

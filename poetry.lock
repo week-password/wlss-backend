@@ -2435,6 +2435,25 @@ files = [
 ]
 
 [[package]]
+name = "wlss"
+version = "0.1.0"
+description = "Library used by WLSS backend."
+category = "dev"
+optional = false
+python-versions = "3.11.*"
+files = []
+develop = false
+
+[package.dependencies]
+typing-extensions = "^4.5.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/week-password/wlss-backend-lib.git"
+reference = "e2c11e344d096579e2582c45fb08007195ebcc8d"
+resolved_reference = "e2c11e344d096579e2582c45fb08007195ebcc8d"
+
+[[package]]
 name = "wrapt"
 version = "1.15.0"
 description = "Module for decorators, wrappers and monkey patching."
@@ -2522,4 +2541,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "8f0dce4b0646f8013bf8e2073d47529e0636cfb533e14c5957d3bbc3b958bc09"
+content-hash = "7144b01855f2a8f459d54031432bb3b18d09485342c5526f988ae696925bcf8e"

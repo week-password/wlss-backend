@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import dirty_equals
 import pytest
+
+from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
@@ -19,7 +20,7 @@ async def test_get_account_wishes_returns_200_with_correct_response(f):
                 "id": 1,
                 "account_id": 1,
                 "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
-                "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+                "created_at": IsUtcDatetimeSerialized,
                 "description": "I'm gonna take my horse to the old town road.",
                 "title": "Horse",
             },
@@ -27,7 +28,7 @@ async def test_get_account_wishes_returns_200_with_correct_response(f):
                 "id": 2,
                 "account_id": 1,
                 "avatar_id": "4b94605b-f5e1-40b1-b9fc-c635c9529e3e",
-                "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+                "created_at": IsUtcDatetimeSerialized,
                 "description": "I need some sleep. Time to put the old horse down.",
                 "title": "Sleep",
             },

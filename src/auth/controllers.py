@@ -14,8 +14,8 @@ from src.auth.exceptions import (
 if TYPE_CHECKING:
     from uuid import UUID
 
-    from pydantic import PositiveInt
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.shared.types import Id
 
 
 async def create_session(credentials: schemas.Credentials, session: AsyncSession) -> schemas.SessionWithTokens:
@@ -36,7 +36,7 @@ async def create_session(credentials: schemas.Credentials, session: AsyncSession
 
 
 async def refresh_tokens(
-    account_id: PositiveInt,
+    account_id: Id,
     session_id: UUID,
     current_account: Account,
     session: AsyncSession,
@@ -51,7 +51,7 @@ async def refresh_tokens(
 
 
 async def delete_session(
-    account_id: PositiveInt,
+    account_id: Id,
     session_id: UUID,
     current_account: Account,
     session: AsyncSession,
@@ -67,7 +67,7 @@ async def delete_session(
 
 
 async def delete_all_sessions(
-    account_id: PositiveInt,
+    account_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> None:

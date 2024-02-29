@@ -5,6 +5,8 @@ from uuid import UUID
 
 import jwt
 import pytest
+from wlss.account.types import AccountEmail, AccountLogin
+from wlss.shared.types import Id
 
 from src.account.models import Account, PasswordHash
 from src.auth.models import Session
@@ -17,12 +19,12 @@ from tests.utils import bcrypt as bcrypt_cached
 async def db_with_one_account(db_empty):
     session = db_empty
 
-    account = Account(id=1, email="john.doe@mail.com", login="john_doe")
+    account = Account(id=Id(1), email=AccountEmail("john.doe@mail.com"), login=AccountLogin("john_doe"))
     session.add(account)
     await session.flush()
 
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
-    password_hash = PasswordHash(account_id=account.id, value=hash_value)
+    password_hash = PasswordHash(account_id=Id(1), value=hash_value)
     session.add(password_hash)
     await session.flush()
 
@@ -34,7 +36,7 @@ async def db_with_one_account(db_empty):
 async def db_with_one_account_and_one_session(db_with_one_account):  # pylint: disable=redefined-outer-name
     session = db_with_one_account
 
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=1)
+    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
     session.add(auth_session)
     await session.flush()
 
@@ -48,7 +50,7 @@ async def db_with_one_account_and_two_sessions(
 ):  # pylint: disable=redefined-outer-name
     session = db_with_one_account_and_one_session
 
-    auth_session = Session(id=UUID("2ee55d6c-fe71-4ba0-9bbc-df074d365f60"), account_id=1)
+    auth_session = Session(id=UUID("2ee55d6c-fe71-4ba0-9bbc-df074d365f60"), account_id=Id(1))
     session.add(auth_session)
     await session.flush()
 

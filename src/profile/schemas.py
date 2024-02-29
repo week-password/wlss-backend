@@ -2,25 +2,25 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from pydantic import PositiveInt
-
+from src.profile.fields import ProfileDescriptionField, ProfileNameField
+from src.shared.fields import IdField, UuidField
 from src.shared.schemas import Schema
 
 
 class NewProfile(Schema):
-    name: str
-    description: str | None = None
+    name: ProfileNameField
+    description: ProfileDescriptionField | None = None
 
 
 class Profile(Schema):
-    account_id: PositiveInt
+    account_id: IdField
 
     avatar_id: UUID | None = None
-    description: str | None = None
-    name: str
+    description: ProfileDescriptionField | None = None
+    name: ProfileNameField
 
 
 class ProfileUpdate(Schema):
-    avatar_id: UUID | None = None
-    description: str | None = None
-    name: str
+    avatar_id: UuidField | None = None
+    description: ProfileDescriptionField | None = None
+    name: ProfileNameField

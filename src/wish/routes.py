@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, Query, status
-from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
+from src.shared.fields import IdField
 from src.wish import controllers, schemas
 
 
@@ -44,7 +44,7 @@ router = APIRouter(tags=["wish"])
     summary="Create a wish.",
 )
 async def create_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     new_wish: Annotated[
         schemas.NewWish,
         Body(
@@ -89,8 +89,8 @@ async def create_wish(
     summary="Update particular wish.",
 )
 async def update_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],
-    wish_id: Annotated[PositiveInt, Path(example=17)],
+    account_id: Annotated[IdField, Path(example=42)],
+    wish_id: Annotated[IdField, Path(example=17)],
     wish_update: Annotated[
         schemas.WishUpdate,
         Body(
@@ -123,8 +123,8 @@ async def update_wish(
     summary="Delete particular wish.",
 )
 async def delete_wish(
-    account_id: Annotated[PositiveInt, Path(example=42)],
-    wish_id: Annotated[PositiveInt, Path(example=17)],
+    account_id: Annotated[IdField, Path(example=42)],
+    wish_id: Annotated[IdField, Path(example=17)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> None:
@@ -171,7 +171,7 @@ async def delete_wish(
     summary="Get account wishes.",
 )
 async def get_account_wishes(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.Wishes:
@@ -203,7 +203,7 @@ async def get_account_wishes(
     summary="Book particular wish.",
 )
 async def create_wish_booking(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     new_wish_booking: Annotated[
         schemas.NewWishBooking,
         Body(
@@ -252,8 +252,8 @@ async def create_wish_booking(
     summary="Get wish bookings.",
 )
 async def get_wish_bookings(
-    account_id: Annotated[PositiveInt, Path(example=42)],
-    wish_ids: Annotated[list[PositiveInt], Query(example=[42, 18], alias="wish_id")],
+    account_id: Annotated[IdField, Path(example=42)],
+    wish_ids: Annotated[list[IdField], Query(example=[42, 18], alias="wish_id")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.WishBookings:
@@ -277,7 +277,7 @@ async def get_wish_bookings(
     summary="Delete wish booking.",
 )
 async def delete_wish_booking(
-    booking_id: Annotated[PositiveInt, Path(example=42)],
+    booking_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> None:

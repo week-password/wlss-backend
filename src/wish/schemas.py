@@ -1,21 +1,18 @@
 from __future__ import annotations
 
-from datetime import datetime
-from uuid import UUID
-
-from pydantic import PositiveInt
-
+from src.shared.fields import IdField, UtcDatetimeField, UuidField
 from src.shared.schemas import Schema
+from src.wish.fields import WishDescriptionField, WishTitleField
 
 
 class Wish(Schema):
-    id: PositiveInt  # noqa: A003
+    id: IdField  # noqa: A003
 
-    account_id: PositiveInt
-    avatar_id: UUID | None = None
-    created_at: datetime
-    description: str
-    title: str
+    account_id: IdField
+    avatar_id: UuidField | None = None
+    created_at: UtcDatetimeField
+    description: WishDescriptionField
+    title: WishTitleField
 
 
 class Wishes(Schema):
@@ -23,21 +20,21 @@ class Wishes(Schema):
 
 
 class NewWish(Schema):
-    avatar_id: UUID | None = None
-    description: str
-    title: str
+    avatar_id: UuidField | None = None
+    description: WishDescriptionField
+    title: WishTitleField
 
 
 class WishUpdate(Schema):
-    avatar_id: UUID | None = None
-    description: str
-    title: str
+    avatar_id: UuidField | None = None
+    description: WishDescriptionField
+    title: WishTitleField
 
 
 class WishBooking(Schema):
-    account_id: PositiveInt
-    created_at: datetime
-    wish_id: PositiveInt
+    account_id: IdField
+    created_at: UtcDatetimeField
+    wish_id: IdField
 
 
 class WishBookings(Schema):
@@ -45,5 +42,5 @@ class WishBookings(Schema):
 
 
 class NewWishBooking(Schema):
-    account_id: PositiveInt
-    wish_id: PositiveInt
+    account_id: IdField
+    wish_id: IdField

@@ -14,12 +14,12 @@ from src.friendship.models import FriendshipRequest
 
 
 if TYPE_CHECKING:
-    from pydantic import PositiveInt
     from sqlalchemy.ext.asyncio import AsyncSession
+    from wlss.shared.types import Id
 
 
 async def get_friends(
-    account_id: PositiveInt,
+    account_id: Id,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,
 ) -> schemas.Friends:
@@ -53,7 +53,7 @@ async def create_friendship_request(
 
 
 async def cancel_friendship_request(
-    request_id: PositiveInt,
+    request_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> None:
@@ -64,7 +64,7 @@ async def cancel_friendship_request(
 
 
 async def accept_friendship_request(
-    request_id: PositiveInt,
+    request_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> schemas.Friendships:
@@ -76,7 +76,7 @@ async def accept_friendship_request(
 
 
 async def reject_friendship_request(
-    request_id: PositiveInt,
+    request_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> schemas.FriendshipRequest:
@@ -88,7 +88,7 @@ async def reject_friendship_request(
 
 
 async def get_friendship_requests(
-    account_id: PositiveInt,
+    account_id: Id,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,
 ) -> schemas.FriendshipRequests:

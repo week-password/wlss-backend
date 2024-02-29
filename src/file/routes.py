@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pathlib
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 from fastapi.responses import FileResponse
@@ -14,6 +13,7 @@ from src.file import controllers, schemas
 from src.file.dependencies import get_new_file, get_tmp_dir
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
+from src.shared.fields import UuidField
 
 
 router = APIRouter(tags=["file"])
@@ -69,7 +69,7 @@ async def create_file(
 )
 async def get_file(
     background_tasks: BackgroundTasks,
-    file_id: Annotated[UUID, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],
+    file_id: Annotated[UuidField, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     tmp_dir: Annotated[pathlib.Path, Depends(get_tmp_dir)],
     session: AsyncSession = Depends(get_session),

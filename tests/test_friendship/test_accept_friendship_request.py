@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import dirty_equals
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
 
 from src.friendship.enums import FriendshipRequestStatus
 from src.friendship.models import Friendship, FriendshipRequest
 from src.shared.database import Base
+from tests.utils.dirty_equals import IsUtcDatetime, IsUtcDatetimeSerialized
 from tests.utils.mocks.models import __eq__
 
 
@@ -25,12 +26,12 @@ async def test_accept_friendship_request_returns_201_with_correct_response(f):
         "friendships": [
             {
                 "account_id": 1,
-                "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+                "created_at": IsUtcDatetimeSerialized,
                 "friend_id": 2,
             },
             {
                 "account_id": 2,
-                "created_at": dirty_equals.IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ"),
+                "created_at": IsUtcDatetimeSerialized,
                 "friend_id": 1,
             },
         ],
@@ -49,27 +50,27 @@ async def test_accept_friendship_request_creates_objects_in_db_correctly(f):
         friendship_requests = (await f.db.execute(select(FriendshipRequest))).scalars().all()
         assert friendship_requests == [
             FriendshipRequest(
-                id=1,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                receiver_id=2,
-                sender_id=1,
+                id=Id(1),
+                created_at=IsUtcDatetime,
+                receiver_id=Id(2),
+                sender_id=Id(1),
                 status=FriendshipRequestStatus.ACCEPTED,
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                updated_at=IsUtcDatetime,
             ),
         ]
         friendships = (await f.db.execute(select(Friendship).order_by(Friendship.account_id))).scalars().all()
         assert friendships == [
             Friendship(
-                account_id=1,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                friend_id=2,
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                account_id=Id(1),
+                created_at=IsUtcDatetime,
+                friend_id=Id(2),
+                updated_at=IsUtcDatetime,
             ),
             Friendship(
-                account_id=2,
-                created_at=dirty_equals.IsDatetime(enforce_tz=True),
-                friend_id=1,
-                updated_at=dirty_equals.IsDatetime(enforce_tz=True),
+                account_id=Id(2),
+                created_at=IsUtcDatetime,
+                friend_id=Id(1),
+                updated_at=IsUtcDatetime,
             ),
         ]
 

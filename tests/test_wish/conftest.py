@@ -5,6 +5,10 @@ from uuid import UUID
 
 import jwt
 import pytest
+from wlss.account.types import AccountEmail, AccountLogin
+from wlss.file.types import FileSize
+from wlss.shared.types import Id
+from wlss.wish.types import WishDescription, WishTitle
 
 from src.account.models import Account, PasswordHash
 from src.auth.models import Session
@@ -21,7 +25,7 @@ from tests.utils import bcrypt as bcrypt_cached
 async def db_with_one_account_and_one_file(db_empty):
     session = db_empty
 
-    account = Account(id=1, email="john.doe@mail.com", login="john_doe")
+    account = Account(id=Id(1), email=AccountEmail("john.doe@mail.com"), login=AccountLogin("john_doe"))
     session.add(account)
     await session.flush()
 
@@ -30,7 +34,7 @@ async def db_with_one_account_and_one_file(db_empty):
     session.add(password_hash)
     await session.flush()
 
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=1)
+    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
     session.add(auth_session)
     await session.flush()
 
@@ -39,7 +43,7 @@ async def db_with_one_account_and_one_file(db_empty):
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
         name="image.png",
-        size=17,
+        size=FileSize(17),
     )
     session.add(file)
     await session.flush()
@@ -52,11 +56,11 @@ async def db_with_one_account_and_one_file(db_empty):
 async def db_with_one_wish(db_with_one_account_and_one_file):  # pylint: disable=redefined-outer-name
     session = db_with_one_account_and_one_file
     wish = Wish(
-        id=1,
-        account_id=1,
+        id=Id(1),
+        account_id=Id(1),
         avatar_id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
-        description="I'm gonna take my horse to the old town road.",
-        title="Horse",
+        description=WishDescription("I'm gonna take my horse to the old town road."),
+        title=WishTitle("Horse"),
     )
     session.add(wish)
     await session.flush()
@@ -68,11 +72,11 @@ async def db_with_one_wish(db_with_one_account_and_one_file):  # pylint: disable
 async def db_with_one_wish_without_avatar(db_with_one_account_and_one_file):  # pylint: disable=redefined-outer-name
     session = db_with_one_account_and_one_file
     wish = Wish(
-        id=1,
-        account_id=1,
+        id=Id(1),
+        account_id=Id(1),
         avatar_id=None,
-        description="I'm gonna take my horse to the old town road.",
-        title="Horse",
+        description=WishDescription("I'm gonna take my horse to the old town road."),
+        title=WishTitle("Horse"),
     )
     session.add(wish)
     await session.flush()
@@ -89,7 +93,7 @@ async def db_with_two_files_and_one_wish(db_with_one_wish):  # pylint: disable=r
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
         name="new_image.png",
-        size=17,
+        size=FileSize(17),
     )
     session.add(file)
     await session.flush()
@@ -102,12 +106,12 @@ async def db_with_two_files_and_one_wish(db_with_one_wish):  # pylint: disable=r
 async def db_with_two_accounts_and_one_file(db_with_one_account_and_one_file):  # pylint: disable=redefined-outer-name
     session = db_with_one_account_and_one_file
 
-    account = Account(id=2, email="john.smith@mail.com", login="john_smith")
+    account = Account(id=Id(2), email=AccountEmail("john.smith@mail.com"), login=AccountLogin("john_smith"))
     session.add(account)
     await session.flush()
 
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
-    password_hash = PasswordHash(account_id=account.id, value=hash_value)
+    password_hash = PasswordHash(account_id=Id(2), value=hash_value)
     session.add(password_hash)
     await session.flush()
 
@@ -119,12 +123,12 @@ async def db_with_two_accounts_and_one_file(db_with_one_account_and_one_file):  
 async def db_with_two_accounts_and_one_wish(db_with_one_wish):  # pylint: disable=redefined-outer-name
     session = db_with_one_wish
 
-    account = Account(id=2, email="john.smith@mail.com", login="john_smith")
+    account = Account(id=Id(2), email=AccountEmail("john.smith@mail.com"), login=AccountLogin("john_smith"))
     session.add(account)
     await session.flush()
 
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
-    password_hash = PasswordHash(account_id=account.id, value=hash_value)
+    password_hash = PasswordHash(account_id=Id(2), value=hash_value)
     session.add(password_hash)
     await session.flush()
 
@@ -140,23 +144,23 @@ async def db_with_two_friend_accounts_and_one_wish(  # pylint: disable=redefined
 
     friendships = [
         Friendship(
-            account_id=1,
-            friend_id=2,
+            account_id=Id(1),
+            friend_id=Id(2),
         ),
         Friendship(
-            account_id=2,
-            friend_id=1,
+            account_id=Id(2),
+            friend_id=Id(1),
         ),
     ]
     session.add_all(friendships)
     await session.flush()
 
     wish = Wish(
-        id=1,
-        account_id=2,
+        id=Id(1),
+        account_id=Id(2),
         avatar_id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
-        description="I'm gonna take my horse to the old town road.",
-        title="Horse",
+        description=WishDescription("I'm gonna take my horse to the old town road."),
+        title=WishTitle("Horse"),
     )
     session.add(wish)
     await session.flush()
@@ -171,7 +175,7 @@ async def db_with_two_friend_accounts_and_one_wish_booking(  # pylint: disable=r
 ):
     session = db_with_two_friend_accounts_and_one_wish
 
-    wish_booking = WishBooking(id=1, account_id=1, wish_id=1)
+    wish_booking = WishBooking(id=Id(1), account_id=Id(1), wish_id=Id(1))
     session.add(wish_booking)
     await session.flush()
 
@@ -190,17 +194,17 @@ async def db_with_two_accounts_and_two_wishes(  # pylint: disable=redefined-oute
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
         name="new_image.png",
-        size=17,
+        size=FileSize(17),
     )
     session.add(file)
     await session.flush()
 
     wish = Wish(
-        id=2,
-        account_id=1,
+        id=Id(2),
+        account_id=Id(1),
         avatar_id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
-        description="I need some sleep. Time to put the old horse down.",
-        title="Sleep",
+        description=WishDescription("I need some sleep. Time to put the old horse down."),
+        title=WishTitle("Sleep"),
     )
     session.add(wish)
     await session.flush()

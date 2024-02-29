@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
-from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account.models import Account
@@ -11,6 +10,7 @@ from src.auth.dependencies import get_account_from_access_token
 from src.profile import controllers, schemas
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
+from src.shared.fields import IdField
 
 
 router = APIRouter(tags=["profile"])
@@ -42,7 +42,7 @@ router = APIRouter(tags=["profile"])
     summary="Get Profile info.",
 )
 async def get_profile(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> schemas.Profile:
@@ -75,7 +75,7 @@ async def get_profile(
     summary="Update Profile info.",
 )
 async def update_profile(
-    account_id: Annotated[PositiveInt, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=42)],
     profile_update: Annotated[
         schemas.ProfileUpdate,
         Body(
