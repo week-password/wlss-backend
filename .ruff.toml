@@ -5,6 +5,9 @@ external = [
     "DAR101",
     "DAR201",
 
+    # flake8
+    "E301",
+
     # flake8-rst-docstrings
     "RST214",
     "RST215",
@@ -40,6 +43,11 @@ src = ["src"]
 
 # ignore checks that are raised only when using FastAPI dependencies
 "src/**/dependencies.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
+# ignore checks that are raised only when using Pydantic models
+"src/**/dtos.py" = [
     "TCH",  # Move import into a type-checking block
 ]
 

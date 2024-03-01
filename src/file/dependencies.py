@@ -9,8 +9,8 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
 from src.file.constants import EOF_BYTE, MAX_SIZE, MEGABYTE
+from src.file.dtos import CreateFileRequest
 from src.file.exceptions import FileTooLarge
-from src.file.schemas import NewFile
 
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ async def get_tmp_dir() -> Path:
 async def get_new_file(
     upload_file: UploadFile,
     tmp_dir: Annotated[Path, Depends(get_tmp_dir)],
-) -> AsyncIterator[NewFile]:
+) -> AsyncIterator[CreateFileRequest]:
     filename = Path(upload_file.filename or "")
     extension = filename.suffix.lstrip(".").lower()
 
@@ -33,7 +33,7 @@ async def get_new_file(
     size = _download_file(file_path, upload_file.file)
 
     try:
-        yield NewFile(
+        yield CreateFileRequest(
             extension=extension,
             mime_type=upload_file.content_type,
             name=str(filename),

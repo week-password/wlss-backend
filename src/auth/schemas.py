@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Any, TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 import jwt
-from pydantic import Field, model_validator
+from pydantic import Field
 from wlss.shared.types import UtcDatetime
 
 from src.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
@@ -17,45 +17,10 @@ if TYPE_CHECKING:
     from typing import Self
 
 
-DictT = TypeVar("DictT", bound=dict[str, Any])
-
-
 class Credentials(Schema):
     email: AccountEmailField | None = None
     login: AccountLoginField | None = None
     password: AccountPasswordField
-
-    @model_validator(mode="before")
-    @classmethod  # to silent mypy error, because mypy doesn't recognize model_validator as a classmethod
-    def _require_login_or_email(cls: type[Credentials], values: DictT) -> DictT:  # pragma: no cover
-        if not (values.get("login") or values.get("email")):
-            msg = "Either 'login' or 'email' is required."
-            raise ValueError(msg)
-        return values
-
-    @model_validator(mode="before")
-    @classmethod  # to silent mypy error, because mypy doesn't recognize model_validator as a classmethod
-    def _forbid_login_and_email_together(cls: type[Credentials], values: DictT) -> DictT:  # pragma: no cover
-        if values.get("login") and values.get("email"):
-            msg = "You cannot use 'login' and 'email' together. Choose one of them."
-            raise ValueError(msg)
-        return values
-
-
-class Session(Schema):
-    id: UuidField  # noqa: A003
-
-    account_id: IdField
-
-
-class Tokens(Schema):
-    access_token: str
-    refresh_token: str
-
-
-class SessionWithTokens(Schema):
-    session: Session
-    tokens: Tokens
 
 
 class AccessTokenPayload(Schema):

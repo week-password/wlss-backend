@@ -43,6 +43,9 @@ dotenv
 # development (pylint spellcheck)
 dev
 
+# Data Transfer Objects
+dtos
+
 # End Of File
 EOF
 

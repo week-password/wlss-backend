@@ -4,11 +4,11 @@ import shutil
 from typing import TYPE_CHECKING
 
 from fastapi import status
-from fastapi.responses import FileResponse
 
 from src.config import CONFIG
-from src.file import schemas
+from src.file.dtos import CreateFileResponse, GetFileResponse
 from src.file.models import File
+from src.file.schemas import NewFile
 from src.shared.minio import Minio
 
 
@@ -20,14 +20,16 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from src.account.models import Account
+    from src.file.dtos import CreateFileRequest
 
 
 async def create_file(
     background_tasks: BackgroundTasks,
-    new_file: schemas.NewFile,
+    request_data: CreateFileRequest,
     current_account: Account,  # noqa: ARG001
     session: AsyncSession,
-) -> schemas.File:
+) -> CreateFileResponse:
+    new_file = NewFile.from_(request_data)
     file = await File.create_file(session, new_file)
     minio = Minio(
         CONFIG.MINIO_SCHEMA,
@@ -39,12 +41,7 @@ async def create_file(
     minio.upload_file(file.id, new_file.tmp_file_path)
 
     background_tasks.add_task(shutil.rmtree, new_file.tmp_file_path.parent)
-    return schemas.File(
-        id=file.id,
-        extension=file.extension,
-        mime_type=file.mime_type,
-        size=file.size,
-    )
+    return CreateFileResponse.model_validate(file, from_attributes=True)
 
 
 async def get_file(
@@ -53,7 +50,7 @@ async def get_file(
     current_account: Account,  # noqa: ARG001
     tmp_dir: Path,
     session: AsyncSession,
-) -> FileResponse:
+) -> GetFileResponse:
     file = await File.get(session, file_id)
     minio = Minio(
         CONFIG.MINIO_SCHEMA,
@@ -66,7 +63,7 @@ async def get_file(
     minio.download_file(file.id, file_path)
 
     background_tasks.add_task(shutil.rmtree, tmp_dir)
-    return FileResponse(
+    return GetFileResponse(
         file_path,
         status_code=status.HTTP_200_OK,
         media_type=file.mime_type.value,

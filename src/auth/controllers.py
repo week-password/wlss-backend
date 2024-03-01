@@ -4,11 +4,13 @@ from typing import TYPE_CHECKING
 
 from src.account.models import Account
 from src.auth import schemas
+from src.auth.dtos import CreateSessionResponse, RefreshTokensResponse
 from src.auth.exceptions import (
     CannotDeleteAllSessionsError,
     CannotDeleteSessionError,
     CannotRefreshTokensError,
 )
+from src.auth.schemas import Credentials
 
 
 if TYPE_CHECKING:
@@ -17,13 +19,16 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.shared.types import Id
 
+    from src.auth.dtos import CreateSessionRequest
 
-async def create_session(credentials: schemas.Credentials, session: AsyncSession) -> schemas.SessionWithTokens:
+
+async def create_session(request_data: CreateSessionRequest, session: AsyncSession) -> CreateSessionResponse:
+    credentials = Credentials.from_(request_data)
     account = await Account.get_by_credentials(session, credentials)
     auth_session = await account.create_session(session)
     access_token = schemas.AccessTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
     refresh_token = schemas.RefreshTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
-    return schemas.SessionWithTokens.model_validate(
+    return CreateSessionResponse.model_validate(
         {
             "session": auth_session,
             "tokens": {
@@ -40,14 +45,14 @@ async def refresh_tokens(
     session_id: UUID,
     current_account: Account,
     session: AsyncSession,
-) -> schemas.Tokens:
+) -> RefreshTokensResponse:
     if account_id != current_account.id:
         raise CannotRefreshTokensError()
 
     auth_session = await current_account.get_session(session, session_id)
     access_token = schemas.AccessTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
     refresh_token = schemas.RefreshTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
-    return schemas.Tokens(access_token=access_token.encode(), refresh_token=refresh_token.encode())
+    return RefreshTokensResponse(access_token=access_token.encode(), refresh_token=refresh_token.encode())
 
 
 async def delete_session(

@@ -63,6 +63,55 @@ async def test_create_session_creates_session_in_db_correctly(f):
 
 
 @pytest.mark.anyio
+@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
+async def test_create_session_with_no_login_and_email_provided_returns_422_with_correct_response(f):
+    result = await f.client.post("/sessions", json={"password": "qwerty123"})
+
+    assert result.status_code == 422
+    assert result.json() == {
+        "detail": [
+            {
+                "type": "value_error",
+                "loc": ["body"],
+                "msg": "Value error, Either 'login' or 'email' is required.",
+                "input": {
+                    "password": "qwerty123",
+                },
+                "ctx": {"error": {}},
+                "url": "https://errors.pydantic.dev/2.5/v/value_error",
+            },
+        ],
+    }
+
+
+@pytest.mark.anyio
+@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
+async def test_create_session_with_both_login_and_email_provided_returns_422_with_correct_response(f):
+    result = await f.client.post(
+        "/sessions",
+        json={"email": "john.doe@mail.com", "login": "john_doe", "password": "qwerty123"},
+    )
+
+    assert result.status_code == 422
+    assert result.json() == {
+        "detail": [
+            {
+                "type": "value_error",
+                "loc": ["body"],
+                "msg": "Value error, You cannot use 'login' and 'email' together. Choose one of them.",
+                "input": {
+                    "email": "john.doe@mail.com",
+                    "login": "john_doe",
+                    "password": "qwerty123",
+                },
+                "ctx": {"error": {}},
+                "url": "https://errors.pydantic.dev/2.5/v/value_error",
+            },
+        ],
+    }
+
+
+@pytest.mark.anyio
 @pytest.mark.fixtures({"client": "client", "db": "db_empty"})
 async def test_create_session_with_nonexistent_account_returns_404_with_correct_response(f):
     result = await f.client.post("/sessions", json={"login": "john_doe", "password": "qwerty123"})
