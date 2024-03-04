@@ -4,9 +4,9 @@ from typing import Any, TypeVar
 
 from pydantic import Field, model_validator
 
-from src.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
-from src.shared.fields import IdField, UuidField
-from src.shared.schemas import Schema
+from api.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
+from api.shared.fields import IdField, UuidField
+from api.shared.schemas import Schema
 
 
 DictT = TypeVar("DictT", bound=dict[str, Any])

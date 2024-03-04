@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from src.friendship.enums import FriendshipRequestStatus
-from src.shared.fields import IdField, UtcDatetimeField
-from src.shared.schemas import Schema
+from api.friendship.enums import FriendshipRequestStatus
+from api.shared.fields import IdField, UtcDatetimeField
+from api.shared.schemas import Schema
 
 
 class GetAccountFriendshipsResponse(Schema):

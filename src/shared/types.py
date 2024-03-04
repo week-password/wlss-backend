@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.shared.enum import Enum
+from api.shared.enum import Enum
 
 
 class UrlSchema(Enum):

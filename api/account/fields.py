@@ -39,6 +39,7 @@ AccountLoginField = Annotated[
 AccountPasswordField = Annotated[
     AccountPassword,
     PlainValidator(AccountPassword),
+    PlainSerializer(lambda v: v.value, return_type=str),
     WithJsonSchema(GenerateJsonSchema().generate(
         str_schema(
             max_length=AccountPassword.LENGTH_MAX.value,

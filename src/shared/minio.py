@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import minio
 
-from src.shared import enum
+from api.shared import enum
 from src.shared.types import UrlSchema
 
 

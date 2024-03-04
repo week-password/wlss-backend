@@ -22,7 +22,7 @@ services:
     volumes:
       # bind .ruff_cache to the host in order to store ruff cache in GitHub Cache
       - ../../../.ruff_cache:/wlss-backend/.ruff_cache  # host path is relative to the current docker-compose file
-    entrypoint: ruff check src tests
+    entrypoint: ruff check api src tests
 
   flake8:
     <<: *app-build
@@ -30,7 +30,7 @@ services:
 
   pylint:
     <<: *app-build
-    entrypoint: pylint --jobs=0 src tests
+    entrypoint: pylint --jobs=0 api src tests
 
   black:
     <<: *app-build

@@ -6,9 +6,9 @@ import asyncio
 from types import SimpleNamespace
 
 import pytest
-from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 
+from api.client import Api
 from src.app import app
 from src.config import CONFIG
 from src.shared.database import get_session, POSTGRES_CONNECTION_URL
@@ -29,13 +29,12 @@ def anyio_backend():
 
 
 @pytest.fixture
-async def client(db_empty):
+async def api(db_empty):
     """Async client."""
     def override_get_session():
         yield db_empty
     app.dependency_overrides[get_session] = override_get_session
-    async with AsyncClient(app=app, base_url="http://") as async_client:
-        yield async_client
+    return Api(app=app, base_url="http://")
 
 
 @pytest.fixture

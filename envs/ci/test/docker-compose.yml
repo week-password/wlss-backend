@@ -25,7 +25,7 @@ services:
     entrypoint: |
       bash -c "
         alembic upgrade head
-        pytest --cov=src
+        pytest --cov=api --cov=src
       "
 
   postgres:

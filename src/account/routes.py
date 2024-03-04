@@ -5,15 +5,15 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.account import controllers
-from src.account.dtos import (
+from api.account.dtos import (
     CreateAccountRequest,
     CreateAccountResponse,
     GetAccountIdResponse,
     MatchAccountEmailRequest,
     MatchAccountLoginRequest,
 )
-from src.account.fields import AccountLoginField
+from api.account.fields import AccountLoginField
+from src.account import controllers
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
 from src.shared import swagger as shared_swagger

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from src.profile.fields import ProfileDescriptionField, ProfileNameField
-from src.shared.fields import UuidField
-from src.shared.schemas import Schema
+from api.profile.fields import ProfileDescriptionField, ProfileNameField
+from api.shared.fields import UuidField
+from api.shared.schemas import Schema
 
 
 class NewProfile(Schema):

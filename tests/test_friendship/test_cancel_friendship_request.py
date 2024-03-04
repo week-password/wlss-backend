@@ -1,39 +1,38 @@
 from __future__ import annotations
 
+import httpx
 import pytest
 from sqlalchemy import select
+from wlss.shared.types import Id
 
 from src.friendship.models import FriendshipRequest
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
-async def test_cancel_friendship_request_returns_204_with_correct_response(f):
-    result = await f.client.delete("/friendships/requests/1", headers={"Authorization": f"Bearer {f.access_token}"})
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_friendship_request"})
+async def test_cancel_friendship_request_returns_correct_response(f):
+    result = await f.api.friendship.cancel_friendship_request(request_id=Id(1), token=f.access_token)
 
-    assert result.status_code == 204
-    assert result.content == b""
+    assert result is None
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_friendship_request"})
 async def test_cancel_friendship_request_removes_objects_from_db_correctly(f):
-    result = await f.client.delete(  # noqa: F841
-        "/friendships/requests/1",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-    )
+    result = await f.api.friendship.cancel_friendship_request(request_id=Id(1), token=f.access_token)  # noqa: F841
 
     friendship_requests = (await f.db.execute(select(FriendshipRequest))).scalars().all()
     assert friendship_requests == []
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_two_accounts"})
-async def test_cancel_friendship_request_with_nonexistent_request_returns_404_with_correct_response(f):
-    result = await f.client.delete("/friendships/requests/42", headers={"Authorization": f"Bearer {f.access_token}"})
+@pytest.mark.fixtures({"access_token": "access_token", "api": "api", "db": "db_with_two_accounts"})
+async def test_cancel_friendship_request_with_nonexistent_request_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.friendship.cancel_friendship_request(request_id=Id(42), token=f.access_token)
 
-    assert result.status_code == 404
-    assert result.json() == {
+    assert exc_info.value.response.status_code == 404
+    assert exc_info.value.response.json() == {
         "resource": "Friendship request",
         "description": "Requested resource not found.",
         "details": "Requested resource doesn't exist or has been deleted.",
@@ -43,14 +42,15 @@ async def test_cancel_friendship_request_with_nonexistent_request_returns_404_wi
 @pytest.mark.anyio
 @pytest.mark.fixtures({
     "access_token": "access_token",
-    "client": "client",
+    "api": "api",
     "db": "db_with_friendship_request_from_another_user",
 })
-async def test_cancel_friendship_request_with_friendship_request_from_another_user_returns_403_with_correct_response(f):
-    result = await f.client.delete("/friendships/requests/1", headers={"Authorization": f"Bearer {f.access_token}"})
+async def test_cancel_friendship_request_with_friendship_request_from_another_user_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.friendship.cancel_friendship_request(request_id=Id(1), token=f.access_token)
 
-    assert result.status_code == 403
-    assert result.json() == {
+    assert exc_info.value.response.status_code == 403
+    assert exc_info.value.response.json() == {
         "action": "Cancel friendship request.",
         "description": "Requested action not allowed.",
         "details": "Provided tokens or credentials don't grant you enough access rights.",

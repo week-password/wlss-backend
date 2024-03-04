@@ -12,6 +12,9 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
 
+# api directory should be copied before poetry installation
+# in that case poetry will be able to install this library
+COPY api ./api
 # we also need to install 'test' dependencies here, because linters check tests code as well
 # otherwise linters will report 'module not found' errors for tests code
 RUN poetry install --with=app,lint,test

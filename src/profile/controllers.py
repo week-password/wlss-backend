@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from api.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileResponse
 from src.account.models import Account
-from src.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileResponse
 from src.profile.models import Profile
 from src.profile.schemas import ProfileUpdate
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.shared.types import Id
 
-    from src.profile.dtos import UpdateProfileRequest
+    from api.profile.dtos import UpdateProfileRequest
 
 
 async def get_profile(

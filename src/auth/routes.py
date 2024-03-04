@@ -5,13 +5,13 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.auth.dtos import CreateSessionRequest, CreateSessionResponse, RefreshTokensResponse
+from api.shared.fields import IdField, UuidField
 from src.account.models import Account
 from src.auth import controllers
 from src.auth.dependencies import get_account_from_access_token, get_account_from_refresh_token
-from src.auth.dtos import CreateSessionRequest, CreateSessionResponse, RefreshTokensResponse
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
-from src.shared.fields import IdField, UuidField
 
 
 router = APIRouter(tags=["auth"])

@@ -7,10 +7,10 @@ import jwt
 from pydantic import Field
 from wlss.shared.types import UtcDatetime
 
-from src.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
+from api.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
+from api.shared.fields import IdField, UtcDatetimeField, UuidField
+from api.shared.schemas import Schema
 from src.config import CONFIG
-from src.shared.fields import IdField, UtcDatetimeField, UuidField
-from src.shared.schemas import Schema
 
 
 if TYPE_CHECKING:

@@ -7,7 +7,7 @@ from sqlalchemy import delete, Enum, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.shared.types import Id, UtcDatetime
 
-from src.friendship.enums import FriendshipRequestStatus
+from api.friendship.enums import FriendshipRequestStatus
 from src.friendship.exceptions import FriendshipRequestNotFoundError
 from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base

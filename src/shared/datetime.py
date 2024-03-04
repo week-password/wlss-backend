@@ -1,16 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
 
 from wlss.shared.types import UtcDatetime
-
-
-if TYPE_CHECKING:
-    from typing import Final
-
-
-DATETIME_FORMAT: Final = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 def utcnow() -> UtcDatetime:

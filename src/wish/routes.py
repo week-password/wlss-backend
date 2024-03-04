@@ -5,13 +5,8 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.account.models import Account
-from src.auth.dependencies import get_account_from_access_token
-from src.shared import swagger as shared_swagger
-from src.shared.database import get_session
-from src.shared.fields import IdField
-from src.wish import controllers
-from src.wish.dtos import (
+from api.shared.fields import IdField
+from api.wish.dtos import (
     CreateWishBookingRequest,
     CreateWishBookingResponse,
     CreateWishRequest,
@@ -21,6 +16,11 @@ from src.wish.dtos import (
     UpdateWishRequest,
     UpdateWishResponse,
 )
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
+from src.shared import swagger as shared_swagger
+from src.shared.database import get_session
+from src.wish import controllers
 
 
 router = APIRouter(tags=["wish"])

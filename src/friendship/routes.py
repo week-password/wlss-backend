@@ -5,10 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.account.models import Account
-from src.auth.dependencies import get_account_from_access_token
-from src.friendship import controllers
-from src.friendship.dtos import (
+from api.friendship.dtos import (
     AcceptFriendshipRequestResponse,
     CreateFriendshipRequestRequest,
     CreateFriendshipRequestResponse,
@@ -16,9 +13,12 @@ from src.friendship.dtos import (
     GetFriendshipRequestsResponse,
     RejectFriendshipRequestResponse,
 )
+from api.shared.fields import IdField
+from src.account.models import Account
+from src.auth.dependencies import get_account_from_access_token
+from src.friendship import controllers
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
-from src.shared.fields import IdField
 
 
 router = APIRouter(tags=["friendship"])

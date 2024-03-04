@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from api.auth.dtos import CreateSessionResponse, RefreshTokensResponse
 from src.account.models import Account
 from src.auth import schemas
-from src.auth.dtos import CreateSessionResponse, RefreshTokensResponse
 from src.auth.exceptions import (
     CannotDeleteAllSessionsError,
     CannotDeleteSessionError,
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.shared.types import Id
 
-    from src.auth.dtos import CreateSessionRequest
+    from api.auth.dtos import CreateSessionRequest
 
 
 async def create_session(request_data: CreateSessionRequest, session: AsyncSession) -> CreateSessionResponse:

@@ -12,6 +12,9 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
 
+# api directory should be copied before poetry installation
+# in that case poetry will be able to install this library
+COPY api ./api
 RUN poetry install --with=app,deploy
 
 COPY . ./

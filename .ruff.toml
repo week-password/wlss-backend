@@ -47,7 +47,7 @@ src = ["src"]
 ]
 
 # ignore checks that are raised only when using Pydantic models
-"src/**/dtos.py" = [
+"**/dtos.py" = [
     "TCH",  # Move import into a type-checking block
 ]
 
@@ -111,7 +111,7 @@ strict = true
 
 # A list of modules to consider first-party, regardless of whether they
 # can be identified as such via introspection of the local filesystem.
-known-first-party = ["src", "tests"]
+known-first-party = ["api", "src", "tests"]
 
 # The number of blank lines to place after imports.
 lines-after-imports = 2

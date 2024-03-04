@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from src.profile.fields import ProfileDescriptionField, ProfileNameField
-from src.shared.fields import IdField, UuidField
-from src.shared.schemas import Schema
+from api.profile.fields import ProfileDescriptionField, ProfileNameField
+from api.shared.fields import IdField, UuidField
+from api.shared.schemas import Schema
 
 
 class GetProfileResponse(Schema):

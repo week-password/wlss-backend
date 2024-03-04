@@ -5,10 +5,10 @@ from pathlib import Path
 from fastapi.responses import FileResponse
 from pydantic import Field
 
-from src.file.enums import Extension, MimeType
-from src.file.fields import FileSizeField
-from src.shared.fields import UuidField
-from src.shared.schemas import Schema
+from api.file.enums import Extension, MimeType
+from api.file.fields import FileSizeField
+from api.shared.fields import UuidField
+from api.shared.schemas import Schema
 
 
 class CreateFileRequest(Schema):

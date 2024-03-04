@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from fastapi import status
 
+from api.file.dtos import CreateFileResponse, GetFileResponse
 from src.config import CONFIG
-from src.file.dtos import CreateFileResponse, GetFileResponse
 from src.file.models import File
 from src.file.schemas import NewFile
 from src.shared.minio import Minio
@@ -19,8 +19,8 @@ if TYPE_CHECKING:
     from fastapi import BackgroundTasks
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from api.file.dtos import CreateFileRequest
     from src.account.models import Account
-    from src.file.dtos import CreateFileRequest
 
 
 async def create_file(

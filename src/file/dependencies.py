@@ -8,8 +8,8 @@ from fastapi import Depends, UploadFile
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
-from src.file.constants import EOF_BYTE, MAX_SIZE, MEGABYTE
-from src.file.dtos import CreateFileRequest
+from api.file.constants import EOF_BYTE, MAX_SIZE, MEGABYTE
+from api.file.dtos import CreateFileRequest
 from src.file.exceptions import FileTooLarge
 
 

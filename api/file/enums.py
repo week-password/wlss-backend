@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from varname import nameof
 
-from src.shared.enum import Enum, types
+from api.shared.enum import Enum, types
 
 
 if TYPE_CHECKING:

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import json
 from unittest.mock import patch
 
 import dirty_equals
+import httpx
 import jwt
+import pydantic
 import pytest
 from sqlalchemy import select
 from wlss.shared.types import Id
 
+from api.auth.dtos import CreateSessionRequest, CreateSessionResponse
 from src.auth.models import Session
 from src.config import CONFIG
 from src.shared.database import Base
@@ -16,12 +20,14 @@ from tests.utils.mocks.models import __eq__
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
-async def test_create_session_returns_200_with_correct_response(f):
-    result = await f.client.post("/sessions", json={"login": "john_doe", "password": "qwerty123"})
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
+async def test_create_session_returns_correct_response(f):
+    result = await f.api.auth.create_session(
+        request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "qwerty123"}),
+    )
 
-    assert result.status_code == 201
-    assert result.json() == {
+    assert isinstance(result, CreateSessionResponse)
+    assert result.model_dump() == {
         "session": {
             "id": dirty_equals.IsUUID(4),
             "account_id": 1,
@@ -31,13 +37,13 @@ async def test_create_session_returns_200_with_correct_response(f):
             "refresh_token": dirty_equals.IsStr,
         },
     }
-    access_token = result.json()["tokens"]["access_token"]
+    access_token = result.model_dump()["tokens"]["access_token"]
     assert jwt.decode(access_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
         "expires_at": IsUtcDatetimeSerialized,
         "session_id": dirty_equals.IsUUID(4),
     }
-    refresh_token = result.json()["tokens"]["refresh_token"]
+    refresh_token = result.model_dump()["tokens"]["refresh_token"]
     assert jwt.decode(refresh_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
         "expires_at": IsUtcDatetimeSerialized,
@@ -46,9 +52,11 @@ async def test_create_session_returns_200_with_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
 async def test_create_session_creates_session_in_db_correctly(f):
-    result = await f.client.post("/sessions", json={"login": "john_doe", "password": "qwerty123"})  # noqa: F841
+    result = await f.api.auth.create_session(  # noqa: F841
+        request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "qwerty123"}),
+    )
 
     with patch.object(Base, "__eq__", __eq__):
         rows = (await f.db.execute(select(Session))).scalars().all()
@@ -63,61 +71,63 @@ async def test_create_session_creates_session_in_db_correctly(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
-async def test_create_session_with_no_login_and_email_provided_returns_422_with_correct_response(f):
-    result = await f.client.post("/sessions", json={"password": "qwerty123"})
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
+async def test_create_session_with_no_login_and_email_provided_raises_correct_exception(f):
+    with pytest.raises(pydantic.ValidationError) as exc_info:
+        await f.api.auth.create_session(request_data=CreateSessionRequest.model_validate({"password": "qwerty123"}))
 
-    assert result.status_code == 422
-    assert result.json() == {
-        "detail": [
-            {
-                "type": "value_error",
-                "loc": ["body"],
-                "msg": "Value error, Either 'login' or 'email' is required.",
-                "input": {
-                    "password": "qwerty123",
-                },
-                "ctx": {"error": {}},
-                "url": "https://errors.pydantic.dev/2.5/v/value_error",
-            },
-        ],
-    }
+    assert json.loads(exc_info.value.json()) == [
+        {
+            "type": "value_error",
+            "loc": [],
+            "msg": "Value error, Either 'login' or 'email' is required.",
+            "input": {"password": "qwerty123"},
+            "ctx": {"error": "Either 'login' or 'email' is required."},
+            "url": "https://errors.pydantic.dev/2.5/v/value_error",
+        },
+    ]
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
-async def test_create_session_with_both_login_and_email_provided_returns_422_with_correct_response(f):
-    result = await f.client.post(
-        "/sessions",
-        json={"email": "john.doe@mail.com", "login": "john_doe", "password": "qwerty123"},
-    )
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
+async def test_create_session_with_both_login_and_email_provided_raises_correct_exception(f):
+    with pytest.raises(pydantic.ValidationError) as exc_info:
+        await f.api.auth.create_session(
+            request_data=CreateSessionRequest.model_validate({
+                "email": "john.doe@mail.com",
+                "login": "john_doe",
+                "password": "qwerty123",
+            }),
+        )
 
-    assert result.status_code == 422
-    assert result.json() == {
-        "detail": [
-            {
-                "type": "value_error",
-                "loc": ["body"],
-                "msg": "Value error, You cannot use 'login' and 'email' together. Choose one of them.",
-                "input": {
-                    "email": "john.doe@mail.com",
-                    "login": "john_doe",
-                    "password": "qwerty123",
-                },
-                "ctx": {"error": {}},
-                "url": "https://errors.pydantic.dev/2.5/v/value_error",
+    assert json.loads(exc_info.value.json()) == [
+        {
+            "type": "value_error",
+            "loc": [],
+            "msg": "Value error, You cannot use 'login' and 'email' together. Choose one of them.",
+            "input": {
+                "email": "john.doe@mail.com",
+                "login": "john_doe",
+                "password": "qwerty123",
             },
-        ],
-    }
+            "ctx": {
+                "error": "You cannot use 'login' and 'email' together. Choose one of them.",
+            },
+            "url": "https://errors.pydantic.dev/2.5/v/value_error",
+        },
+    ]
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_empty"})
-async def test_create_session_with_nonexistent_account_returns_404_with_correct_response(f):
-    result = await f.client.post("/sessions", json={"login": "john_doe", "password": "qwerty123"})
+@pytest.mark.fixtures({"api": "api", "db": "db_empty"})
+async def test_create_session_with_nonexistent_account_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.auth.create_session(
+            request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "qwerty123"}),
+        )
 
-    assert result.status_code == 404
-    assert result.json() == {
+    assert exc_info.value.response.status_code == 404
+    assert exc_info.value.response.json() == {
         "resource": "Account",
         "description": "Requested resource not found.",
         "details": "Requested resource doesn't exist or has been deleted.",
@@ -125,12 +135,15 @@ async def test_create_session_with_nonexistent_account_returns_404_with_correct_
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"client": "client", "db": "db_with_one_account"})
-async def test_create_session_with_wrong_credentials_returns_404_with_correct_response(f):
-    result = await f.client.post("/sessions", json={"login": "john_doe", "password": "wrong password"})
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
+async def test_create_session_with_wrong_credentials_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.auth.create_session(
+            request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "wrong password"}),
+        )
 
-    assert result.status_code == 404
-    assert result.json() == {
+    assert exc_info.value.response.status_code == 404
+    assert exc_info.value.response.json() == {
         "resource": "Account",
         "description": "Requested resource not found.",
         "details": "Requested resource doesn't exist or has been deleted.",

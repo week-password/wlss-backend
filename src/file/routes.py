@@ -6,14 +6,14 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.file.dtos import CreateFileRequest, CreateFileResponse, GetFileResponse
+from api.shared.fields import UuidField
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
 from src.file import controllers
 from src.file.dependencies import get_new_file, get_tmp_dir
-from src.file.dtos import CreateFileRequest, CreateFileResponse, GetFileResponse
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
-from src.shared.fields import UuidField
 
 
 router = APIRouter(tags=["file"])
@@ -32,11 +32,11 @@ router = APIRouter(tags=["file"])
 )
 async def create_file(
     background_tasks: BackgroundTasks,
-    new_file: Annotated[CreateFileRequest, Depends(get_new_file)],
+    request_data: Annotated[CreateFileRequest, Depends(get_new_file)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> CreateFileResponse:
-    return await controllers.create_file(background_tasks, new_file, current_account, session)
+    return await controllers.create_file(background_tasks, request_data, current_account, session)
 
 
 @router.get(

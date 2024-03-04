@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, status
 
-from src.health import enums, schemas
+from api.health import dtos
+from src.health import enums
 
 
 router = APIRouter(tags=["service"])
@@ -23,9 +24,9 @@ router = APIRouter(tags=["service"])
             },
         },
     },
-    response_model=schemas.Health,
+    response_model=dtos.HealthResponse,
     status_code=status.HTTP_200_OK,
     summary="Check health.",
 )
-async def get_health() -> schemas.Health:
-    return schemas.Health(status=enums.HealthStatus.OK)
+async def get_health() -> dtos.HealthResponse:
+    return dtos.HealthResponse(status=enums.HealthStatus.OK)

@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from src.account.models import Account
-from src.friendship import schemas
-from src.friendship.dtos import (
+from api.friendship.dtos import (
     AcceptFriendshipRequestResponse,
     CreateFriendshipRequestResponse,
     GetAccountFriendshipsResponse,
     GetFriendshipRequestsResponse,
     RejectFriendshipRequestResponse,
 )
+from src.account.models import Account
+from src.friendship import schemas
 from src.friendship.exceptions import (
     CannotAcceptFriendshipRequest,
     CannotCancelFriendshipRequest,
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.shared.types import Id
 
-    from src.friendship.dtos import CreateFriendshipRequestRequest
+    from api.friendship.dtos import CreateFriendshipRequestRequest
 
 
 async def get_account_friendships(

@@ -9,7 +9,7 @@ from pydantic.json_schema import GenerateJsonSchema
 from pydantic_core.core_schema import datetime_schema, int_schema, uuid_schema
 from wlss.shared.types import Id, UtcDatetime
 
-from src.shared.datetime import DATETIME_FORMAT
+from api.shared.datetime import DATETIME_FORMAT
 
 
 if TYPE_CHECKING:

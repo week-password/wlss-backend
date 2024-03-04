@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.shared.enum import Enum, types
+from api.shared.enum import Enum, types
 
 
 @types(str)

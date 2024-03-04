@@ -5,11 +5,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import dirty_equals
+import httpx
 import pytest
 from sqlalchemy import select
 from wlss.file.types import FileSize
 
-from src.file.enums import Extension, MimeType
+from api.file.dtos import CreateFileRequest, CreateFileResponse
+from api.file.enums import Extension, MimeType
 from src.file.models import File
 from src.shared.database import Base
 from tests.utils.dirty_equals import IsUtcDatetime
@@ -18,40 +20,58 @@ from tests.utils.mocks.models import __eq__
 
 @pytest.mark.anyio
 @pytest.mark.fixtures({
+    "api": "api",
     "access_token": "access_token",
-    "client": "client",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_empty",
 })
-async def test_create_file_returns_201_with_correct_response(f):
-    result = await f.client.post(
-        "/files",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-        files={"upload_file": ("image.png", b"image binary data", "image/png")},
-    )
+async def test_create_file_returns_correct_response(f):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file_path = Path(tmp_dir) / "image.png"
+        tmp_file_path.write_bytes(b"image binary data")
 
-    assert result.status_code == 201
-    assert result.json() == {
+        result = await f.api.file.create_file(
+            token=f.access_token,
+            request_data=CreateFileRequest(
+                name="image.png",
+                mime_type="image/png",
+                extension="png",
+                size=17,
+                tmp_file_path=tmp_file_path,
+            ),
+        )
+
+    assert isinstance(result, CreateFileResponse)
+    assert result.model_dump() == {
         "id": dirty_equals.IsUUID(4),
-        "extension": "png",
-        "mime_type": "image/png",
+        "extension": Extension("png"),
+        "mime_type": MimeType("image/png"),
         "size": 17,
     }
 
 
 @pytest.mark.anyio
 @pytest.mark.fixtures({
+    "api": "api",
     "access_token": "access_token",
-    "client": "client",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_empty",
 })
 async def test_create_file_creates_file_in_db_correctly(f):
-    result = await f.client.post(  # noqa: F841
-        "/files",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-        files={"upload_file": ("image.png", b"image binary data", "image/png")},
-    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file_path = Path(tmp_dir) / "image.png"
+        tmp_file_path.write_bytes(b"image binary data")
+
+        result = await f.api.file.create_file(  # noqa: F841
+            token=f.access_token,
+            request_data=CreateFileRequest(
+                name="image.png",
+                mime_type="image/png",
+                extension="png",
+                size=17,
+                tmp_file_path=tmp_file_path,
+            ),
+        )
 
     with patch.object(Base, "__eq__", __eq__):
         files = (await f.db.execute(select(File))).scalars().all()
@@ -70,17 +90,26 @@ async def test_create_file_creates_file_in_db_correctly(f):
 
 @pytest.mark.anyio
 @pytest.mark.fixtures({
+    "api": "api",
     "access_token": "access_token",
-    "client": "client",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_empty",
 })
-async def test_create_file_uploads_file_to_db_correctly(f):
-    result = await f.client.post(  # noqa: F841
-        "/files",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-        files={"upload_file": ("image.png", b"image binary data", "image/png")},
-    )
+async def test_create_file_uploads_file_to_minio_correctly(f):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file_path = Path(tmp_dir) / "image.png"
+        tmp_file_path.write_bytes(b"image binary data")
+
+        result = await f.api.file.create_file(  # noqa: F841
+            token=f.access_token,
+            request_data=CreateFileRequest(
+                name="image.png",
+                mime_type="image/png",
+                extension="png",
+                size=17,
+                tmp_file_path=tmp_file_path,
+            ),
+        )
 
     files = list(f.minio.list_objects("files"))
     assert len(files) == 1
@@ -96,22 +125,31 @@ async def test_create_file_uploads_file_to_db_correctly(f):
 @pytest.mark.anyio
 @pytest.mark.fixtures({
     "access_token": "access_token",
-    "client": "client",
+    "api": "api",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_empty",
 })
 @patch("src.file.dependencies.MAX_SIZE", 10)  # lower max size to improve test's performance
-async def test_create_file_with_too_large_file_returns_413_with_correct_body(f):
+async def test_create_file_with_too_large_file_raises_correct_exception(f):
     large_image_data = b"x" * 11
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file_path = Path(tmp_dir) / "image.png"
+        tmp_file_path.write_bytes(large_image_data)
 
-    result = await f.client.post(
-        "/files",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-        files={"upload_file": ("image.png", large_image_data, "image/png")},
-    )
+        with pytest.raises(httpx.HTTPError) as exc_info:
+            await f.api.file.create_file(
+                token=f.access_token,
+                request_data=CreateFileRequest(
+                    name="image.png",
+                    mime_type="image/png",
+                    extension="png",
+                    size=17,
+                    tmp_file_path=tmp_file_path,
+                ),
+            )
 
-    assert result.status_code == 413
-    assert result.json() == {
+    assert exc_info.value.response.status_code == 413
+    assert exc_info.value.response.json() == {
         "resource": "file",
         "description": "File size is too large.",
         "details": "File size is too large and it cannot be handled.",
@@ -121,19 +159,29 @@ async def test_create_file_with_too_large_file_returns_413_with_correct_body(f):
 @pytest.mark.anyio
 @pytest.mark.fixtures({
     "access_token": "access_token",
-    "client": "client",
+    "api": "api",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_empty",
 })
-async def test_create_file_with_filename_without_extension_returns_422_with_correct_body(f):
-    result = await f.client.post(
-        "/files",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-        files={"upload_file": ("image", b"image binary data", "image/png")},
-    )
+async def test_create_file_with_filename_without_extension_raises_correct_exception(f):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file_path = Path(tmp_dir) / "image.png"
+        tmp_file_path.write_bytes(b"image binary data")
 
-    assert result.status_code == 422
-    assert result.json() == {
+        with pytest.raises(httpx.HTTPError) as exc_info:
+            await f.api.file.create_file(
+                token=f.access_token,
+                request_data=CreateFileRequest(
+                    name="image",
+                    mime_type="image/png",
+                    extension="png",
+                    size=17,
+                    tmp_file_path=tmp_file_path,
+                ),
+            )
+
+    assert exc_info.value.response.status_code == 422
+    assert exc_info.value.response.json() == {
         "detail": [
             {
                 "type": "enum",

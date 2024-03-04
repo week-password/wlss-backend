@@ -7,7 +7,9 @@ authors = [
 
 description = "Backend for WLSS application."
 
-name = "wlss-backend"
+name = "api"
+
+packages = [{include="api"}]
 
 version = "0.0.0"
 
@@ -15,6 +17,10 @@ version = "0.0.0"
 [tool.poetry.dependencies]
 
 python = "~3.11"
+
+httpx = "^0.24.0"
+pydantic = "^2.5.3"
+wlss = {git = "https://github.com/week-password/wlss-backend-lib.git", rev = "e2c11e344d096579e2582c45fb08007195ebcc8d"}
 
 
 [tool.poetry.group.app]
@@ -31,12 +37,10 @@ fastapi = {extras = ["all"], version = "0.109.0" }  # we need "all" at least for
 minio = "7.1.14"
 overrides = "7.3.1"
 psycopg2-binary = "2.9.7"  # used for some special cases when we cannot work with database via async code
-pydantic = "2.5.3"
 pyjwt = "2.8.0"
 python-dotenv = "1.0.0"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.12"}
 varname = "0.12.0"
-wlss = {git = "https://github.com/week-password/wlss-backend-lib.git", rev = "e2c11e344d096579e2582c45fb08007195ebcc8d"}
 
 
 [tool.poetry.group.lint]

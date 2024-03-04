@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-
+from api.shared.schemas import Schema
 from src.health.enums import HealthStatus
 
 
-class Health(BaseModel):
+class HealthResponse(Schema):
     status: HealthStatus

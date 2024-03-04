@@ -9,9 +9,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 from wlss.file.types import FileSize
 from wlss.shared.types import UtcDatetime
 
+from api.file.enums import Extension, MimeType
 from src.file import exceptions
 from src.file.columns import FileSizeColumn
-from src.file.enums import Extension, MimeType
 from src.shared.columns import UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from src.account.models import Account
-from src.wish.dtos import (
+from api.wish.dtos import (
     CreateWishBookingResponse,
     CreateWishResponse,
     GetAccountWishesResponse,
     GetWishBookingsResponse,
     UpdateWishResponse,
 )
+from src.account.models import Account
 from src.wish.exceptions import (
     CannotCreateWishBookingError,
     CannotCreateWishError,
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.shared.types import Id
 
-    from src.wish.dtos import CreateWishBookingRequest, CreateWishRequest, UpdateWishRequest
+    from api.wish.dtos import CreateWishBookingRequest, CreateWishRequest, UpdateWishRequest
 
 
 async def create_wish(

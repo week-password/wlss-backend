@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import pytest
+from wlss.shared.types import Id
 
+from api.friendship.dtos import GetAccountFriendshipsResponse
 from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_two_friendships"})
-async def test_get_account_friendships_returns_200_with_correct_response(f):
-    result = await f.client.get("/accounts/1/friendships", headers={"Authorization": f"Bearer {f.access_token}"})
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_two_friendships"})
+async def test_get_account_friendships_returns_correct_response(f):
+    result = await f.api.friendship.get_account_friendships(account_id=Id(1), token=f.access_token)
 
-    assert result.status_code == 200
-    assert result.json() == {
+    assert isinstance(result, GetAccountFriendshipsResponse)
+    assert result.model_dump() == {
         "friendships": [
             {
                 "account_id": 1,

@@ -1,8 +1,14 @@
 # This is a whitelist of allowed words for flake8-spellcheck plugin.
 # IMPORTANT: please keep this list alphabetically sorted by whitelisted words
 
+# asynchronous iteration
+aiter
+
 # Python library
 anyio
+
+# asynchronous read
+aread
 
 # positional arguments in Python
 args
@@ -63,6 +69,9 @@ envs
 
 # equals
 eq
+
+# exception
+exc
 
 # fastapi framework
 fastapi
@@ -129,6 +138,9 @@ openapi
 
 # ORM - Object-Relational Mapping
 orm
+
+# parameters
+params
 
 # PostgreSQL
 postgre

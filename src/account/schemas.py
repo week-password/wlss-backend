@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from src.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
-from src.shared.schemas import Schema
+from api.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
+from api.shared.schemas import Schema
 
 
 class NewAccount(Schema):

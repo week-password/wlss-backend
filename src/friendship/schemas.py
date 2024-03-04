@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from src.shared.fields import IdField
-from src.shared.schemas import Schema
+from api.shared.fields import IdField
+from api.shared.schemas import Schema
 
 
 class NewFriendshipRequest(Schema):

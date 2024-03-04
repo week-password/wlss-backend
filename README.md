@@ -103,13 +103,13 @@ Run any linter you need or all of them at once:
 mypy
 
 # Run ruff.
-ruff check src tests
+ruff check api src tests
 
 # Run flake8.
 flake8
 
-# Run pylnig.
-pylint src tests
+# Run pylint.
+pylint api src tests
 ```
 
 
@@ -129,19 +129,19 @@ docker compose --file=envs/local/test/docker-compose.yml up --detach
 WLSS_ENV=local/test alembic upgrade head
 
 # Run pytest.
-WLSS_ENV=local/test pytest --cov=src
+WLSS_ENV=local/test pytest --cov=api --cov=src
 ```
 
 Also you can choose one of the following ways of running tests:
 
 - Tests with html coverage report:
 ```bash
-WLSS_ENV=local/test pytest --cov=src ; coverage html
+WLSS_ENV=local/test pytest --cov=api --cov=src ; coverage html
 ```
 
 - Tests with execution contexts in report:
 ```bash
-WLSS_ENV=local/test pytest --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
+WLSS_ENV=local/test pytest --cov=api --cov=src --cov-context=test ; coverage html --show-contexts --no-skip-covered
 ```
 
 

@@ -1,18 +1,30 @@
 from __future__ import annotations
 
 import pytest
+from wlss.shared.types import Id
+
+from api.profile.dtos import GetProfilesResponse
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({
-    "access_token": "access_token",
-    "client": "client",
-    "db": "db_with_three_profiles",
-})
-async def test_get_profiles_returns_200_with_correct_response(f):
-    result = await f.client.get(
-        "/profiles?account_id=1&account_id=2",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-    )
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_three_profiles"})
+async def test_get_profiles_returns_correct_response(f):
+    result = await f.api.profile.get_profiles(account_ids=[Id(1), Id(2)], token=f.access_token)
 
-    assert result.status_code == 200
+    assert isinstance(result, GetProfilesResponse)
+    assert result.model_dump() == {
+        "profiles": [
+            {
+                "account_id": 1,
+                "avatar_id": None,
+                "description": None,
+                "name": "John Doe",
+            },
+            {
+                "account_id": 2,
+                "avatar_id": None,
+                "description": None,
+                "name": "John Smith",
+            },
+        ],
+    }

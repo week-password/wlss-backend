@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from src.account.dtos import CreateAccountResponse, GetAccountIdResponse
+from api.account.dtos import CreateAccountResponse, GetAccountIdResponse
 from src.account.models import Account, PasswordHash
 from src.account.schemas import NewAccount
 from src.profile.models import Profile
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.account.types import AccountLogin
 
-    from src.account.dtos import CreateAccountRequest, MatchAccountEmailRequest, MatchAccountLoginRequest
+    from api.account.dtos import CreateAccountRequest, MatchAccountEmailRequest, MatchAccountLoginRequest
 
 
 async def create_account(request_data: CreateAccountRequest, session: AsyncSession) -> CreateAccountResponse:

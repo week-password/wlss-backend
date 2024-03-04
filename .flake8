@@ -1,6 +1,7 @@
 [flake8]
 
 filename =
+    ./api/*,
     ./src/*,
     ./tests/*,
 
@@ -181,7 +182,7 @@ docstring_style = sphinx
 strictness = short
 
 # flake8-import-order ==================================================================================================
-application-import-names = src,tests
+application-import-names = api,src,tests
 # Controls what style the plugin follows.
 import-order-style = smarkets
 
