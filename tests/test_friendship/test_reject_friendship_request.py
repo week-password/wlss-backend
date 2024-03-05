@@ -18,7 +18,7 @@ from tests.utils.mocks.models import __eq__
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
 async def test_reject_friendship_request_returns_200_with_correct_response(f):
     result = await f.client.put(
-        "/friendship/requests/1/rejected",
+        "/friendships/requests/1/rejected",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 
@@ -36,7 +36,7 @@ async def test_reject_friendship_request_returns_200_with_correct_response(f):
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
 async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
     result = await f.client.put(  # noqa: F841
-        "/friendship/requests/1/rejected",
+        "/friendships/requests/1/rejected",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 
@@ -62,27 +62,7 @@ async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
 })
 async def test_reject_friendship_request_with_friendship_request_from_another_user_returns_403_with_correct_response(f):
     result = await f.client.put(
-        "/friendship/requests/1/rejected",
-        headers={"Authorization": f"Bearer {f.access_token}"},
-    )
-
-    assert result.status_code == 403
-    assert result.json() == {
-        "action": "Reject friendship request.",
-        "description": "Requested action not allowed.",
-        "details": "Provided tokens or credentials don't grant you enough access rights.",
-    }
-
-
-@pytest.mark.anyio
-@pytest.mark.fixtures({
-    "access_token": "access_token",
-    "client": "client",
-    "db": "db_with_accepted_friendship_request",
-})
-async def test_reject_friendship_request_with_accepted_friendship_request_returns_403_with_correct_response(f):
-    result = await f.client.put(
-        "/friendship/requests/1/rejected",
+        "/friendships/requests/1/rejected",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 

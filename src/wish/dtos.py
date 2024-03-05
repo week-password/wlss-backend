@@ -50,7 +50,6 @@ class GetAccountWishesResponse(Schema):
 
 class CreateWishBookingRequest(Schema):
     account_id: IdField = Field(..., example=42)
-    wish_id: IdField = Field(..., example=17)
 
 
 class CreateWishBookingResponse(Schema):
@@ -62,6 +61,7 @@ class CreateWishBookingResponse(Schema):
 class GetWishBookingsResponse(Schema):
     wish_bookings: list[_WishBooking]
     class _WishBooking(Schema):  # noqa: E301
-        account_id: IdField
-        created_at: UtcDatetimeField
-        wish_id: IdField
+        id: IdField = Field(..., example=1)  # noqa: A003
+        account_id: IdField = Field(..., example=42)
+        created_at: UtcDatetimeField = Field(..., example="2023-06-17T11:47:02.823Z")
+        wish_id: IdField = Field(..., example=18)

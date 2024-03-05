@@ -29,6 +29,14 @@ class CannotDeleteWishError(NotAllowedException):
     status_code = status.HTTP_403_FORBIDDEN
 
 
+class CannotDeleteWishBookingError(NotAllowedException):
+    action = "Delete wish booking."
+
+    description = "Requested action not allowed."
+    details = "Provided tokens or credentials don't grant you enough access rights."
+    status_code = status.HTTP_403_FORBIDDEN
+
+
 class CannotGetWishBookingsError(NotAllowedException):
     action = "Get wish bookings."
 

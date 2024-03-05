@@ -13,12 +13,12 @@ from src.wish.dtos import (
 from src.wish.exceptions import (
     CannotCreateWishBookingError,
     CannotCreateWishError,
+    CannotDeleteWishBookingError,
     CannotDeleteWishError,
     CannotGetWishBookingsError,
     CannotGetWishesError,
     CannotUpdateWishError,
 )
-from src.wish.models import WishBooking
 from src.wish.schemas import NewWish, NewWishBooking, WishUpdate
 
 
@@ -86,6 +86,7 @@ async def get_account_wishes(
 
 async def create_wish_booking(
     account_id: Id,
+    wish_id: Id,
     request_data: CreateWishBookingRequest,
     current_account: Account,
     session: AsyncSession,
@@ -98,27 +99,35 @@ async def create_wish_booking(
         or not await account.has_friend(session, current_account.id)
     ):
         raise CannotCreateWishBookingError()
-    wish = await account.get_wish(session, new_wish_booking.wish_id)
-    wish_booking = await wish.create_booking(session, new_wish_booking.account_id)
+    wish = await account.get_wish(session, wish_id)
+    wish_booking = await wish.create_booking(session, new_wish_booking)
     return CreateWishBookingResponse.model_validate(wish_booking, from_attributes=True)
 
 
 async def get_wish_bookings(
     account_id: Id,
-    wish_ids: list[Id],
     current_account: Account,
     session: AsyncSession,
 ) -> GetWishBookingsResponse:
     if account_id == current_account.id:
         raise CannotGetWishBookingsError()
-    wish_bookings = await WishBooking.find_by_wish_ids(session, wish_ids)
+    account = await Account.get(session, account_id)
+    wish_bookings = await account.get_wish_bookings(session)
     return GetWishBookingsResponse.model_validate({"wish_bookings": wish_bookings}, from_attributes=True)
 
 
 async def delete_wish_booking(
+    account_id: Id,
+    wish_id: Id,
     booking_id: Id,
     current_account: Account,
     session: AsyncSession,
 ) -> None:
-    wish_booking = await current_account.get_wish_booking(session, booking_id)
+    if account_id == current_account.id:
+        raise CannotDeleteWishBookingError()
+    account = await Account.get(session, account_id)
+    wish = await account.get_wish(session, wish_id)
+    wish_booking = await wish.get_booking(session, booking_id)
+    if wish_booking.account_id != current_account.id:
+        raise CannotDeleteWishBookingError()
     await wish_booking.delete(session)

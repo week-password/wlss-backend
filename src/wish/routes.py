@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Path, Query, status
+from fastapi import APIRouter, Body, Depends, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.account.models import Account
@@ -125,11 +125,12 @@ async def get_account_wishes(
 )
 async def create_wish_booking(
     account_id: Annotated[IdField, Path(example=42)],
+    wish_id: Annotated[IdField, Path(example=18)],
     request_data: Annotated[CreateWishBookingRequest, Body()],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> CreateWishBookingResponse:
-    return await controllers.create_wish_booking(account_id, request_data, current_account, session)
+    return await controllers.create_wish_booking(account_id, wish_id, request_data, current_account, session)
 
 
 @router.get(
@@ -145,16 +146,15 @@ async def create_wish_booking(
 )
 async def get_wish_bookings(
     account_id: Annotated[IdField, Path(example=42)],
-    wish_ids: Annotated[list[IdField], Query(example=[42, 18], alias="wish_id")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> GetWishBookingsResponse:
     """Get wish bookings for particular wishes."""
-    return await controllers.get_wish_bookings(account_id, wish_ids, current_account, session)
+    return await controllers.get_wish_bookings(account_id, current_account, session)
 
 
 @router.delete(
-    "/bookings/{booking_id}",
+    "/accounts/{account_id}/wishes/{wish_id}/bookings/{booking_id}",
     description="Delete particular wish booking.",
     responses={
         status.HTTP_204_NO_CONTENT: {"description": "Wish Booking has been removed."},
@@ -167,8 +167,10 @@ async def get_wish_bookings(
     summary="Delete wish booking.",
 )
 async def delete_wish_booking(
-    booking_id: Annotated[IdField, Path(example=42)],
+    account_id: Annotated[IdField, Path(example=10)],
+    wish_id: Annotated[IdField, Path(example=42)],
+    booking_id: Annotated[IdField, Path(example=18)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
 ) -> None:
-    return await controllers.delete_wish_booking(booking_id, current_account, session)
+    return await controllers.delete_wish_booking(account_id, wish_id, booking_id, current_account, session)

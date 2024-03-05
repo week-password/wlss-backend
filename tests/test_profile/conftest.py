@@ -62,6 +62,38 @@ async def db_with_one_profile_and_one_file(db_empty):
 
 
 @pytest.fixture
+async def db_with_three_profiles(db_with_one_profile_and_one_file):  # pylint: disable=redefined-outer-name
+    session = db_with_one_profile_and_one_file
+
+    session.add_all([
+        Account(
+            id=Id(2),
+            email=AccountEmail("john.smith@mail.com"),
+            login=AccountLogin("john_smith"),
+        ),
+        Profile(
+            account_id=Id(2),
+            avatar_id=None,
+            description=None,
+            name=ProfileName("John Smith"),
+        ),
+        Account(
+            id=Id(3),
+            email=AccountEmail("john.bloggs@mail.com"),
+            login=AccountLogin("john_bloggs"),
+        ),
+        Profile(
+            account_id=Id(3),
+            avatar_id=None,
+            description=None,
+            name=ProfileName("John Bloggs"),
+        ),
+    ])
+    await session.flush()
+    return session
+
+
+@pytest.fixture
 async def access_token():
     payload = {
         "account_id": 1,

@@ -110,6 +110,10 @@ async def db_with_two_accounts_and_one_file(db_with_one_account_and_one_file):  
     session.add(account)
     await session.flush()
 
+    auth_session = Session(id=UUID("a3bdfc12-ad0b-419c-97fa-59695798ca80"), account_id=Id(2))
+    session.add(auth_session)
+    await session.flush()
+
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
     password_hash = PasswordHash(account_id=Id(2), value=hash_value)
     session.add(password_hash)
@@ -214,6 +218,45 @@ async def db_with_two_accounts_and_two_wishes(  # pylint: disable=redefined-oute
 
 
 @pytest.fixture
+async def db_with_three_friend_accounts_and_one_booking(  # pylint: disable=redefined-outer-name
+    db_with_two_friend_accounts_and_one_wish,
+):
+    session = db_with_two_friend_accounts_and_one_wish
+
+    account = Account(id=Id(3), email=AccountEmail("john.bloggs@mail.com"), login=AccountLogin("john_bloggs"))
+    session.add(account)
+    await session.flush()
+
+    auth_session = Session(id=UUID("8d0c487d-dd59-4d6a-b102-620633cb33ab"), account_id=Id(3))
+    session.add(auth_session)
+    await session.flush()
+
+    hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
+    password_hash = PasswordHash(account_id=Id(3), value=hash_value)
+    session.add(password_hash)
+
+    friendships = [
+        Friendship(
+            account_id=Id(1),
+            friend_id=Id(3),
+        ),
+        Friendship(
+            account_id=Id(3),
+            friend_id=Id(1),
+        ),
+    ]
+    session.add_all(friendships)
+    await session.flush()
+
+    wish_booking = WishBooking(id=Id(1), account_id=Id(1), wish_id=Id(1))
+    session.add(wish_booking)
+    await session.flush()
+
+    await session.flush()
+    return session
+
+
+@pytest.fixture
 async def access_token():
     payload = {
         "account_id": 1,
@@ -223,5 +266,19 @@ async def access_token():
             ).strftime(DATETIME_FORMAT)
         ),
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+    }
+    return jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")
+
+
+@pytest.fixture
+async def access_token_for_another_account():
+    payload = {
+        "account_id": 3,
+        "expires_at": (
+            (
+                datetime.now(tz=timezone.utc) + timedelta(days=CONFIG.DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION)
+            ).strftime(DATETIME_FORMAT)
+        ),
+        "session_id": "8d0c487d-dd59-4d6a-b102-620633cb33ab",
     }
     return jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")

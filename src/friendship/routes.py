@@ -12,8 +12,8 @@ from src.friendship.dtos import (
     AcceptFriendshipRequestResponse,
     CreateFriendshipRequestRequest,
     CreateFriendshipRequestResponse,
+    GetAccountFriendshipsResponse,
     GetFriendshipRequestsResponse,
-    GetFriendsResponse,
     RejectFriendshipRequestResponse,
 )
 from src.shared import swagger as shared_swagger
@@ -25,7 +25,7 @@ router = APIRouter(tags=["friendship"])
 
 
 @router.get(
-    "/accounts/{account_id}/friends",
+    "/accounts/{account_id}/friendships",
     description="Get profile info of friends of particular account",
     responses={
         status.HTTP_200_OK: {"description": "Profile info for account friends is returned."},
@@ -36,16 +36,16 @@ router = APIRouter(tags=["friendship"])
     status_code=status.HTTP_200_OK,
     summary="Get friends.",
 )
-async def get_friends(
+async def get_account_friendships(
     account_id: Annotated[IdField, Path(example=15)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
     session: AsyncSession = Depends(get_session),
-) -> GetFriendsResponse:
-    return await controllers.get_friends(account_id, current_account, session)
+) -> GetAccountFriendshipsResponse:
+    return await controllers.get_account_friendships(account_id, current_account, session)
 
 
 @router.post(
-    "/friendship/requests",
+    "/friendships/requests",
     description="Create new friendship request.",
     responses={
         status.HTTP_201_CREATED: {"description": "New friendship request is created and returned."},
@@ -64,7 +64,7 @@ async def create_friendship_request(
 
 
 @router.delete(
-    "/friendship/requests/{request_id}",
+    "/friendships/requests/{request_id}",
     description="Cancel (same as delete) existing friendship request.",
     responses={
         status.HTTP_204_NO_CONTENT: {"description": "Friendship request has been removed (same as cancelled)."},
@@ -85,7 +85,7 @@ async def cancel_friendship_request(
 
 
 @router.put(
-    "/friendship/requests/{request_id}/accepted",
+    "/friendships/requests/{request_id}/accepted",
     description="Accept friendship request and create two friendship relations between two accounts.",
     responses={
         status.HTTP_201_CREATED: {"description": "Friendship request accepted. New friendship relations returned."},
@@ -105,7 +105,7 @@ async def accept_friendship_request(
 
 
 @router.put(
-    "/friendship/requests/{request_id}/rejected",
+    "/friendships/requests/{request_id}/rejected",
     description="Reject friendship request.",
     responses={
         status.HTTP_200_OK: {
@@ -127,7 +127,7 @@ async def reject_friendship_request(
 
 
 @router.get(
-    "/accounts/{account_id}/friendship/requests",
+    "/accounts/{account_id}/friendships/requests",
     description="Get friendship requests related to particular account",
     responses={
         status.HTTP_200_OK: {
@@ -149,3 +149,22 @@ async def get_friendship_requests(
     session: AsyncSession = Depends(get_session),
 ) -> GetFriendshipRequestsResponse:
     return await controllers.get_friendship_requests(account_id, current_account, session)
+
+
+@router.delete(
+    "/accounts/{account_id}/friendships/{friend_id}",
+    description="Delete friendhips between account_id and friend_id.",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"description": "Friendships removed."},
+    },
+    response_model=None,
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete friend.",
+)
+async def delete_friendships(
+    account_id: Annotated[IdField, Path(example=42)],
+    friend_id: Annotated[IdField, Path(example=18)],
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> None:
+    return await controllers.delete_friendships(account_id, friend_id, current_account, session)

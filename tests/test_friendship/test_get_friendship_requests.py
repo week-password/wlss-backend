@@ -14,7 +14,7 @@ from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 })
 async def test_get_friendship_requests_returns_200_with_correct_response(f):
     result = await f.client.get(
-        "/accounts/1/friendship/requests",
+        "/accounts/1/friendships/requests",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 

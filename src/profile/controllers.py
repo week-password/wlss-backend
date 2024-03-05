@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from src.account.models import Account
-from src.profile.dtos import GetProfileResponse, UpdateProfileResponse
+from src.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileResponse
+from src.profile.models import Profile
 from src.profile.schemas import ProfileUpdate
 
 
@@ -35,3 +36,12 @@ async def update_profile(
     profile_update = ProfileUpdate.from_(request_data)
     profile = await profile.update(session, profile_update)
     return UpdateProfileResponse.model_validate(profile, from_attributes=True)
+
+
+async def get_profiles(
+    account_ids: list[Id],
+    current_account: Account,  # noqa: ARG001
+    session: AsyncSession,
+) -> GetProfilesResponse:
+    profiles = await Profile.get_multiple(session, account_ids)
+    return GetProfilesResponse.model_validate({"profiles": profiles}, from_attributes=True)

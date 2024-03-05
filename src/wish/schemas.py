@@ -19,4 +19,3 @@ class WishUpdate(Schema):
 
 class NewWishBooking(Schema):
     account_id: IdField
-    wish_id: IdField

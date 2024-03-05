@@ -4,7 +4,7 @@ import typing
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, update
+from sqlalchemy import ForeignKey, select, update
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.profile.types import ProfileDescription, ProfileName
 from wlss.shared.types import Id, UtcDatetime
@@ -60,3 +60,9 @@ class Profile(Base):
         )
         row = (await session.execute(query)).one()
         return typing.cast(Profile, row.Profile)
+
+    @staticmethod
+    async def get_multiple(session: AsyncSession, account_ids: list[Id]) -> list[Profile]:
+        query = select(Profile).where(Profile.account_id.in_(account_ids))
+        rows = (await session.execute(query)).all()
+        return [typing.cast(Profile, row.Profile) for row in rows]

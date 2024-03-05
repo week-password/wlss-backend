@@ -13,22 +13,19 @@ from src.account.columns import AccountEmailColumn, AccountLoginColumn
 from src.account.exceptions import AccountNotFoundError, DuplicateAccountException
 from src.auth.exceptions import SessionNotFoundError
 from src.auth.models import Session
-from src.friendship.exceptions import FriendshipRequestNotFoundError
 from src.friendship.models import Friendship, FriendshipRequest
 from src.profile.models import Profile
 from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
-from src.wish.exceptions import WishBookingNotFoundError, WishNotFoundError
+from src.wish.exceptions import WishNotFoundError
 from src.wish.models import Wish, WishBooking
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
     from typing import Self
     from uuid import UUID
 
-    from sqlalchemy import Row
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.account.types import AccountPassword
 
@@ -141,27 +138,23 @@ class Account(Base):
         row = (await session.execute(query)).one()
         return typing.cast(Profile, row.Profile)
 
-    async def get_friends(self: Self, session: AsyncSession) -> Sequence[Row[tuple[Account, Profile, Friendship]]]:
-        query = (
-            select(Account, Profile, Friendship)
-            .select_from(Account)
-            .join(Friendship, Account.id == Friendship.friend_id)
-            .join(Profile, Friendship.friend_id == Profile.account_id)
-            .where(Friendship.account_id == self.id)
-        )
-        return (await session.execute(query)).all()
+    async def get_friendships(self: Self, session: AsyncSession) -> list[Friendship]:
+        query = select(Friendship).where(Friendship.account_id == self.id)
+        rows = (await session.execute(query)).all()
+        return [typing.cast(Friendship, row.Friendship) for row in rows]
 
-    @classmethod
-    async def get_friendship_request(
-        cls: type[Account],
-        session: AsyncSession,
-        request_id: Id,
-    ) -> FriendshipRequest:
-        query = select(FriendshipRequest).where(FriendshipRequest.id == request_id)
-        row = (await session.execute(query)).one_or_none()
-        if row is None:
-            raise FriendshipRequestNotFoundError()
-        return typing.cast(FriendshipRequest, row.FriendshipRequest)
+    async def delete_friendships(self: Self, session: AsyncSession, friend_id: Id) -> None:
+        query = (
+            delete(Friendship)
+            .where(
+                (
+                    (Friendship.account_id == self.id) & (Friendship.friend_id == friend_id)
+                ) | (
+                    (Friendship.account_id == friend_id) & (Friendship.friend_id == self.id)
+                ),
+            )
+        )
+        await session.execute(query)
 
     async def get_friendship_requests(self: Self, session: AsyncSession) -> list[FriendshipRequest]:
         query = (
@@ -194,17 +187,19 @@ class Account(Base):
         rows = (await session.execute(query)).all()
         return [typing.cast(Wish, row.Wish) for row in rows]
 
+    async def get_wish_bookings(self: Self, session: AsyncSession) -> list[WishBooking]:
+        query = (
+            select(WishBooking)
+            .join(Wish, Wish.id == WishBooking.wish_id)
+            .where(Wish.account_id == self.id)
+        )
+        rows = (await session.execute(query)).all()
+        return [typing.cast(WishBooking, row.WishBooking) for row in rows]
+
     async def has_friend(self: Self, session: AsyncSession, friend_id: Id) -> bool:
         query = select(Friendship).where((Friendship.account_id == self.id) & (Friendship.friend_id == friend_id))
         row = (await session.execute(query)).one_or_none()
         return row is not None
-
-    async def get_wish_booking(self: Self, session: AsyncSession, booking_id: Id) -> WishBooking:
-        query = select(WishBooking).where((WishBooking.id == booking_id) & (WishBooking.account_id == self.id))
-        row = (await session.execute(query)).one_or_none()
-        if row is None:
-            raise WishBookingNotFoundError()
-        return typing.cast(WishBooking, row.WishBooking)
 
 
 class PasswordHash(Base):

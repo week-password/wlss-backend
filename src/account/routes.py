@@ -41,14 +41,14 @@ async def create_account(
 
 @router.get(
     "/accounts/logins/{account_login}/id",
-    description="Get Account Id by login. Account Id is available for every logged in user.",
+    description="Get account id by login. Account id is available for every logged in user.",
     responses={
-        status.HTTP_200_OK: {"description": "Account Id returned"},
+        status.HTTP_200_OK: {"description": "Account id returned"},
         status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
     status_code=status.HTTP_200_OK,
-    summary="Get Account Id.",
+    summary="Get account id.",
 )
 async def get_account_id(
     account_login: Annotated[AccountLoginField, Path(example="john_doe")],

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import typing
 from typing import TYPE_CHECKING
 
-from sqlalchemy import delete, Enum, ForeignKey
+from sqlalchemy import delete, Enum, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.shared.types import Id, UtcDatetime
 
 from src.friendship.enums import FriendshipRequestStatus
-from src.friendship.exceptions import CannotRejectFriendshipRequest
+from src.friendship.exceptions import FriendshipRequestNotFoundError
 from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
@@ -62,23 +63,34 @@ class FriendshipRequest(Base):
         await session.flush()
         return friendship_request
 
+    @classmethod
+    async def get(
+        cls: type[FriendshipRequest],
+        session: AsyncSession,
+        request_id: Id,
+    ) -> FriendshipRequest:
+        query = select(FriendshipRequest).where(FriendshipRequest.id == request_id)
+        row = (await session.execute(query)).one_or_none()
+        if row is None:
+            raise FriendshipRequestNotFoundError()
+        return typing.cast(FriendshipRequest, row.FriendshipRequest)
+
     async def delete(self: Self, session: AsyncSession) -> None:
         query = delete(FriendshipRequest).where(FriendshipRequest.id == self.id)
         await session.execute(query)
         await session.flush()
 
     async def accept(self: Self, session: AsyncSession) -> list[Friendship]:
-        self.status = FriendshipRequestStatus.ACCEPTED
         friendships = [
             Friendship(account_id=self.sender_id, friend_id=self.receiver_id),
             Friendship(account_id=self.receiver_id, friend_id=self.sender_id),
         ]
         session.add_all(friendships)
         await session.flush()
+
+        await self.delete(session)
         return friendships
 
     async def reject(self: Self, session: AsyncSession) -> None:
-        if self.status is not FriendshipRequestStatus.PENDING:
-            raise CannotRejectFriendshipRequest()
         self.status = FriendshipRequestStatus.REJECTED
         await session.flush()

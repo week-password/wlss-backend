@@ -16,7 +16,6 @@ disable =
     # implemented in other linter we use, please do it in a separate section below
     consider-using-assignment-expr,  # assignment expressions can make code difficult to read
     duplicate-code,
-    fixme,  # "todos" and "fixmes" in the codebase
 
     # options below are disabled because they are already implemented in ruff
     # if you want to disable another error for some reason, please do it in a separate section above

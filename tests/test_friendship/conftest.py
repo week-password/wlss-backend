@@ -78,23 +78,6 @@ async def db_with_one_friendship_request(db_with_two_accounts):  # pylint: disab
 
 
 @pytest.fixture
-async def db_with_accepted_friendship_request(db_with_two_accounts):  # pylint: disable=redefined-outer-name
-    session = db_with_two_accounts
-
-    friendship_request = FriendshipRequest(
-        id=Id(1),
-        receiver_id=Id(2),
-        sender_id=Id(1),
-        status=FriendshipRequestStatus.ACCEPTED,
-    )
-    session.add(friendship_request)
-    await session.flush()
-
-    await session.commit()
-    return session
-
-
-@pytest.fixture
 async def db_with_friendship_request_from_another_user(db_with_two_accounts):  # pylint: disable=redefined-outer-name
     session = db_with_two_accounts
 

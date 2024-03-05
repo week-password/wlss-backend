@@ -13,7 +13,7 @@ from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 })
 async def test_get_wish_bookings_returns_200_with_correct_response(f):
     result = await f.client.get(
-        "/accounts/2/wishes/bookings?wish_id=1",
+        "/accounts/2/wishes/bookings",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 
@@ -21,6 +21,7 @@ async def test_get_wish_bookings_returns_200_with_correct_response(f):
     assert result.json() == {
         "wish_bookings": [
             {
+                "id": 1,
                 "account_id": 1,
                 "created_at": IsUtcDatetimeSerialized,
                 "wish_id": 1,

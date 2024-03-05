@@ -14,6 +14,7 @@ from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 from src.wish.columns import WishDescriptionColumn, WishTitleColumn
+from src.wish.exceptions import WishBookingNotFoundError
 
 
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from src.wish.schemas import WishUpdate
+    from src.wish.schemas import NewWishBooking, WishUpdate
 
 
 class Wish(Base):
@@ -65,14 +66,21 @@ class Wish(Base):
         await session.execute(query)
         await session.flush()
 
-    async def create_booking(self: Self, session: AsyncSession, account_id: Id) -> WishBooking:
-        wish_booking = WishBooking(account_id=account_id, wish_id=self.id)
+    async def create_booking(self: Self, session: AsyncSession, new_booking: NewWishBooking) -> WishBooking:
+        wish_booking = WishBooking(account_id=new_booking.account_id, wish_id=self.id)
         session.add(wish_booking)
         await session.flush()
         return wish_booking
 
+    async def get_booking(self: Self, session: AsyncSession, booking_id: Id) -> WishBooking:
+        query = select(WishBooking).where((WishBooking.id == booking_id) & (WishBooking.id == self.id))
+        row = (await session.execute(query)).one_or_none()
+        if row is None:
+            raise WishBookingNotFoundError()
+        return typing.cast(WishBooking, row.WishBooking)
 
-class WishBooking(Base):
+
+class WishBooking(Base):  # pylint: disable=too-few-public-methods
 
     __tablename__ = "wish_booking"
 
@@ -86,12 +94,6 @@ class WishBooking(Base):
     __table_args__ = (
         UniqueConstraint("account_id", "wish_id", name="account_id__wish_id__unique_together"),
     )
-
-    @classmethod
-    async def find_by_wish_ids(cls: type[WishBooking], session: AsyncSession, wish_ids: list[Id]) -> list[WishBooking]:
-        query = select(WishBooking).where(WishBooking.wish_id.in_(wish_ids))
-        rows = (await session.execute(query)).all()
-        return [typing.cast(WishBooking, row.WishBooking) for row in rows]
 
     async def delete(self: Self, session: AsyncSession) -> None:
         query = delete(WishBooking).where(WishBooking.id == self.id)

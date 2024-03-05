@@ -24,12 +24,32 @@ app = FastAPI(
     description="Backend API for Wish List Sharing Service.",
     openapi_tags=[
         {
+            "name": "account",
+            "description": "Account-related functionality for managing accounts.",
+        },
+        {
             "name": "auth",
             "description": "Auth-related functionality for Signing Up/In/Out.",
         },
         {
+            "name": "file",
+            "description": "File related functionality for downloading and uploading files.",
+        },
+        {
+            "name": "friendship",
+            "description": "Friendship and friendship request related functionality.",
+        },
+        {
+            "name": "profile",
+            "description": "Profile related functionality for managing profiles.",
+        },
+        {
             "name": "service",
             "description": "Maintenace related functionality.",
+        },
+        {
+            "name": "wish",
+            "description": "Wish and wish booking related functionality.",
         },
     ],
 )

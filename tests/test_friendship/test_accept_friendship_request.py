@@ -6,7 +6,6 @@ import pytest
 from sqlalchemy import select
 from wlss.shared.types import Id
 
-from src.friendship.enums import FriendshipRequestStatus
 from src.friendship.models import Friendship, FriendshipRequest
 from src.shared.database import Base
 from tests.utils.dirty_equals import IsUtcDatetime, IsUtcDatetimeSerialized
@@ -17,7 +16,7 @@ from tests.utils.mocks.models import __eq__
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
 async def test_accept_friendship_request_returns_201_with_correct_response(f):
     result = await f.client.put(
-        "/friendship/requests/1/accepted",
+        "/friendships/requests/1/accepted",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 
@@ -42,22 +41,13 @@ async def test_accept_friendship_request_returns_201_with_correct_response(f):
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_one_friendship_request"})
 async def test_accept_friendship_request_creates_objects_in_db_correctly(f):
     result = await f.client.put(  # noqa: F841
-        "/friendship/requests/1/accepted",
+        "/friendships/requests/1/accepted",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 
     with patch.object(Base, "__eq__", __eq__):
         friendship_requests = (await f.db.execute(select(FriendshipRequest))).scalars().all()
-        assert friendship_requests == [
-            FriendshipRequest(
-                id=Id(1),
-                created_at=IsUtcDatetime,
-                receiver_id=Id(2),
-                sender_id=Id(1),
-                status=FriendshipRequestStatus.ACCEPTED,
-                updated_at=IsUtcDatetime,
-            ),
-        ]
+        assert friendship_requests == []
         friendships = (await f.db.execute(select(Friendship).order_by(Friendship.account_id))).scalars().all()
         assert friendships == [
             Friendship(
@@ -83,7 +73,7 @@ async def test_accept_friendship_request_creates_objects_in_db_correctly(f):
 })
 async def test_accept_friendship_request_with_friendship_request_from_another_user_returns_403_with_correct_response(f):
     result = await f.client.put(
-        "/friendship/requests/1/accepted",
+        "/friendships/requests/1/accepted",
         headers={"Authorization": f"Bearer {f.access_token}"},
     )
 

@@ -17,7 +17,7 @@ from tests.utils.mocks.models import __eq__
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_two_accounts"})
 async def test_create_friendship_request_returns_201_with_correct_response(f):
     result = await f.client.post(
-        "/friendship/requests",
+        "/friendships/requests",
         headers={"Authorization": f"Bearer {f.access_token}"},
         json={"receiver_id": 2, "sender_id": 1},
     )
@@ -36,7 +36,7 @@ async def test_create_friendship_request_returns_201_with_correct_response(f):
 @pytest.mark.fixtures({"access_token": "access_token", "client": "client", "db": "db_with_two_accounts"})
 async def test_create_friendship_request_creates_objects_in_db_correctly(f):
     result = await f.client.post(  # noqa: F841
-        "/friendship/requests",
+        "/friendships/requests",
         headers={"Authorization": f"Bearer {f.access_token}"},
         json={"receiver_id": 2, "sender_id": 1},
     )
@@ -61,7 +61,7 @@ async def test_create_friendship_request_for_different_account_ids_in_query_and_
     f,
 ):
     result = await f.client.post(
-        "/friendship/requests",
+        "/friendships/requests",
         headers={"Authorization": f"Bearer {f.access_token}"},
         json={"receiver_id": 1, "sender_id": 2},
     )
