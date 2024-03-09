@@ -16,8 +16,7 @@ class Health:  # pylint: disable=too-few-public-methods
         self._client = client
 
     async def get_health(self: Self) -> HealthResponse:
-        async with self._client as client:
-            response = await client.get("/health")
+        response = await self._client.get("/health")
         response.raise_for_status()
         assert response.status_code == httpx.codes.OK
         return HealthResponse.model_validate(response.json())

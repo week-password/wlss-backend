@@ -34,7 +34,8 @@ async def api(db_empty):
     def override_get_session():
         yield db_empty
     app.dependency_overrides[get_session] = override_get_session
-    return Api(app=app, base_url="http://")
+    async with Api(app=app, base_url="http://") as api:
+        yield api
 
 
 @pytest.fixture

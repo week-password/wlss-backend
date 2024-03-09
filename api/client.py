@@ -18,17 +18,27 @@ if TYPE_CHECKING:
     from typing import Any, Self
 
 
-class Api:  # pylint: disable=too-many-instance-attributes
+class Api:
     def __init__(self: Self, app: Callable[..., Any] | None = None, base_url: str = "") -> None:
         self._client = httpx.AsyncClient(app=app, base_url=base_url)
 
-        self._account = Account(self._client)
-        self._auth = Auth(self._client)
-        self._file = File(self._client)
-        self._friendship = Friendship(self._client)
-        self._health = Health(self._client)
-        self._profile = Profile(self._client)
-        self._wish = Wish(self._client)
+    async def __aenter__(self: Self) -> Client:
+        return Client(await self._client.__aenter__())
+
+    async def __aexit__(self: Self, *args: Any, **kwargs: Any) -> None:
+        await self._client.__aexit__(*args, **kwargs)
+
+
+class Client:
+    def __init__(self: Self, connection: httpx.AsyncClient) -> None:
+
+        self._account = Account(connection)
+        self._auth = Auth(connection)
+        self._file = File(connection)
+        self._friendship = Friendship(connection)
+        self._health = Health(connection)
+        self._profile = Profile(connection)
+        self._wish = Wish(connection)
 
     @property
     def account(self: Self) -> Account:

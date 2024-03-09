@@ -1,6 +1,12 @@
 # This is a whitelist of allowed words for flake8-spellcheck plugin.
 # IMPORTANT: please keep this list alphabetically sorted by whitelisted words
 
+# asynchronous enter
+aenter
+
+# asynchronous exit
+aexit
+
 # asynchronous iteration
 aiter
 

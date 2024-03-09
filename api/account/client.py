@@ -30,8 +30,7 @@ class Account:
         self._client = client
 
     async def create_account(self: Self, request_data: CreateAccountRequest) -> CreateAccountResponse:
-        async with self._client as client:
-            response = await client.post("/accounts", json=request_data.model_dump())
+        response = await self._client.post("/accounts", json=request_data.model_dump())
         response.raise_for_status()
         assert response.status_code == httpx.codes.CREATED
         return CreateAccountResponse.model_validate(response.json())
@@ -41,8 +40,7 @@ class Account:
         account_id: Id,
         token: str,
     ) -> GetAccountResponse:
-        async with self._client as client:
-            response = await client.get(f"/accounts/{account_id.value}", headers={"Authorization": f"Bearer {token}"})
+        response = await self._client.get(f"/accounts/{account_id.value}", headers={"Authorization": f"Bearer {token}"})
         response.raise_for_status()
         assert response.status_code == httpx.codes.OK
         return GetAccountResponse.model_validate(response.json())
@@ -55,33 +53,30 @@ class Account:
     ) -> GetAccountsResponse:
         account_ids = account_ids or []
         account_logins = account_logins or []
-        async with self._client as client:
-            response = await client.get(
-                "/accounts",
-                params={
-                    "account_id": [str(v.value) for v in account_ids],
-                    "account_login": [v.value for v in account_logins],
-                },
-                headers={"Authorization": f"Bearer {token}"},
-            )
+        response = await self._client.get(
+            "/accounts",
+            params={
+                "account_id": [str(v.value) for v in account_ids],
+                "account_login": [v.value for v in account_logins],
+            },
+            headers={"Authorization": f"Bearer {token}"},
+        )
         response.raise_for_status()
         assert response.status_code == httpx.codes.OK
         return GetAccountsResponse.model_validate(response.json())
 
     async def match_account_login(self: Self, request_data: MatchAccountLoginRequest) -> bool:
-        async with self._client as client:
-            response = await client.post(
-                "/accounts/logins/match",
-                json=request_data.model_dump(),
-            )
+        response = await self._client.post(
+            "/accounts/logins/match",
+            json=request_data.model_dump(),
+        )
         response.raise_for_status()
         return response.status_code == httpx.codes.NO_CONTENT
 
     async def match_account_email(self: Self, request_data: MatchAccountEmailRequest) -> bool:
-        async with self._client as client:
-            response = await client.post(
-                "/accounts/emails/match",
-                json=request_data.model_dump(),
-            )
+        response = await self._client.post(
+            "/accounts/emails/match",
+            json=request_data.model_dump(),
+        )
         response.raise_for_status()
         return response.status_code == httpx.codes.NO_CONTENT
