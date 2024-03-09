@@ -37,8 +37,16 @@ class CreateAccountResponse(Schema):
         name: ProfileNameField = Field(..., example="John Doe")
 
 
-class GetAccountIdResponse(Schema):
+class GetAccountResponse(Schema):
     id: IdField = Field(..., example=42)  # noqa: A003
+    login: AccountLoginField = Field(..., example="john_doe")
+
+
+class GetAccountsResponse(Schema):
+    accounts: list[_Account]
+    class _Account(Schema):  # noqa: E301
+        id: IdField = Field(..., example=42)  # noqa: A003
+        login: AccountLoginField = Field(..., example="john_doe")
 
 
 class MatchAccountLoginRequest(Schema):

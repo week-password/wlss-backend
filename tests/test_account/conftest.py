@@ -45,6 +45,23 @@ async def db_with_one_account_and_one_session(db_with_one_account):  # pylint: d
 
 
 @pytest.fixture
+async def db_with_two_accounts(db_with_one_account_and_one_session):  # pylint: disable=redefined-outer-name
+    session = db_with_one_account_and_one_session
+
+    account = Account(id=Id(2), login=AccountLogin("john_smith"), email=AccountEmail("john.smith@mail.com"))
+    session.add(account)
+    await session.flush()
+
+    hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
+    password_hash = PasswordHash(account_id=Id(2), value=hash_value)
+    session.add(password_hash)
+    await session.flush()
+
+    await session.commit()
+    return session
+
+
+@pytest.fixture
 async def access_token():
     payload = {
         "account_id": 1,

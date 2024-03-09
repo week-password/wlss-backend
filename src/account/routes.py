@@ -2,17 +2,19 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Path, status
+from fastapi import APIRouter, Body, Depends, Path, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.account.dtos import (
     CreateAccountRequest,
     CreateAccountResponse,
-    GetAccountIdResponse,
+    GetAccountResponse,
+    GetAccountsResponse,
     MatchAccountEmailRequest,
     MatchAccountLoginRequest,
 )
 from api.account.fields import AccountLoginField
+from api.shared.fields import IdField
 from src.account import controllers
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
@@ -40,22 +42,48 @@ async def create_account(
 
 
 @router.get(
-    "/accounts/logins/{account_login}/id",
-    description="Get account id by login. Account id is available for every logged in user.",
+    "/accounts/{account_id}",
+    description="Get account. Returns public available info for particular account",
     responses={
-        status.HTTP_200_OK: {"description": "Account id returned"},
+        status.HTTP_200_OK: {"description": "Account info returned"},
         status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
         status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
     },
     status_code=status.HTTP_200_OK,
-    summary="Get account id.",
+    summary="Get account.",
 )
-async def get_account_id(
-    account_login: Annotated[AccountLoginField, Path(example="john_doe")],
+async def get_account(
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    account_id: Annotated[IdField, Path(example=42)],
     session: AsyncSession = Depends(get_session),
-) -> GetAccountIdResponse:
-    return await controllers.get_account_id(account_login, current_account, session)
+) -> GetAccountResponse:
+    return await controllers.get_account(account_id, current_account, session)
+
+
+@router.get(
+    "/accounts",
+    description="Get accounts. Account infos are available for every logged in user.",
+    responses={
+        status.HTTP_200_OK: {"description": "Accounts info returned"},
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
+    },
+    status_code=status.HTTP_200_OK,
+    summary="Get accounts.",
+)
+async def get_accounts(
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    account_ids: Annotated[
+        list[IdField],
+        Query(alias="account_id", example=[42, 18]),
+    ] = [],  # noqa: B006
+    account_logins: Annotated[
+        list[AccountLoginField],
+        Query(alias="account_login", example=["john", "bob"]),
+    ] = [],  # noqa: B006
+    session: AsyncSession = Depends(get_session),
+) -> GetAccountsResponse:
+    return await controllers.get_accounts(account_ids, account_logins, current_account, session)
 
 
 @router.post(

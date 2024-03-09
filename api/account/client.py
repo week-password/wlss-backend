@@ -6,14 +6,17 @@ import httpx
 
 from api.account.dtos import (
     CreateAccountResponse,
-    GetAccountIdResponse,
+    GetAccountResponse,
+    GetAccountsResponse,
 )
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from typing import Self
 
     from wlss.account.types import AccountLogin
+    from wlss.shared.types import Id
 
     from api.account.dtos import (
         CreateAccountRequest,
@@ -33,15 +36,37 @@ class Account:
         assert response.status_code == httpx.codes.CREATED
         return CreateAccountResponse.model_validate(response.json())
 
-    async def get_account_id(self: Self, account_login: AccountLogin, token: str) -> GetAccountIdResponse:
+    async def get_account(
+        self: Self,
+        account_id: Id,
+        token: str,
+    ) -> GetAccountResponse:
+        async with self._client as client:
+            response = await client.get(f"/accounts/{account_id.value}", headers={"Authorization": f"Bearer {token}"})
+        response.raise_for_status()
+        assert response.status_code == httpx.codes.OK
+        return GetAccountResponse.model_validate(response.json())
+
+    async def get_accounts(
+        self: Self,
+        token: str,
+        account_ids: Iterable[Id] | None = None,
+        account_logins: Iterable[AccountLogin] | None = None,
+    ) -> GetAccountsResponse:
+        account_ids = account_ids or []
+        account_logins = account_logins or []
         async with self._client as client:
             response = await client.get(
-                f"/accounts/logins/{account_login.value}/id",
+                "/accounts",
+                params={
+                    "account_id": [str(v.value) for v in account_ids],
+                    "account_login": [v.value for v in account_logins],
+                },
                 headers={"Authorization": f"Bearer {token}"},
             )
         response.raise_for_status()
         assert response.status_code == httpx.codes.OK
-        return GetAccountIdResponse.model_validate(response.json())
+        return GetAccountsResponse.model_validate(response.json())
 
     async def match_account_login(self: Self, request_data: MatchAccountLoginRequest) -> bool:
         async with self._client as client:

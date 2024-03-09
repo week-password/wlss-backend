@@ -105,6 +105,17 @@ class Account(Base):
         await password_hash.check_password(credentials.password)
         return typing.cast(Account, row.Account)
 
+    @classmethod
+    async def get_accounts(
+        cls: type[Account],
+        session: AsyncSession,
+        account_ids: list[Id],
+        account_logins: list[AccountLogin],
+    ) -> list[Account]:
+        query = select(Account).where((Account.id.in_(account_ids)) | (Account.login.in_(account_logins)))
+        rows = (await session.execute(query)).all()
+        return [typing.cast(Account, row.Account) for row in rows]
+
     async def create_session(self: Self, session: AsyncSession) -> Session:
         auth_session = Session(account_id=self.id)
         session.add(auth_session)
