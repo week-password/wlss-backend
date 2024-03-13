@@ -47,7 +47,6 @@ async def create_file(
 async def get_file(
     background_tasks: BackgroundTasks,
     file_id: UUID,
-    current_account: Account,  # noqa: ARG001
     tmp_dir: Path,
     session: AsyncSession,
 ) -> GetFileResponse:

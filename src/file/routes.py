@@ -54,8 +54,7 @@ async def create_file(
 async def get_file(
     background_tasks: BackgroundTasks,
     file_id: Annotated[UuidField, Path(example="47b3d7a9-d7d3-459a-aac1-155997775a0e")],
-    current_account: Annotated[Account, Depends(get_account_from_access_token)],
     tmp_dir: Annotated[pathlib.Path, Depends(get_tmp_dir)],
     session: AsyncSession = Depends(get_session),
 ) -> GetFileResponse:
-    return await controllers.get_file(background_tasks, file_id, current_account, tmp_dir, session)
+    return await controllers.get_file(background_tasks, file_id, tmp_dir, session)

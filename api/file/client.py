@@ -26,19 +26,15 @@ class File:
             response = await self._client.post(
                 "/files",
                 headers={"Authorization": f"Bearer {token}"},
-                files={"upload_file": (request_data.name, f, request_data.mime_type.value)},
+                files={"file": (request_data.name, f, request_data.mime_type.value)},
             )
 
         response.raise_for_status()
         assert response.status_code == httpx.codes.CREATED
         return CreateFileResponse.model_validate(response.json())
 
-    async def get_file(self: Self, file_id: UUID, token: str, tmp_file_path: Path) -> GetFileResponse:
-        async with self._client.stream(
-            "GET",
-            f"/files/{file_id}",
-            headers={"Authorization": f"Bearer {token}"},
-        ) as response:
+    async def get_file(self: Self, file_id: UUID, tmp_file_path: Path) -> GetFileResponse:
+        async with self._client.stream("GET", f"/files/{file_id}") as response:
             if response.is_error:
                 await response.aread()
                 response.raise_for_status()

@@ -11,7 +11,6 @@ from api.file.dtos import GetFileResponse
 @pytest.mark.anyio
 @pytest.mark.fixtures({
     "api": "api",
-    "access_token": "access_token",
     "db": "db_with_one_file",
     "minio": "minio_with_one_file",
     "tmp_path": "tmp_path",
@@ -21,7 +20,6 @@ async def test_get_file_returns_correct_response(f):
 
     result = await f.api.file.get_file(
         file_id=UUID("4c8a2c85-0fe3-4ab0-b683-96bb1805d370"),
-        token=f.access_token,
         tmp_file_path=tmp_file_path,
     )
 
@@ -32,7 +30,6 @@ async def test_get_file_returns_correct_response(f):
 
 @pytest.mark.anyio
 @pytest.mark.fixtures({
-    "access_token": "access_token",
     "api": "api",
     "db": "db_with_one_account_and_one_session",
     "minio": "minio_with_one_file",
@@ -43,7 +40,6 @@ async def test_get_file_returns_with_nonexistent_file_raises_correct_exception(f
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.file.get_file(
             file_id=UUID("4c8a2c85-0fe3-4ab0-b683-96bb1805d370"),
-            token=f.access_token,
             tmp_file_path=tmp_file_path,
         )
 

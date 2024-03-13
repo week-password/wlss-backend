@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 from typing import Annotated, TYPE_CHECKING
 
-from fastapi import Depends, UploadFile
+from fastapi import Depends, File, UploadFile
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
@@ -23,19 +23,19 @@ async def get_tmp_dir() -> Path:
 
 
 async def get_new_file(
-    upload_file: UploadFile,
+    file_request: Annotated[UploadFile, File(..., alias="file", validation_alias="file")],
     tmp_dir: Annotated[Path, Depends(get_tmp_dir)],
 ) -> AsyncIterator[CreateFileRequest]:
-    filename = Path(upload_file.filename or "")
+    filename = Path(file_request.filename or "")
     extension = filename.suffix.lstrip(".").lower()
 
     file_path = Path(tmp_dir) / filename
-    size = _download_file(file_path, upload_file.file)
+    size = _download_file(file_path, file_request.file)
 
     try:
         yield CreateFileRequest(
             extension=extension,
-            mime_type=upload_file.content_type,
+            mime_type=file_request.content_type,
             name=str(filename),
             size=size,
             tmp_file_path=file_path,
