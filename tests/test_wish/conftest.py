@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from uuid import UUID
 
 import jwt
@@ -260,11 +260,7 @@ async def db_with_three_friend_accounts_and_one_booking(  # pylint: disable=rede
 async def access_token():
     payload = {
         "account_id": 1,
-        "expires_at": (
-            (
-                datetime.now(tz=timezone.utc) + timedelta(days=CONFIG.DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION)
-            ).strftime(DATETIME_FORMAT)
-        ),
+        "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     return jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")
@@ -274,11 +270,7 @@ async def access_token():
 async def access_token_for_another_account():
     payload = {
         "account_id": 3,
-        "expires_at": (
-            (
-                datetime.now(tz=timezone.utc) + timedelta(days=CONFIG.DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION)
-            ).strftime(DATETIME_FORMAT)
-        ),
+        "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
         "session_id": "8d0c487d-dd59-4d6a-b102-620633cb33ab",
     }
     return jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")

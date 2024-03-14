@@ -4,7 +4,7 @@ from typing import Any, TYPE_CHECKING, TypeVar
 
 from pydantic import (
     field_validator,
-    PositiveInt,  # noqa: TCH002
+    PositiveFloat,  # noqa: TCH002
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,8 +20,8 @@ T = TypeVar("T", bound=Any)
 
 
 class _Config(BaseSettings):
-    DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION: PositiveInt = 1
-    DAYS_BEFORE_REFRESH_TOKEN_EXPIRATION: PositiveInt = 60
+    DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION: PositiveFloat
+    DAYS_BEFORE_REFRESH_TOKEN_EXPIRATION: PositiveFloat
 
     MINIO_HOST: str
     MINIO_PORT: str

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 import jwt
-from pydantic import Field
-from wlss.shared.types import UtcDatetime
+from pydantic import ConfigDict
 
 from api.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
 from api.shared.fields import IdField, UtcDatetimeField, UuidField
@@ -25,13 +24,10 @@ class Credentials(Schema):
 
 class AccessTokenPayload(Schema):
     account_id: IdField
-    expires_at: UtcDatetimeField = Field(
-        default_factory=lambda: UtcDatetime(
-            datetime.now(tz=timezone.utc)
-            + timedelta(days=CONFIG.DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION),
-        ),
-    )
+    created_at: UtcDatetimeField
     session_id: UuidField
+
+    model_config = ConfigDict(extra="forbid")
 
     @classmethod
     def decode(cls: type[AccessTokenPayload], token: str) -> AccessTokenPayload:
@@ -39,18 +35,15 @@ class AccessTokenPayload(Schema):
         return cls.model_validate(payload)
 
     def encode(self: Self) -> str:
+        # double check that generated token doesn't have "created_at" pointing to future
+        assert self.created_at.value < datetime.now(tz=timezone.utc)
         payload = self.model_dump()
         return jwt.encode(payload, CONFIG.SECRET_KEY, algorithm="HS256")
 
 
 class RefreshTokenPayload(Schema):
     account_id: IdField
-    expires_at: UtcDatetimeField = Field(
-        default_factory=lambda: UtcDatetime(
-            datetime.now(tz=timezone.utc)
-            + timedelta(days=CONFIG.DAYS_BEFORE_REFRESH_TOKEN_EXPIRATION),
-        ),
-    )
+    created_at: UtcDatetimeField
     session_id: UuidField
 
     @classmethod
@@ -59,5 +52,7 @@ class RefreshTokenPayload(Schema):
         return cls.model_validate(payload)
 
     def encode(self: Self) -> str:
+        # double check that generated token doesn't have "created_at" pointing to future
+        assert self.created_at.value < datetime.now(tz=timezone.utc)
         payload = self.model_dump()
         return jwt.encode(payload, CONFIG.SECRET_KEY, algorithm="HS256")

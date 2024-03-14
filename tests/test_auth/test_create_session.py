@@ -40,13 +40,13 @@ async def test_create_session_returns_correct_response(f):
     access_token = result.model_dump()["tokens"]["access_token"]
     assert jwt.decode(access_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
-        "expires_at": IsUtcDatetimeSerialized,
+        "created_at": IsUtcDatetimeSerialized,
         "session_id": dirty_equals.IsUUID(4),
     }
     refresh_token = result.model_dump()["tokens"]["refresh_token"]
     assert jwt.decode(refresh_token, CONFIG.SECRET_KEY, "HS256") == {
         "account_id": 1,
-        "expires_at": IsUtcDatetimeSerialized,
+        "created_at": IsUtcDatetimeSerialized,
         "session_id": dirty_equals.IsUUID(4),
     }
 

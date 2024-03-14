@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 import dirty_equals
@@ -33,23 +33,54 @@ async def test_refresh_tokens_returns_correct_response(f):
     access_token_payload = jwt.decode(json["access_token"], CONFIG.SECRET_KEY, "HS256")
     assert access_token_payload == {
         "account_id": 1,
-        "expires_at": IsUtcDatetimeSerialized,
+        "created_at": IsUtcDatetimeSerialized,
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     refresh_token_payload = jwt.decode(json["refresh_token"], CONFIG.SECRET_KEY, "HS256")
     assert refresh_token_payload == {
         "account_id": 1,
-        "expires_at": IsUtcDatetimeSerialized,
+        "created_at": IsUtcDatetimeSerialized,
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     access_token_expiration = datetime.strptime(  # noqa: DTZ007
-        access_token_payload["expires_at"], DATETIME_FORMAT,
+        access_token_payload["created_at"], DATETIME_FORMAT,
     )
     refresh_token_expiration = datetime.strptime(  # noqa: DTZ007
-        refresh_token_payload["expires_at"],
+        refresh_token_payload["created_at"],
         DATETIME_FORMAT,
     )
     assert access_token_expiration < refresh_token_expiration
+
+
+@pytest.mark.anyio
+@pytest.mark.fixtures({
+    "api": "api",
+    "refresh_token": "refresh_token_incorrect",
+    "db": "db_with_one_account_and_one_session",
+})
+async def test_refresh_tokens_with_incorrect_token_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.auth.refresh_tokens(
+            account_id=Id(1),
+            session_id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
+            token=f.refresh_token,
+        )
+
+    assert exc_info.value.response.status_code == 422
+    assert exc_info.value.response.json() == {
+        "detail": [
+            {
+                "type": "missing",
+                "loc": ["created_at"],
+                "msg": "Field required",
+                "input": {
+                    "account_id": 1,
+                    "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+                },
+                "url": "https://errors.pydantic.dev/2.5/v/missing",
+            },
+        ],
+    }
 
 
 @pytest.mark.anyio
@@ -135,7 +166,7 @@ async def test_refresh_tokens_with_invalid_token_raises_correct_exception(f):
 async def test_refresh_tokens_with_nonexistent_session_raises_correct_exception(f):
     payload = {
         "account_id": 1,
-        "created_at": "2023-06-17T11:47:02.823Z",
+        "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
         "session_id": "42424242-aee8-4a6b-a519-def9ca30c9ec",
     }
     token = jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")

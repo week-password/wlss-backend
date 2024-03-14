@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
+
+from wlss.shared.types import UtcDatetime
 
 from api.auth.dtos import CreateSessionResponse, RefreshTokensResponse
 from src.account.models import Account
@@ -26,8 +29,16 @@ async def create_session(request_data: CreateSessionRequest, session: AsyncSessi
     credentials = Credentials.from_(request_data)
     account = await Account.get_by_credentials(session, credentials)
     auth_session = await account.create_session(session)
-    access_token = schemas.AccessTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
-    refresh_token = schemas.RefreshTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
+    access_token = schemas.AccessTokenPayload(
+        account_id=auth_session.account_id,
+        created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
+        session_id=auth_session.id,
+    )
+    refresh_token = schemas.RefreshTokenPayload(
+        account_id=auth_session.account_id,
+        created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
+        session_id=auth_session.id,
+    )
     return CreateSessionResponse.model_validate(
         {
             "session": auth_session,
@@ -50,8 +61,16 @@ async def refresh_tokens(
         raise CannotRefreshTokensError()
 
     auth_session = await current_account.get_session(session, session_id)
-    access_token = schemas.AccessTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
-    refresh_token = schemas.RefreshTokenPayload(account_id=auth_session.account_id, session_id=auth_session.id)
+    access_token = schemas.AccessTokenPayload(
+        account_id=auth_session.account_id,
+        created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
+        session_id=auth_session.id,
+    )
+    refresh_token = schemas.RefreshTokenPayload(
+        account_id=auth_session.account_id,
+        created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
+        session_id=auth_session.id,
+    )
     return RefreshTokensResponse(access_token=access_token.encode(), refresh_token=refresh_token.encode())
 
 

@@ -18,6 +18,9 @@ cat > $ENV_FILE << EOF
 BUILDX_CACHE_DEST="/tmp/.buildx-cache-new"
 BUILDX_CACHE_SRC="/tmp/.buildx-cache"
 
+DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION="1"
+DAYS_BEFORE_REFRESH_TOKEN_EXPIRATION="60"
+
 # Minio related variables are not used for envs/ci/db checks
 # because we don't need to connect to minio to check db-related stuff.
 # But these variables are required by the application config.

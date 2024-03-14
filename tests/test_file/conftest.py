@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from io import BytesIO
 from uuid import UUID
 
@@ -69,11 +69,7 @@ def minio_with_one_file(minio_empty):
 async def access_token():
     payload = {
         "account_id": 1,
-        "expires_at": (
-            (
-                datetime.now(tz=timezone.utc) + timedelta(days=CONFIG.DAYS_BEFORE_ACCESS_TOKEN_EXPIRATION)
-            ).strftime(DATETIME_FORMAT)
-        ),
+        "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
         "session_id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
     }
     return jwt.encode(payload, CONFIG.SECRET_KEY, "HS256")
