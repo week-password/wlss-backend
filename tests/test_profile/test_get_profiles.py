@@ -28,3 +28,12 @@ async def test_get_profiles_returns_correct_response(f):
             },
         ],
     }
+
+
+@pytest.mark.anyio
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_three_profiles"})
+async def test_get_profiles_without_account_ids_returns_correct_response(f):
+    result = await f.api.profile.get_profiles(account_ids=[], token=f.access_token)
+
+    assert isinstance(result, GetProfilesResponse)
+    assert result.model_dump() == {"profiles": []}

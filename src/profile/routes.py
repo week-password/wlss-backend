@@ -71,8 +71,8 @@ async def update_profile(
     summary="Get profiles.",
 )
 async def get_profiles(
-    account_ids: Annotated[list[IdField], Query(example=[42, 18], alias="account_id")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    account_ids: Annotated[list[IdField], Query(example=[42, 18], alias="account_id")] = [],  # noqa; B006
     session: AsyncSession = Depends(get_session),
 ) -> GetProfilesResponse:
     return await controllers.get_profiles(account_ids, current_account, session)
