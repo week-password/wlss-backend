@@ -16,6 +16,7 @@ from src.friendship.exceptions import (
     CannotCancelFriendshipRequest,
     CannotCreateFriendshipRequest,
     CannotDeleteFriendship,
+    CannotGetFriendshipRequests,
     CannotRejectFriendshipRequest,
 )
 from src.friendship.models import FriendshipRequest
@@ -69,7 +70,7 @@ async def accept_friendship_request(
     session: AsyncSession,
 ) -> AcceptFriendshipRequestResponse:
     friendship_request = await FriendshipRequest.get(session, request_id)
-    if friendship_request.sender_id != current_account.id:
+    if friendship_request.receiver_id != current_account.id:
         raise CannotAcceptFriendshipRequest()
     friendships = await friendship_request.accept(session)
     return AcceptFriendshipRequestResponse.model_validate({"friendships": friendships}, from_attributes=True)
@@ -81,7 +82,7 @@ async def reject_friendship_request(
     session: AsyncSession,
 ) -> RejectFriendshipRequestResponse:
     friendship_request = await FriendshipRequest.get(session, request_id)
-    if friendship_request.sender_id != current_account.id:
+    if friendship_request.receiver_id != current_account.id:
         raise CannotRejectFriendshipRequest()
     await friendship_request.reject(session)
     return RejectFriendshipRequestResponse.model_validate(friendship_request, from_attributes=True)
@@ -89,9 +90,11 @@ async def reject_friendship_request(
 
 async def get_friendship_requests(
     account_id: Id,
-    current_account: Account,  # noqa: ARG001
+    current_account: Account,
     session: AsyncSession,
 ) -> GetFriendshipRequestsResponse:
+    if account_id != current_account.id:
+        raise CannotGetFriendshipRequests()
     account = await Account.get(session, account_id)
     friendship_requests = await account.get_friendship_requests(session)
     return GetFriendshipRequestsResponse.model_validate({"requests": friendship_requests}, from_attributes=True)

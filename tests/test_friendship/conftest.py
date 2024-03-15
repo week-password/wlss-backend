@@ -42,6 +42,11 @@ async def db_with_two_accounts(db_empty):
         account_id=Id(1),
     )
     session.add(auth_session)
+    auth_session = Session(
+        id=UUID("f83a7e2b-7f2d-4e12-be41-513d950e54d9"),
+        account_id=Id(2),
+    )
+    session.add(auth_session)
     await session.flush()
 
     profiles = [

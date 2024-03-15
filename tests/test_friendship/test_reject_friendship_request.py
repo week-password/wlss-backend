@@ -17,7 +17,11 @@ from tests.utils.mocks.models import __eq__
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_friendship_request"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_friendship_request_from_another_user",
+})
 async def test_reject_friendship_request_returns_correct_response(f):
     result = await f.api.friendship.reject_friendship_request(request_id=Id(1), token=f.access_token)
 
@@ -25,14 +29,18 @@ async def test_reject_friendship_request_returns_correct_response(f):
     assert result.model_dump() == {
         "id": dirty_equals.IsInt,
         "created_at": IsUtcDatetimeSerialized,
-        "receiver_id": 2,
-        "sender_id": 1,
+        "receiver_id": 1,
+        "sender_id": 2,
         "status": FriendshipRequestStatus.REJECTED,
     }
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_friendship_request"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_friendship_request_from_another_user",
+})
 async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
     await f.api.friendship.reject_friendship_request(request_id=Id(1), token=f.access_token)
 
@@ -42,8 +50,8 @@ async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
             FriendshipRequest(
                 id=Id(1),
                 created_at=IsUtcDatetime,
-                sender_id=Id(1),
-                receiver_id=Id(2),
+                sender_id=Id(2),
+                receiver_id=Id(1),
                 status=FriendshipRequestStatus.REJECTED,
                 updated_at=IsUtcDatetime,
             ),
@@ -54,7 +62,7 @@ async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
 @pytest.mark.fixtures({
     "access_token": "access_token",
     "api": "api",
-    "db": "db_with_friendship_request_from_another_user",
+    "db": "db_with_one_friendship_request",
 })
 async def test_reject_friendship_request_with_friendship_request_from_another_user_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

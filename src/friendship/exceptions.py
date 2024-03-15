@@ -37,6 +37,14 @@ class CannotDeleteFriendship(NotAllowedException):
     status_code = status.HTTP_403_FORBIDDEN
 
 
+class CannotGetFriendshipRequests(NotAllowedException):
+    action = "Get friendship requests."
+
+    description = "Requested action not allowed."
+    details = "Provided tokens or credentials don't grant you enough access rights."
+    status_code = status.HTTP_403_FORBIDDEN
+
+
 class CannotRejectFriendshipRequest(NotAllowedException):
     action = "Reject friendship request."
 
