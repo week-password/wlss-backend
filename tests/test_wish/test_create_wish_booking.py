@@ -33,6 +33,29 @@ async def test_create_wish_booking_returns_correct_response(f):
 
 
 @pytest.mark.anyio
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_two_friend_accounts_and_one_wish_booking",
+})
+async def test_create_wish_booking_with_already_booked_with_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.wish.create_wish_booking(
+            account_id=Id(2),
+            wish_id=Id(1),
+            token=f.access_token,
+            request_data=CreateWishBookingRequest.model_validate({"account_id": 1, "wish_id": 1}),
+        )
+
+    assert exc_info.value.response.status_code == 400
+    assert exc_info.value.response.json() == {
+        "action": "Create wish booking.",
+        "description": "Wish booking already exists.",
+        "details": "Wish already has a booking associated with it.",
+    }
+
+
+@pytest.mark.anyio
 @pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_two_friend_accounts_and_one_wish"})
 async def test_create_wish_booking_creates_objects_in_db_correctly(f):
     result = await f.api.wish.create_wish_booking(  # noqa: F841

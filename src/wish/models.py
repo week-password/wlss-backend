@@ -14,7 +14,7 @@ from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 from src.wish.columns import WishDescriptionColumn, WishTitleColumn
-from src.wish.exceptions import WishBookingNotFoundError
+from src.wish.exceptions import DuplicateWishBookingException, WishBookingNotFoundError
 
 
 if TYPE_CHECKING:
@@ -53,6 +53,10 @@ class Wish(Base):
         return typing.cast(Wish, row.Wish)
 
     async def delete(self: Self, session: AsyncSession) -> None:
+        query = delete(WishBooking).where(WishBooking.wish_id == self.id)
+        await session.execute(query)
+        await session.flush()
+
         avatar_id = self.avatar_id
 
         query = delete(Wish).where(Wish.id == self.id)
@@ -67,13 +71,18 @@ class Wish(Base):
         await session.flush()
 
     async def create_booking(self: Self, session: AsyncSession, new_booking: NewWishBooking) -> WishBooking:
+        query = select(WishBooking).where(WishBooking.wish_id == self.id)
+        rows = (await session.execute(query)).all()
+        if rows:
+            raise DuplicateWishBookingException()
+
         wish_booking = WishBooking(account_id=new_booking.account_id, wish_id=self.id)
         session.add(wish_booking)
         await session.flush()
         return wish_booking
 
     async def get_booking(self: Self, session: AsyncSession, booking_id: Id) -> WishBooking:
-        query = select(WishBooking).where((WishBooking.id == booking_id) & (WishBooking.id == self.id))
+        query = select(WishBooking).where((WishBooking.id == booking_id) & (WishBooking.wish_id == self.id))
         row = (await session.execute(query)).one_or_none()
         if row is None:
             raise WishBookingNotFoundError()

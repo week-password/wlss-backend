@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import status
 
-from src.shared.exceptions import NotAllowedException, NotFoundException
+from src.shared.exceptions import BadRequestException, NotAllowedException, NotFoundException
 
 
 class CannotCreateWishError(NotAllowedException):
@@ -59,6 +59,13 @@ class CannotUpdateWishError(NotAllowedException):
     description = "Requested action not allowed."
     details = "Provided tokens or credentials don't grant you enough access rights."
     status_code = status.HTTP_403_FORBIDDEN
+
+
+class DuplicateWishBookingException(BadRequestException):
+    action = "Create wish booking."
+
+    description = "Wish booking already exists."
+    details: str = "Wish already has a booking associated with it."
 
 
 class WishNotFoundError(NotFoundException):
