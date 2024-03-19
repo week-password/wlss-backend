@@ -150,7 +150,7 @@ class Account(Base):
         return typing.cast(Profile, row.Profile)
 
     async def get_friendships(self: Self, session: AsyncSession) -> list[Friendship]:
-        query = select(Friendship).where(Friendship.account_id == self.id)
+        query = select(Friendship).where(Friendship.account_id == self.id).order_by(Friendship.created_at.desc())
         rows = (await session.execute(query)).all()
         return [typing.cast(Friendship, row.Friendship) for row in rows]
 
@@ -171,6 +171,7 @@ class Account(Base):
         query = (
             select(FriendshipRequest)
             .where((FriendshipRequest.sender_id == self.id) | (FriendshipRequest.receiver_id == self.id))
+            .order_by(FriendshipRequest.created_at.desc())
         )
         rows = (await session.execute(query)).all()
         return [typing.cast(FriendshipRequest, row.FriendshipRequest) for row in rows]
@@ -194,7 +195,7 @@ class Account(Base):
         return typing.cast(Wish, row.Wish)
 
     async def get_wishes(self: Self, session: AsyncSession) -> list[Wish]:
-        query = select(Wish).where(Wish.account_id == self.id)
+        query = select(Wish).where(Wish.account_id == self.id).order_by(Wish.created_at.desc())
         rows = (await session.execute(query)).all()
         return [typing.cast(Wish, row.Wish) for row in rows]
 

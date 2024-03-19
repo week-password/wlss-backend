@@ -52,6 +52,9 @@ datetime
 # designates files with `.env` extension
 dotenv
 
+# descending
+desc
+
 # development (pylint spellcheck)
 dev
 

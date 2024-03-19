@@ -69,6 +69,18 @@ class Profile(Base):
 
     @staticmethod
     async def search_profiles(session: AsyncSession) -> list[Profile]:
-        query = select(Profile)
+        # yeah, I know, this import is not looking good...
+        # it's here to avoid circular dependency issues
+        # because Account requires Profile and Profile requires Account
+        # +++++++++++++++++++++++++++++++++++++ #
+        from src.account.models import Account  # pylint: disable=cyclic-import,import-outside-toplevel  # noqa: SC100
+        # +++++++++++++++++++++++++++++++++++++ #
+        # it should gone once we refactor code to use
+        # Repositories or QueryBuilders or Aggregates or etc...
+        # and make them to work with db queries.
+        # So models will just contain table definitions,
+        # and querying them will happen in Repository or somewhere
+
+        query = select(Profile).join(Account).order_by(Account.created_at.desc())
         rows = (await session.execute(query)).all()
         return [typing.cast(Profile, row.Profile) for row in rows]

@@ -13,6 +13,7 @@ external = [
     "RST215",
 
     # flake8-spellcheck
+    "SC100",
     "SC200",
 ]
 

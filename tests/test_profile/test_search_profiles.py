@@ -14,10 +14,10 @@ async def test_search_profiles_returns_correct_response(f):
     assert result.model_dump() == {
         "profiles": [
             {
-                "account_id": 1,
+                "account_id": 3,
                 "avatar_id": None,
                 "description": None,
-                "name": "John Doe",
+                "name": "John Bloggs",
             },
             {
                 "account_id": 2,
@@ -26,10 +26,10 @@ async def test_search_profiles_returns_correct_response(f):
                 "name": "John Smith",
             },
             {
-                "account_id": 3,
+                "account_id": 1,
                 "avatar_id": None,
                 "description": None,
-                "name": "John Bloggs",
+                "name": "John Doe",
             },
         ],
     }
