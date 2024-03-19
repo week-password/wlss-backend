@@ -7,16 +7,8 @@ from api.account.dtos import MatchAccountLoginRequest
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
-async def test_match_account_login_returns_correct_response(f):
-    result = await f.api.account.match_account_login(request_data=MatchAccountLoginRequest(login="john_doe"))
-
-    assert result
-
-
-@pytest.mark.anyio
 @pytest.mark.fixtures({"api": "api", "db": "db_empty"})
-async def test_match_account_login_with_nonexistent_account_login_raises_correct_exception(f):
+async def test(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.account.match_account_login(
             request_data=MatchAccountLoginRequest.model_validate({"login": "john_doe"}),
