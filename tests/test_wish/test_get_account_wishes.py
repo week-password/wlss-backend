@@ -17,20 +17,20 @@ async def test_get_account_wishes_returns_correct_response(f):
     assert result.model_dump() == {
         "wishes": [
             {
-                "id": 1,
-                "account_id": 1,
-                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
-                "created_at": IsUtcDatetimeSerialized,
-                "description": "I'm gonna take my horse to the old town road.",
-                "title": "Horse",
-            },
-            {
                 "id": 2,
                 "account_id": 1,
                 "avatar_id": "4b94605b-f5e1-40b1-b9fc-c635c9529e3e",
                 "created_at": IsUtcDatetimeSerialized,
                 "description": "I need some sleep. Time to put the old horse down.",
                 "title": "Sleep",
+            },
+            {
+                "id": 1,
+                "account_id": 1,
+                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
+                "created_at": IsUtcDatetimeSerialized,
+                "description": "I'm gonna take my horse to the old town road.",
+                "title": "Horse",
             },
         ],
     }
