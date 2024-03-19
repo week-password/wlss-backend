@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from api.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileResponse
+from api.profile.dtos import GetProfileResponse, GetProfilesResponse, SearchProfilesResponse, UpdateProfileResponse
 from src.account.models import Account
 from src.profile.models import Profile
 from src.profile.schemas import ProfileUpdate
@@ -45,3 +45,11 @@ async def get_profiles(
 ) -> GetProfilesResponse:
     profiles = await Profile.get_multiple(session, account_ids)
     return GetProfilesResponse.model_validate({"profiles": profiles}, from_attributes=True)
+
+
+async def search_profiles(
+    current_account: Account,  # noqa: ARG001
+    session: AsyncSession,
+) -> SearchProfilesResponse:
+    profiles = await Profile.search_profiles(session)
+    return SearchProfilesResponse.model_validate({"profiles": profiles}, from_attributes=True)

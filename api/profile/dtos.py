@@ -34,3 +34,12 @@ class GetProfilesResponse(Schema):
         avatar_id: UuidField | None = Field(..., example="0b928aaa-521f-47ec-8be5-396650e2a187")
         description: ProfileDescriptionField | None = Field(..., example="Who da heck is John Doe?")
         name: ProfileNameField = Field(..., example="John Doe")
+
+
+class SearchProfilesResponse(Schema):
+    profiles: list[_Profile]
+    class _Profile(Schema):  # noqa: E301
+        account_id: IdField = Field(..., example=42)
+        avatar_id: UuidField | None = Field(..., example="0b928aaa-521f-47ec-8be5-396650e2a187")
+        description: ProfileDescriptionField | None = Field(..., example="Who da heck is John Doe?")
+        name: ProfileNameField = Field(..., example="John Doe")

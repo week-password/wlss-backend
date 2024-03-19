@@ -66,3 +66,9 @@ class Profile(Base):
         query = select(Profile).where(Profile.account_id.in_(account_ids))
         rows = (await session.execute(query)).all()
         return [typing.cast(Profile, row.Profile) for row in rows]
+
+    @staticmethod
+    async def search_profiles(session: AsyncSession) -> list[Profile]:
+        query = select(Profile)
+        rows = (await session.execute(query)).all()
+        return [typing.cast(Profile, row.Profile) for row in rows]

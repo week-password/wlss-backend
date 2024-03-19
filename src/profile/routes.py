@@ -5,7 +5,13 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileRequest, UpdateProfileResponse
+from api.profile.dtos import (
+    GetProfileResponse,
+    GetProfilesResponse,
+    SearchProfilesResponse,
+    UpdateProfileRequest,
+    UpdateProfileResponse,
+)
 from api.shared.fields import IdField
 from src.account.models import Account
 from src.auth.dependencies import get_account_from_access_token
@@ -76,3 +82,22 @@ async def get_profiles(
     session: AsyncSession = Depends(get_session),
 ) -> GetProfilesResponse:
     return await controllers.get_profiles(account_ids, current_account, session)
+
+
+@router.post(
+    "/profiles/search",
+    description="Search profiles info by search query.",
+    responses={
+        status.HTTP_200_OK: {"description": "Search result with profiles returned."},
+        status.HTTP_401_UNAUTHORIZED: shared_swagger.responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_403_FORBIDDEN: shared_swagger.responses[status.HTTP_403_FORBIDDEN],
+        status.HTTP_404_NOT_FOUND: shared_swagger.responses[status.HTTP_404_NOT_FOUND],
+    },
+    status_code=status.HTTP_200_OK,
+    summary="Search profiles.",
+)
+async def search_profiles(
+    current_account: Annotated[Account, Depends(get_account_from_access_token)],
+    session: AsyncSession = Depends(get_session),
+) -> SearchProfilesResponse:
+    return await controllers.search_profiles(current_account, session)

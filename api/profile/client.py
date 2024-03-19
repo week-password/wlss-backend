@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import httpx
 
-from api.profile.dtos import GetProfileResponse, GetProfilesResponse, UpdateProfileResponse
+from api.profile.dtos import GetProfileResponse, GetProfilesResponse, SearchProfilesResponse, UpdateProfileResponse
 
 
 if TYPE_CHECKING:
@@ -52,3 +52,9 @@ class Profile:
         response.raise_for_status()
         assert response.status_code == httpx.codes.OK
         return GetProfilesResponse.model_validate(response.json())
+
+    async def search_profiles(self: Self, token: str) -> SearchProfilesResponse:
+        response = await self._client.post("/profiles/search", headers={"Authorization": f"Bearer {token}"})
+        response.raise_for_status()
+        assert response.status_code == httpx.codes.OK
+        return SearchProfilesResponse.model_validate(response.json())
