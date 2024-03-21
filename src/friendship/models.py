@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 from typing import TYPE_CHECKING
 
-from sqlalchemy import delete, Enum, ForeignKey, select
+from sqlalchemy import and_, delete, Enum, ForeignKey, or_, select
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.shared.types import Id, UtcDatetime
 
@@ -88,7 +88,22 @@ class FriendshipRequest(Base):
         session.add_all(friendships)
         await session.flush()
 
-        await self.delete(session)
+        query = (
+            delete(FriendshipRequest)
+            .where(
+                or_(
+                    and_(
+                        FriendshipRequest.sender_id == self.sender_id,
+                        FriendshipRequest.receiver_id == self.receiver_id,
+                    ),
+                    and_(
+                        FriendshipRequest.sender_id == self.receiver_id,
+                        FriendshipRequest.receiver_id == self.sender_id,
+                    ),
+                ),
+            )
+        )
+        await session.execute(query)
         return friendships
 
     async def reject(self: Self, session: AsyncSession) -> None:
