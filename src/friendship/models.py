@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 from typing import TYPE_CHECKING
 
-from sqlalchemy import and_, delete, Enum, ForeignKey, or_, select
+from sqlalchemy import and_, CheckConstraint, delete, Enum, ForeignKey, or_, select, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.shared.types import Id, UtcDatetime
 
@@ -32,6 +32,10 @@ class Friendship(Base):  # pylint: disable=too-few-public-methods
     created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
     updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
+    __table_args__ = (
+        CheckConstraint("account_id != friend_id", name="account_id__friend_id__differ"),
+    )
+
 
 class FriendshipRequest(Base):
 
@@ -48,6 +52,11 @@ class FriendshipRequest(Base):
         nullable=False,
     )
     updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
+
+    __table_args__ = (
+        CheckConstraint("sender_id != receiver_id", name="sender_id__receiver_id__differ"),
+        UniqueConstraint("sender_id", "receiver_id", name="sender_id__receiver_id__unique_together"),
+    )
 
     @classmethod
     async def create(
