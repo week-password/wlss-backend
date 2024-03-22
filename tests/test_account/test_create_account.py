@@ -88,6 +88,7 @@ async def test_create_account_creates_objects_in_db_correctly(f):
             Profile(
                 account_id=IsId,
                 avatar_id=None,
+                created_at=IsUtcDatetime,
                 description=ProfileDescription("I'm the best guy for your mocks."),
                 name=ProfileName("John Doe"),
                 updated_at=IsUtcDatetime,
@@ -102,6 +103,8 @@ async def test_create_account_creates_objects_in_db_correctly(f):
                 value=b"password-hash",
             ),
         ]
+        assert accounts[0].created_at == profiles[0].created_at == password_hashes[0].created_at
+        assert accounts[0].updated_at == profiles[0].updated_at == password_hashes[0].updated_at
 
 
 @pytest.mark.anyio

@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from src.account.models import Account
     from src.profile import schemas
     from src.profile.schemas import NewProfile
 
@@ -31,17 +32,20 @@ class Profile(Base):
     account_id: Mapped[Id] = mapped_column(ForeignKey("account.id"), primary_key=True)
 
     avatar_id: Mapped[UUID | None] = mapped_column(ForeignKey("file.id"), unique=True)
+    created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
     description: Mapped[ProfileDescription | None] = mapped_column(ProfileDescriptionColumn)
     name: Mapped[ProfileName] = mapped_column(ProfileNameColumn, nullable=False)
     updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     @staticmethod
-    async def create(session: AsyncSession, profile_data: NewProfile, account_id: Id) -> Profile:
+    async def create(session: AsyncSession, profile_data: NewProfile, account: Account) -> Profile:
         """Create new profile object."""
         profile = Profile(
-            account_id=account_id,
+            account_id=account.id,
+            created_at=account.created_at,
             description=profile_data.description,
             name=profile_data.name,
+            updated_at=account.updated_at,
         )
         session.add(profile)
         await session.flush()
@@ -69,18 +73,6 @@ class Profile(Base):
 
     @staticmethod
     async def search_profiles(session: AsyncSession) -> list[Profile]:
-        # yeah, I know, this import is not looking good...
-        # it's here to avoid circular dependency issues
-        # because Account requires Profile and Profile requires Account
-        # +++++++++++++++++++++++++++++++++++++ #
-        from src.account.models import Account  # pylint: disable=cyclic-import,import-outside-toplevel  # noqa: SC100
-        # +++++++++++++++++++++++++++++++++++++ #
-        # it should gone once we refactor code to use
-        # Repositories or QueryBuilders or Aggregates or etc...
-        # and make them to work with db queries.
-        # So models will just contain table definitions,
-        # and querying them will happen in Repository or somewhere
-
-        query = select(Profile).join(Account).order_by(Account.created_at.desc())
+        query = select(Profile).order_by(Profile.created_at.desc())
         rows = (await session.execute(query)).all()
         return [typing.cast(Profile, row.Profile) for row in rows]

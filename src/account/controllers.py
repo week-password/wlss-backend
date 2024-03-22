@@ -22,9 +22,9 @@ async def create_account(request_data: CreateAccountRequest, session: AsyncSessi
     account = await Account.create(session, new_account)
 
     new_profile = NewProfile.from_(request_data.profile)
-    profile = await Profile.create(session, new_profile, account_id=account.id)
+    profile = await Profile.create(session, new_profile, account=account)
 
-    await PasswordHash.create(session, request_data.account.password, account_id=account.id)
+    await PasswordHash.create(session, request_data.account.password, account=account)
     return CreateAccountResponse.model_validate({"account": account, "profile": profile}, from_attributes=True)
 
 

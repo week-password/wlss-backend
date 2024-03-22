@@ -225,9 +225,14 @@ class PasswordHash(Base):
     value: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
 
     @staticmethod
-    async def create(session: AsyncSession, password: AccountPassword, account_id: Id) -> PasswordHash:
+    async def create(session: AsyncSession, password: AccountPassword, account: Account) -> PasswordHash:
         hash_value = PasswordHash._generate_hash(password)
-        password_hash = PasswordHash(value=hash_value, account_id=account_id)
+        password_hash = PasswordHash(
+            value=hash_value,
+            account_id=account.id,
+            created_at=account.created_at,
+            updated_at=account.updated_at,
+        )
         session.add(password_hash)
         await session.flush()
         return password_hash

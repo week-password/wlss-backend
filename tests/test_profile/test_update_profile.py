@@ -56,6 +56,7 @@ async def test_update_profile_updates_profile_in_db_correctly(f):
             Profile(
                 account_id=Id(1),
                 avatar_id=UUID("2b41c87b-6f06-438b-9933-2a1568cc593b"),
+                created_at=IsUtcDatetime,
                 description=ProfileDescription("Updated description."),
                 name=ProfileName("Updated name."),
                 updated_at=IsUtcDatetime,
