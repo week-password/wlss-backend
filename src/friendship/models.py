@@ -64,6 +64,13 @@ class FriendshipRequest(Base):
         session: AsyncSession,
         new_friendship_request: NewFriendshipRequest,
     ) -> FriendshipRequest:
+        query = delete(FriendshipRequest).where(
+            FriendshipRequest.receiver_id == new_friendship_request.receiver_id,
+            FriendshipRequest.sender_id == new_friendship_request.sender_id,
+        )
+        await session.execute(query)
+        await session.flush()
+
         friendship_request = FriendshipRequest(
             receiver_id=new_friendship_request.receiver_id,
             sender_id=new_friendship_request.sender_id,
