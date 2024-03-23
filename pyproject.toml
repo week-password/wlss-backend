@@ -20,7 +20,7 @@ python = "~3.11"
 
 httpx = "^0.24.0"
 pydantic = "^2.5.3"
-wlss = {git = "https://github.com/week-password/wlss-backend-lib.git", rev = "ea9c10fab7f3e89b5a9da981a2d153a6729bbc4a"}
+wlss = {git = "https://github.com/week-password/wlss-backend-lib.git", rev = "b92ffd515451215501cc08b9ecb15433466262d0"}
 
 
 [tool.poetry.group.app]
