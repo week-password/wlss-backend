@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
@@ -23,7 +25,8 @@ async def db_with_one_account(db_empty):
     session.add(account)
     await session.flush()
 
-    hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
+    byte_password = base64.b64encode(hashlib.sha256(b"qwerty123").digest())
+    hash_value = bcrypt_cached.hashpw(byte_password, salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
     password_hash = PasswordHash(account_id=Id(1), value=hash_value)
     session.add(password_hash)
     await session.flush()

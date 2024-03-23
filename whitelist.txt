@@ -34,6 +34,9 @@ autoincrement
 # auto use (from pytest library)
 autouse
 
+# base64 encoding
+base64
+
 # library for password hashing
 bcrypt
 

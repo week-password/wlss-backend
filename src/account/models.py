@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import typing
 from typing import TYPE_CHECKING
 
@@ -240,9 +242,21 @@ class PasswordHash(Base):
     @staticmethod
     def _generate_hash(password: AccountPassword) -> bytes:
         salt = bcrypt.gensalt()
-        byte_password = password.value.encode("utf-8")
+        byte_password = PasswordHash._encode_password(password)
         return bcrypt.hashpw(byte_password, salt)
 
+    @staticmethod
+    def _encode_password(password: AccountPassword) -> bytes:
+        # This approach is used instead of just password.encode()
+        # because bcrypt is able to hash only password up to 72 characters
+        # all characters beyond will be ignored by bcrypt.
+        # So approach allows us to shorten input string via hashlib.sha256()
+        # and base64.b64encode() is used to prevent NULL bytes
+        # before hashing the result with bcrypt.
+        byte_password = password.value.encode("utf-8")
+        return base64.b64encode(hashlib.sha256(byte_password).digest())
+
     async def check_password(self: Self, password: AccountPassword) -> None:
-        if not bcrypt.checkpw(password.value.encode("utf-8"), self.value):
+        byte_password = self._encode_password(password)
+        if not bcrypt.checkpw(byte_password, self.value):
             raise AccountNotFoundError()
