@@ -2450,8 +2450,8 @@ typing-extensions = "^4.5.0"
 [package.source]
 type = "git"
 url = "https://github.com/week-password/wlss-backend-lib.git"
-reference = "e2c11e344d096579e2582c45fb08007195ebcc8d"
-resolved_reference = "e2c11e344d096579e2582c45fb08007195ebcc8d"
+reference = "ea9c10fab7f3e89b5a9da981a2d153a6729bbc4a"
+resolved_reference = "ea9c10fab7f3e89b5a9da981a2d153a6729bbc4a"
 
 [[package]]
 name = "wrapt"
@@ -2541,4 +2541,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "67f6f90bbfea589541d7fa11957ffa308b524ab8c3c78c5daa3d8aeb9d2ae35a"
+content-hash = "0f7587f3bc2eac7543a11c3703e6e2763287db4ec53abc62fb2e0a3f43f4a52d"

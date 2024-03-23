@@ -7,7 +7,7 @@ from uuid import UUID
 import jwt
 import pytest
 from wlss.account.types import AccountEmail, AccountLogin
-from wlss.file.types import FileSize
+from wlss.file.types import FileName, FileSize
 from wlss.shared.types import Id
 
 from api.file.enums import Extension, MimeType
@@ -48,7 +48,7 @@ async def db_with_one_file(db_with_one_account_and_one_session):  # pylint: disa
         id=UUID("4c8a2c85-0fe3-4ab0-b683-96bb1805d370"),
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
-        name="image.png",
+        name=FileName("image.png"),
         size=FileSize(17),
     )
     session.add(file)

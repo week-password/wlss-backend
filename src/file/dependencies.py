@@ -7,6 +7,7 @@ from typing import Annotated, TYPE_CHECKING
 from fastapi import Depends, File, UploadFile
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
+from wlss.file.types import FileName
 
 from api.file.constants import EOF_BYTE, MAX_SIZE, MEGABYTE
 from api.file.dtos import CreateFileRequest
@@ -36,7 +37,7 @@ async def get_new_file(
         yield CreateFileRequest(
             extension=extension,
             mime_type=file_request.content_type,
-            name=str(filename),
+            name=FileName(str(filename)),
             size=size,
             tmp_file_path=file_path,
         )

@@ -6,7 +6,7 @@ from uuid import UUID
 import jwt
 import pytest
 from wlss.account.types import AccountEmail, AccountLogin
-from wlss.file.types import FileSize
+from wlss.file.types import FileName, FileSize
 from wlss.shared.types import Id
 from wlss.wish.types import WishDescription, WishTitle
 
@@ -42,7 +42,7 @@ async def db_with_one_account_and_one_file(db_empty):
         id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
-        name="image.png",
+        name=FileName("image.png"),
         size=FileSize(17),
     )
     session.add(file)
@@ -92,7 +92,7 @@ async def db_with_two_files_and_one_wish(db_with_one_wish):  # pylint: disable=r
         id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
-        name="new_image.png",
+        name=FileName("new_image.png"),
         size=FileSize(17),
     )
     session.add(file)
@@ -197,7 +197,7 @@ async def db_with_two_accounts_and_two_wishes(  # pylint: disable=redefined-oute
         id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
-        name="new_image.png",
+        name=FileName("new_image.png"),
         size=FileSize(17),
     )
     session.add(file)

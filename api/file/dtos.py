@@ -6,14 +6,14 @@ from fastapi.responses import FileResponse
 from pydantic import Field
 
 from api.file.enums import Extension, MimeType
-from api.file.fields import FileSizeField
+from api.file.fields import FileNameField, FileSizeField
 from api.shared.fields import UuidField
 from api.shared.schemas import Schema
 
 
 class CreateFileRequest(Schema):
     extension: Extension = Field(..., example="png")
-    name: str = Field(..., example="image.png")
+    name: FileNameField = Field(..., example="image.png")
     mime_type: MimeType = Field(..., example="image/png")
     size: FileSizeField = Field(..., example=2048)
     tmp_file_path: Path

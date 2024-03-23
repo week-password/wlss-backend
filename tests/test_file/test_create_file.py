@@ -8,7 +8,7 @@ import dirty_equals
 import httpx
 import pytest
 from sqlalchemy import select
-from wlss.file.types import FileSize
+from wlss.file.types import FileName, FileSize
 
 from api.file.dtos import CreateFileRequest, CreateFileResponse
 from api.file.enums import Extension, MimeType
@@ -81,7 +81,7 @@ async def test_create_file_creates_file_in_db_correctly(f):
                 id=dirty_equals.IsUUID(4),
                 extension=Extension.PNG,
                 mime_type=MimeType.IMAGE_PNG,
-                name="image.png",
+                name=FileName("image.png"),
                 size=FileSize(17),
                 updated_at=IsUtcDatetime,
             ),

@@ -6,7 +6,7 @@ from uuid import UUID
 import jwt
 import pytest
 from wlss.account.types import AccountEmail, AccountLogin
-from wlss.file.types import FileSize
+from wlss.file.types import FileName, FileSize
 from wlss.profile.types import ProfileName
 from wlss.shared.types import Id
 
@@ -51,7 +51,7 @@ async def db_with_one_profile_and_one_file(db_empty):
         id=UUID("2b41c87b-6f06-438b-9933-2a1568cc593b"),
         extension=Extension.PNG,
         mime_type=MimeType.IMAGE_PNG,
-        name="image.png",
+        name=FileName("image.png"),
         size=FileSize(42),
     )
     session.add(file)

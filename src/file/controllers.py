@@ -58,7 +58,7 @@ async def get_file(
         CONFIG.MINIO_ROOT_USER,
         CONFIG.MINIO_ROOT_PASSWORD,
     )
-    file_path = tmp_dir / file.name
+    file_path = tmp_dir / file.name.value
     minio.download_file(file.id, file_path)
 
     background_tasks.add_task(shutil.rmtree, tmp_dir)

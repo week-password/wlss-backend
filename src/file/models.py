@@ -4,14 +4,14 @@ import typing
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, select, String, UUID
+from sqlalchemy import Enum, select, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-from wlss.file.types import FileSize
+from wlss.file.types import FileName, FileSize
 from wlss.shared.types import UtcDatetime
 
 from api.file.enums import Extension, MimeType
 from src.file import exceptions
-from src.file.columns import FileSizeColumn
+from src.file.columns import FileNameColumn, FileSizeColumn
 from src.shared.columns import UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
@@ -32,7 +32,7 @@ class File(Base):
     created_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False)
     extension: Mapped[Extension] = mapped_column(Enum(Extension, name="extension_enum"), nullable=False)
     mime_type: Mapped[MimeType] = mapped_column(Enum(MimeType, name="mime_type_enum"), nullable=False)
-    name: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[FileName] = mapped_column(FileNameColumn, nullable=False)
     size: Mapped[FileSize] = mapped_column(FileSizeColumn, nullable=False)
     updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 

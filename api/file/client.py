@@ -26,7 +26,7 @@ class File:
             response = await self._client.post(
                 "/files",
                 headers={"Authorization": f"Bearer {token}"},
-                files={"file": (request_data.name, f, request_data.mime_type.value)},
+                files={"file": (request_data.name.value, f, request_data.mime_type.value)},
             )
 
         response.raise_for_status()
