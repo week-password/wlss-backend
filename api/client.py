@@ -19,8 +19,13 @@ if TYPE_CHECKING:
 
 
 class Api:
-    def __init__(self: Self, app: Callable[..., Any] | None = None, base_url: str = "") -> None:
-        self._client = httpx.AsyncClient(app=app, base_url=base_url)
+    def __init__(
+        self: Self,
+        app: Callable[..., Any] | None = None,
+        base_url: str = "",
+        timeout: httpx.Timeout = httpx.Timeout(30),  # noqa: B008
+    ) -> None:
+        self._client = httpx.AsyncClient(app=app, base_url=base_url, timeout=timeout)
 
     async def __aenter__(self: Self) -> Client:
         return Client(await self._client.__aenter__())
