@@ -7,6 +7,7 @@ import jwt
 import pytest
 from wlss.account.types import AccountEmail, AccountLogin
 from wlss.file.types import FileName, FileSize
+from wlss.profile.types import ProfileName
 from wlss.shared.types import Id
 from wlss.wish.types import WishDescription, WishTitle
 
@@ -17,6 +18,7 @@ from src.auth.models import Session
 from src.config import CONFIG
 from src.file.models import File
 from src.friendship.models import Friendship
+from src.profile.models import Profile
 from src.wish.models import Wish, WishBooking
 from tests.utils import bcrypt as bcrypt_cached
 
@@ -47,6 +49,34 @@ async def db_with_one_account_and_one_file(db_empty):
     )
     session.add(file)
     await session.flush()
+
+    await session.commit()
+    return session
+
+
+@pytest.fixture
+async def db_with_one_account_and_one_file_already_in_use(db_empty):
+    session = db_empty
+
+    hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
+    session.add_all([
+        Account(id=Id(1), email=AccountEmail("john.doe@mail.com"), login=AccountLogin("john_doe")),
+        PasswordHash(account_id=Id(1), value=hash_value),
+        Profile(
+            account_id=Id(1),
+            avatar_id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
+            description=None,
+            name=ProfileName("John Doe"),
+        ),
+        Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1)),
+        File(
+            id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
+            extension=Extension.PNG,
+            mime_type=MimeType.IMAGE_PNG,
+            name=FileName("image.png"),
+            size=FileSize(17),
+        ),
+    ])
 
     await session.commit()
     return session
@@ -98,6 +128,45 @@ async def db_with_two_files_and_one_wish(db_with_one_wish):  # pylint: disable=r
     session.add(file)
     await session.flush()
 
+    await session.commit()
+    return session
+
+
+@pytest.fixture
+async def db_with_one_wish_and_one_file_already_in_use(db_empty):
+    session = db_empty
+    session.add_all([
+        Account(
+            id=Id(1),
+            email=AccountEmail("john.doe@mail.com"),
+            login=AccountLogin("john_doe"),
+        ),
+        Profile(
+            account_id=Id(1),
+            avatar_id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
+            description=None,
+            name=ProfileName("John Doe"),
+        ),
+        Session(
+            id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
+            account_id=Id(1),
+        ),
+        File(
+            id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
+            extension=Extension.PNG,
+            mime_type=MimeType.IMAGE_PNG,
+            name=FileName("image.png"),
+            size=FileSize(42),
+        ),
+
+        Wish(
+            id=Id(1),
+            account_id=Id(1),
+            avatar_id=None,
+            description=WishDescription("I'm gonna take my horse to the old town road."),
+            title=WishTitle("Horse"),
+        ),
+    ])
     await session.commit()
     return session
 

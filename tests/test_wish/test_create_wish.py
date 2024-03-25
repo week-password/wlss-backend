@@ -70,6 +70,56 @@ async def test_create_wish_creates_objects_in_db_correctly(f):
 
 
 @pytest.mark.anyio
+@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_account_and_one_file"})
+async def test_create_wish_without_avatar_id_returns_correct_response(f):
+    result = await f.api.wish.create_wish(
+        account_id=Id(1),
+        token=f.access_token,
+        request_data=CreateWishRequest.model_validate({
+            "title": "Horse",
+            "description": "I'm gonna take my horse to the old town road.",
+            "avatar_id": None,
+        }),
+    )
+
+    assert isinstance(result, CreateWishResponse)
+    assert result.model_dump() == {
+        "id": dirty_equals.IsInt,
+        "account_id": 1,
+        "avatar_id": None,
+        "created_at": IsUtcDatetimeSerialized,
+        "description": "I'm gonna take my horse to the old town road.",
+        "title": "Horse",
+    }
+
+
+@pytest.mark.anyio
+@pytest.mark.fixtures({
+    "access_token": "access_token",
+    "api": "api",
+    "db": "db_with_one_account_and_one_file_already_in_use",
+})
+async def test_create_wish_with_file_already_in_use_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.wish.create_wish(
+            account_id=Id(1),
+            token=f.access_token,
+            request_data=CreateWishRequest.model_validate({
+                "title": "Horse",
+                "description": "I'm gonna take my horse to the old town road.",
+                "avatar_id": "0b928aaa-521f-47ec-8be5-396650e2a187",
+            }),
+        )
+
+    assert exc_info.value.response.status_code == 400
+    assert exc_info.value.response.json() == {
+        "action": "Use file",
+        "description": "Request is not correct.",
+        "details": "Request contains file that is already in use in somewhere else.",
+    }
+
+
+@pytest.mark.anyio
 @pytest.mark.fixtures({"access_token": "access_token", "api": "api", "db": "db_with_two_accounts_and_one_file"})
 async def test_create_wish_with_another_account_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

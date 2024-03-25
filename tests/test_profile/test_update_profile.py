@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import patch
 from uuid import UUID
 
+import httpx
 import pytest
 from sqlalchemy import select
 from wlss.profile.types import ProfileDescription, ProfileName
@@ -62,3 +63,29 @@ async def test_update_profile_updates_profile_in_db_correctly(f):
                 updated_at=IsUtcDatetime,
             ),
         ]
+
+
+@pytest.mark.anyio
+@pytest.mark.fixtures({
+    "api": "api",
+    "db": "db_with_one_profile_and_one_file_already_in_use",
+    "access_token": "access_token",
+})
+async def test_update_profile_with_file_already_in_use_raises_correct_exception(f):
+    with pytest.raises(httpx.HTTPError) as exc_info:
+        await f.api.profile.update_profile(
+            account_id=Id(1),
+            request_data=UpdateProfileRequest.model_validate({
+                "avatar_id": "2b41c87b-6f06-438b-9933-2a1568cc593b",
+                "description": "Updated description.",
+                "name": "Updated name.",
+            }),
+            token=f.access_token,
+        )
+
+    assert exc_info.value.response.status_code == 400
+    assert exc_info.value.response.json() == {
+        "action": "Use file",
+        "description": "Request is not correct.",
+        "details": "Request contains file that is already in use in somewhere else.",
+    }

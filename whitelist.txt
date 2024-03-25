@@ -195,6 +195,9 @@ src
 # standard library
 stdlib
 
+# multiple sub-queries
+subqueries
+
 # table name
 tablename
 

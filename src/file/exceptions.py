@@ -2,7 +2,15 @@ from __future__ import annotations
 
 from fastapi import status
 
-from src.shared.exceptions import NotFoundException, TooLargeException
+from src.shared.exceptions import BadRequestException, NotFoundException, TooLargeException
+
+
+class FileAlreadyInUse(BadRequestException):
+    action: str = "Use file"
+
+    description = "Request is not correct."
+    details = "Request contains file that is already in use in somewhere else."
+    status_code = status.HTTP_400_BAD_REQUEST
 
 
 class FileNotFoundError(NotFoundException):  # noqa: A001

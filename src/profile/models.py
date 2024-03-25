@@ -9,6 +9,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from wlss.profile.types import ProfileDescription, ProfileName
 from wlss.shared.types import Id, UtcDatetime
 
+from src.file.exceptions import FileAlreadyInUse
+from src.file.models import File
 from src.profile.columns import ProfileDescriptionColumn, ProfileNameColumn
 from src.shared.columns import UtcDatetimeColumn
 from src.shared.database import Base
@@ -52,6 +54,12 @@ class Profile(Base):
         return profile
 
     async def update(self: Self, session: AsyncSession, profile_update: schemas.ProfileUpdate) -> Profile:
+        if (
+            self.avatar_id != profile_update.avatar_id
+            and await File.is_already_in_use(session, profile_update.avatar_id)
+        ):
+            raise FileAlreadyInUse()
+
         query = (
             update(Profile)
             .where(Profile.account_id == self.account_id)

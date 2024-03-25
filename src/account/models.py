@@ -15,6 +15,8 @@ from src.account.columns import AccountEmailColumn, AccountLoginColumn
 from src.account.exceptions import AccountNotFoundError, DuplicateAccountException
 from src.auth.exceptions import SessionNotFoundError
 from src.auth.models import Session
+from src.file.exceptions import FileAlreadyInUse
+from src.file.models import File
 from src.friendship.models import Friendship, FriendshipRequest
 from src.profile.models import Profile
 from src.shared.columns import IdColumn, UtcDatetimeColumn
@@ -179,6 +181,9 @@ class Account(Base):
         return [typing.cast(FriendshipRequest, row.FriendshipRequest) for row in rows]
 
     async def create_wish(self: Self, session: AsyncSession, new_wish: schemas.NewWish) -> Wish:
+        if await File.is_already_in_use(session, new_wish.avatar_id):
+            raise FileAlreadyInUse()
+
         wish = Wish(
             account_id=self.id,
             avatar_id=new_wish.avatar_id,

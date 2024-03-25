@@ -4,7 +4,7 @@ import typing
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, select, UUID
+from sqlalchemy import Enum, select, text, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from wlss.file.types import FileName, FileSize
 from wlss.shared.types import UtcDatetime
@@ -18,6 +18,7 @@ from src.shared.datetime import utcnow
 
 
 if TYPE_CHECKING:
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from src.file.schemas import NewFile
@@ -55,3 +56,40 @@ class File(Base):
         if row is None:
             raise exceptions.FileNotFoundError()
         return typing.cast(File, row.File)
+
+    @classmethod
+    async def is_already_in_use(cls: type[File], session: AsyncSession, file_id: uuid.UUID | None) -> bool:
+        if file_id is None:
+            return False
+
+        query = text("""
+            SELECT
+                conrelid::regclass AS referencing_table,
+                a.attname AS foreign_key_column
+            FROM
+                pg_constraint AS c
+            JOIN
+                pg_attribute AS a ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
+            WHERE
+                confrelid = 'public.file'::regclass
+            ;
+        """)
+        rows = (await session.execute(query)).all()
+
+        subqueries = []
+        for table_name, column_name in rows:
+            subqueries.append(
+                f"""
+                    (
+                        SELECT
+                            {table_name}.{column_name} AS file_id
+                        FROM
+                            {table_name}
+                        WHERE
+                            {table_name}.{column_name} = :current_file_id
+                    )
+                """,
+            )
+        query = text(" UNION ALL ".join(subqueries))
+        rows = (await session.execute(query, params={"current_file_id": file_id})).all()
+        return len(rows) > 0  # pylint: disable=compare-to-zero

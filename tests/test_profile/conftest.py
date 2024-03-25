@@ -62,6 +62,52 @@ async def db_with_one_profile_and_one_file(db_empty):
 
 
 @pytest.fixture
+async def db_with_one_profile_and_one_file_already_in_use(db_empty):
+    session = db_empty
+
+    session.add_all([
+        Account(
+            id=Id(1),
+            email=AccountEmail("john.doe@mail.com"),
+            login=AccountLogin("john_doe"),
+        ),
+        Profile(
+            account_id=Id(1),
+            avatar_id=None,
+            description=None,
+            name=ProfileName("John Doe"),
+        ),
+        Session(
+            id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
+            account_id=Id(1),
+        ),
+
+
+        Account(
+            id=Id(2),
+            email=AccountEmail("john.smith@mail.com"),
+            login=AccountLogin("john_smith"),
+        ),
+        Profile(
+            account_id=Id(2),
+            avatar_id=UUID("2b41c87b-6f06-438b-9933-2a1568cc593b"),
+            description=None,
+            name=ProfileName("John Smith"),
+        ),
+        File(
+            id=UUID("2b41c87b-6f06-438b-9933-2a1568cc593b"),
+            extension=Extension.PNG,
+            mime_type=MimeType.IMAGE_PNG,
+            name=FileName("image.png"),
+            size=FileSize(42),
+        ),
+    ])
+
+    await session.commit()
+    return session
+
+
+@pytest.fixture
 async def db_with_three_profiles(db_with_one_profile_and_one_file):  # pylint: disable=redefined-outer-name
     session = db_with_one_profile_and_one_file
 
