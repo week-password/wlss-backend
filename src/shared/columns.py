@@ -19,6 +19,7 @@ T = TypeVar("T")
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class TypeColumn(types.TypeDecorator[Type[T]]):
+    cache_ok = True
     type_: type[Type[T]]
 
     def process_bind_param(self: Self, value: Any | None, _: Dialect) -> T | None:  # noqa: SC200
@@ -36,22 +37,26 @@ class TypeColumn(types.TypeDecorator[Type[T]]):
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class PositiveIntColumn(TypeColumn[int]):  # pylint: disable=too-many-ancestors
+    cache_ok = True
     type_ = PositiveInt
     impl = types.Integer()  # noqa: SC200
 
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class IdColumn(PositiveIntColumn):  # pylint: disable=too-many-ancestors
+    cache_ok = True
     type_ = Id
 
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class StrColumn(TypeColumn[str]):  # pylint: disable=too-many-ancestors
+    cache_ok = True
     type_ = Str
     impl = types.String(length=type_.LENGTH_MAX.value if type_.LENGTH_MAX is not None else None)  # noqa: SC200
 
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class UtcDatetimeColumn(TypeColumn[datetime]):  # pylint: disable=too-many-ancestors
+    cache_ok = True
     type_ = UtcDatetime
     impl = types.DateTime(timezone=True)  # noqa: SC200

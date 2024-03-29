@@ -7,9 +7,11 @@ from src.shared.columns import StrColumn
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class AccountEmailColumn(StrColumn):
+    cache_ok = True
     type_ = AccountEmail
 
 
 # pylint: disable-next=abstract-method,too-many-ancestors
 class AccountLoginColumn(StrColumn):
+    cache_ok = True
     type_ = AccountLogin
