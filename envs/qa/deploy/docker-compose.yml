@@ -20,6 +20,21 @@ services:
         gunicorn --config=envs/qa/deploy/gunicorn/config.py
       "
 
+  scheduler:
+    build:
+      context: ../../..  # path from the corrent file to the project root dir
+      dockerfile: envs/qa/deploy/Dockerfile  # path from the project root dir to the Dockerfile
+    environment:
+      - WLSS_ENV=qa/deploy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - .env:/wlss-backend/envs/qa/deploy/.env
+    entrypoint: python -m src.scheduler
+
   postgres:
     image: postgres:16.0-alpine
     env_file:

@@ -9,8 +9,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from wlss.shared.types import Id, UtcDatetime
 from wlss.wish.types import WishDescription, WishTitle
 
-from src.file.exceptions import FileAlreadyInUse
-from src.file.models import File
 from src.shared.columns import IdColumn, UtcDatetimeColumn
 from src.shared.database import Base
 from src.shared.datetime import utcnow
@@ -40,12 +38,6 @@ class Wish(Base):
     updated_at: Mapped[UtcDatetime] = mapped_column(UtcDatetimeColumn, default=utcnow, nullable=False, onupdate=utcnow)
 
     async def update(self: Self, session: AsyncSession, wish_update: WishUpdate) -> Wish:
-        if (
-            self.avatar_id != wish_update.avatar_id
-            and await File.is_already_in_use(session, wish_update.avatar_id)
-        ):
-            raise FileAlreadyInUse()
-
         query = (
             update(Wish)
             .where(Wish.id == self.id)
@@ -64,17 +56,10 @@ class Wish(Base):
         await session.execute(query)
         await session.flush()
 
-        avatar_id = self.avatar_id
-
         query = delete(Wish).where(Wish.id == self.id)
         await session.execute(query)
         await session.flush()
 
-        if avatar_id is None:
-            return
-
-        query = delete(File).where(File.id == avatar_id)
-        await session.execute(query)
         await session.flush()
 
     async def create_booking(self: Self, session: AsyncSession, new_booking: NewWishBooking) -> WishBooking:

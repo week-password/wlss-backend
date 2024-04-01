@@ -30,6 +30,9 @@ POSTGRES_PASSWORD=""  # provide correct value here
 POSTGRES_PORT="5432"
 POSTGRES_USER=""  # provide correct value here
 
+SCHEDULER_TRIGGER_MINUTES_INTERVAL=""  # provide correct value here
+SCHEDULER_FILE_RETENTION_MINUTES_PERIOD=""  # provide correct value here
+
 SECRET_KEY="keyboardcat"
 EOF
 

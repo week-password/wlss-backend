@@ -1,12 +1,20 @@
 from __future__ import annotations
 
+from unittest.mock import patch
+from uuid import UUID
+
 import httpx
 import pytest
 from sqlalchemy import select
+from wlss.file.types import FileName, FileSize
 from wlss.shared.types import Id
 
+from api.file.enums import Extension, MimeType
 from src.file.models import File
+from src.shared.database import Base
 from src.wish.models import Wish
+from tests.utils.dirty_equals import IsUtcDatetime
+from tests.utils.mocks.models import __eq__
 
 
 @pytest.mark.anyio
@@ -22,10 +30,21 @@ async def test_delete_wish_returns_correct_response(f):
 async def test_delete_wish_deletes_objects_from_db_correctly(f):
     result = await f.api.wish.delete_wish(account_id=Id(1), wish_id=Id(1), token=f.access_token)  # noqa: F841
 
-    wishes = (await f.db.execute(select(Wish))).all()
-    assert wishes == []
-    files = (await f.db.execute(select(File))).all()
-    assert files == []
+    with patch.object(Base, "__eq__", __eq__):
+        wishes = (await f.db.execute(select(Wish))).all()
+        assert wishes == []
+        files = (await f.db.execute(select(File))).scalars().all()
+        assert files == [
+            File(
+                id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
+                extension=Extension.PNG,
+                mime_type=MimeType.IMAGE_PNG,
+                name=FileName("image.png"),
+                size=FileSize(17),
+                created_at=IsUtcDatetime,
+                updated_at=IsUtcDatetime,
+            ),
+        ]
 
 
 @pytest.mark.anyio

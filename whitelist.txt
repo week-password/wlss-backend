@@ -13,6 +13,9 @@ aiter
 # Python library
 anyio
 
+# Advanced Python Scheduler (third-party library)
+apscheduler
+
 # asynchronous read
 aread
 
@@ -126,6 +129,9 @@ kwargs
 
 # same as 127.0.0.1
 localhost
+
+# python package for logging
+loguru
 
 # MinIO service
 minio

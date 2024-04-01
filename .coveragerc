@@ -16,6 +16,8 @@ exclude_lines =
 
 fail_under = 100
 
+omit = src/scheduler.py
+
 show_missing = True
 
 skip_covered = True

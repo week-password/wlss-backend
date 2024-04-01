@@ -35,6 +35,9 @@ class _Config(BaseSettings):
     POSTGRES_PORT: str
     POSTGRES_USER: str
 
+    SCHEDULER_TRIGGER_MINUTES_INTERVAL: int
+    SCHEDULER_FILE_RETENTION_MINUTES_PERIOD: int
+
     SECRET_KEY: str
 
     model_config = SettingsConfigDict(env_file=get_dotenv_path(), extra="allow", frozen=True)

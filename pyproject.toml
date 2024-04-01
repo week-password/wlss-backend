@@ -31,9 +31,11 @@ optional = true
 [tool.poetry.group.app.dependencies]
 
 alembic = {extras = ["tz"], version = "1.10.4"}
+apscheduler = "3.10.4"
 asyncpg = "0.27.0"  # asynchronous postgresql driver used by sqlalchemy
 bcrypt = "4.0.1"  # modern password hashing library
 fastapi = {extras = ["all"], version = "0.109.0" }  # we need "all" at least for uvicorn
+loguru = "0.7.2"
 minio = "7.1.14"
 overrides = "7.3.1"
 psycopg2-binary = "2.9.7"  # used for some special cases when we cannot work with database via async code

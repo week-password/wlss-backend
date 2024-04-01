@@ -59,3 +59,6 @@ class Minio(minio.Minio):  # type: ignore[misc]
 
     def download_file(self: Self, file_id: UUID, file_path: Path) -> None:
         self.fget_object(self.BUCKETS.FILES.value, str(file_id), file_path)
+
+    def delete_file(self: Self, file_id: UUID) -> None:
+        self.remove_object(self.BUCKETS.FILES.value, str(file_id))
