@@ -8,6 +8,6 @@ errorlog = "-"  # here "-" means stdout
 
 worker_class = "uvicorn.workers.UvicornWorker"
 
-workers = 4
+workers = 1
 
 wsgi_app = "src.app:app"
