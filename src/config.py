@@ -40,6 +40,9 @@ class _Config(BaseSettings):
 
     SECRET_KEY: str
 
+    SESSION_STORAGE_HOST: str
+    SESSION_STORAGE_PORT: str
+
     model_config = SettingsConfigDict(env_file=get_dotenv_path(), extra="allow", frozen=True)
 
     @field_validator("*")

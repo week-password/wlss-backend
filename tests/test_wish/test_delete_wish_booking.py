@@ -13,6 +13,7 @@ from src.wish.models import WishBooking
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_delete_wish_booking_returns_correct_response(f):
     result = await f.api.wish.delete_wish_booking(
@@ -30,6 +31,7 @@ async def test_delete_wish_booking_returns_correct_response(f):
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_delete_wish_booking_deletes_objects_from_db_correctly(f):
     result = await f.api.wish.delete_wish_booking(  # noqa: F841
@@ -48,6 +50,7 @@ async def test_delete_wish_booking_deletes_objects_from_db_correctly(f):
     "access_token": "access_token",
     "api": "api",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_delete_wish_booking_with_nonexistent_booking_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -71,6 +74,7 @@ async def test_delete_wish_booking_with_nonexistent_booking_raises_correct_excep
     "access_token": "access_token",
     "api": "api",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_delete_wish_booking_with_wish_created_by_self_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -94,6 +98,7 @@ async def test_delete_wish_booking_with_wish_created_by_self_raises_correct_exce
     "access_token": "access_token_for_another_account",
     "api": "api",
     "db": "db_with_three_friend_accounts_and_one_booking",
+    "redis": "redis_with_three_sessions",
 })
 async def test_delete_wish_booking_with_booking_created_by_other_account_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

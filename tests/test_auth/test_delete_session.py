@@ -7,11 +7,14 @@ import pytest
 from sqlalchemy import select
 from wlss.shared.types import Id
 
-from src.auth.models import Session
-
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_account_and_one_session"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
+})
 async def test_delete_session_returns_204_with_correct_response(f):
     result = await f.api.auth.delete_session(
         account_id=Id(1),
@@ -23,7 +26,12 @@ async def test_delete_session_returns_204_with_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_account_and_one_session"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_one_account",
+    "redis": "redis_with_two_sessions",
+})
 async def test_delete_session_deletes_session_from_db_correctly(f):
     result = await f.api.auth.delete_session(  # noqa: F841
         account_id=Id(1),
@@ -31,12 +39,17 @@ async def test_delete_session_deletes_session_from_db_correctly(f):
         token=f.access_token,
     )
 
-    rows = (await f.db.execute(select(Session))).all()
-    assert not rows
+    user_sessions = (await f.redis.hgetall("account_id:1"))
+    assert "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec" not in user_sessions
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_one_account_and_one_session"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
+})
 async def test_delete_session_with_different_session_ids_in_url_path_and_token_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.auth.delete_session(

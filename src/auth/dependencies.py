@@ -14,8 +14,13 @@ from src.account.exceptions import AccountNotFoundError
 from src.account.models import Account
 from src.auth.exceptions import InvalidCredentialsError, SessionNotFoundError, TokenExpiredError
 from src.auth.schemas import AccessTokenPayload, RefreshTokenPayload
+from src.auth.storage import SessionStorage
 from src.config import CONFIG
 from src.shared.database import get_session
+
+
+async def get_session_storage() -> SessionStorage:
+    return SessionStorage(CONFIG.SESSION_STORAGE_HOST, CONFIG.SESSION_STORAGE_PORT)
 
 
 async def get_account_from_access_token(
@@ -29,6 +34,7 @@ async def get_account_from_access_token(
         ),
     ],
     session: Annotated[AsyncSession, Depends(get_session)],
+    auth_session: Annotated[SessionStorage, Depends(get_session_storage)],
 ) -> Account:
     try:
         payload = AccessTokenPayload.decode(authorization.credentials)
@@ -44,7 +50,7 @@ async def get_account_from_access_token(
 
     try:  # pylint: disable=too-many-try-statements
         current_account = await Account.get(session, payload.account_id)
-        await current_account.get_session(session, payload.session_id)
+        await auth_session.get_session(current_account.id, payload.session_id)
     except (SessionNotFoundError, AccountNotFoundError):
         # pylint: disable-next=raise-missing-from
         raise InvalidCredentialsError()  # noqa: B904,TRY200
@@ -63,6 +69,7 @@ async def get_account_from_refresh_token(
         ),
     ],
     session: Annotated[AsyncSession, Depends(get_session)],
+    auth_session: Annotated[SessionStorage, Depends(get_session_storage)],
 ) -> Account:
     try:
         payload = RefreshTokenPayload.decode(authorization.credentials)
@@ -78,7 +85,7 @@ async def get_account_from_refresh_token(
 
     try:  # pylint: disable=too-many-try-statements
         current_account = await Account.get(session, payload.account_id)
-        await current_account.get_session(session, payload.session_id)
+        await auth_session.get_session(current_account.id, payload.session_id)
     except (SessionNotFoundError, AccountNotFoundError):
         # pylint: disable-next=raise-missing-from
         raise InvalidCredentialsError()  # noqa: B904,TRY200

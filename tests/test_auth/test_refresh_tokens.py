@@ -16,7 +16,12 @@ from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "refresh_token": "refresh_token", "db": "db_with_one_account_and_one_session"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "refresh_token": "refresh_token",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
+})
 async def test_refresh_tokens_returns_correct_response(f):
     result = await f.api.auth.refresh_tokens(
         account_id=Id(1),
@@ -56,7 +61,8 @@ async def test_refresh_tokens_returns_correct_response(f):
 @pytest.mark.fixtures({
     "api": "api",
     "refresh_token": "refresh_token_incorrect",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
 })
 async def test_refresh_tokens_with_incorrect_token_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -87,7 +93,8 @@ async def test_refresh_tokens_with_incorrect_token_raises_correct_exception(f):
 @pytest.mark.fixtures({
     "api": "api",
     "refresh_token": "refresh_token_expired",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
 })
 async def test_refresh_tokens_with_expired_token_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -109,7 +116,8 @@ async def test_refresh_tokens_with_expired_token_raises_correct_exception(f):
 @pytest.mark.fixtures({
     "api": "api",
     "refresh_token": "refresh_token",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
 })
 async def test_refresh_tokens_with_account_different_than_current_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

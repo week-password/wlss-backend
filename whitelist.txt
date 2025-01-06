@@ -94,11 +94,20 @@ fastapi
 # file get (used by `minio` library)
 fget
 
+# flush all (used by `redis` library)
+flushall
+
 # file put (used by `minio` library)
 fput
 
 # full match (used by `re` library)
 fullmatch
+
+# hashmap get (used by `redis` library)
+hget
+
+# hashmap set (used by `redis` library)
+hset
 
 # jfif - image format
 jfif

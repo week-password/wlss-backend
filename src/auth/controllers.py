@@ -23,12 +23,17 @@ if TYPE_CHECKING:
     from wlss.shared.types import Id
 
     from api.auth.dtos import CreateSessionRequest
+    from src.auth.storage import SessionStorage
 
 
-async def create_session(request_data: CreateSessionRequest, session: AsyncSession) -> CreateSessionResponse:
+async def create_session(
+    request_data: CreateSessionRequest,
+    session_storage: SessionStorage,
+    session: AsyncSession,
+) -> CreateSessionResponse:
     credentials = Credentials.from_(request_data)
     account = await Account.get_by_credentials(session, credentials)
-    auth_session = await account.create_session(session)
+    auth_session = await session_storage.create_session(account.id)
     access_token = schemas.AccessTokenPayload(
         account_id=auth_session.account_id,
         created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
@@ -55,12 +60,13 @@ async def refresh_tokens(
     account_id: Id,
     session_id: UUID,
     current_account: Account,
+    session_storage: SessionStorage,
     session: AsyncSession,
 ) -> RefreshTokensResponse:
     if account_id != current_account.id:
         raise CannotRefreshTokensError()
 
-    auth_session = await current_account.get_session(session, session_id)
+    auth_session = await session_storage.get_session(account_id, session_id)
     access_token = schemas.AccessTokenPayload(
         account_id=auth_session.account_id,
         created_at=UtcDatetime(datetime.now(tz=timezone.utc)),
@@ -78,23 +84,22 @@ async def delete_session(
     account_id: Id,
     session_id: UUID,
     current_account: Account,
-    session: AsyncSession,
+    session_storage: SessionStorage,
 ) -> None:
     if (
-        not await current_account.has_session(session, session_id)
+        not (await session_storage.has_session(account_id, session_id))
         or not account_id == current_account.id
     ):
         raise CannotDeleteSessionError()
 
-    auth_session = await current_account.get_session(session, session_id)
-    await auth_session.delete(session)
+    await session_storage.delete_session(account_id, session_id)
 
 
 async def delete_all_sessions(
     account_id: Id,
     current_account: Account,
-    session: AsyncSession,
+    session_storage: SessionStorage,
 ) -> None:
     if account_id != current_account.id:
         raise CannotDeleteAllSessionsError()
-    await current_account.delete_all_sessions(session)
+    await session_storage.delete_all_sessions(account_id)

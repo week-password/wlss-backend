@@ -7,7 +7,12 @@ from api.profile.dtos import GetProfilesResponse
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_three_profiles"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_three_profiles",
+    "redis": "redis_with_one_session",
+})
 async def test_get_profiles_returns_correct_response(f):
     result = await f.api.profile.get_profiles(account_ids=[Id(1), Id(2)], token=f.access_token)
 
@@ -31,7 +36,12 @@ async def test_get_profiles_returns_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_three_profiles"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_three_profiles",
+    "redis": "redis_with_one_session",
+})
 async def test_get_profiles_without_account_ids_returns_correct_response(f):
     result = await f.api.profile.get_profiles(account_ids=[], token=f.access_token)
 

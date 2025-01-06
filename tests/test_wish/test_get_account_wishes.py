@@ -9,7 +9,12 @@ from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_two_accounts_and_two_wishes"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_two_accounts_and_two_wishes",
+    "redis": "redis_with_one_session",
+})
 async def test_get_account_wishes_returns_correct_response(f):
     result = await f.api.wish.get_account_wishes(account_id=Id(1), token=f.access_token)
 
@@ -37,7 +42,12 @@ async def test_get_account_wishes_returns_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "api": "api", "db": "db_with_two_accounts_and_two_wishes"})
+@pytest.mark.fixtures({
+    "access_token": "access_token",
+    "api": "api",
+    "db": "db_with_two_accounts_and_two_wishes",
+    "redis": "redis_with_one_session",
+})
 async def test_get_account_wishes_from_not_friend_account_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.wish.get_account_wishes(account_id=Id(2), token=f.access_token)

@@ -21,6 +21,11 @@ services:
       - minio:/data
     command: server /data --console-address ":9001"
 
+  redis:
+    image: redis:7.4.1-alpine
+    ports:
+      - "6379:6379"
+
 volumes:
   postgres:
   minio:

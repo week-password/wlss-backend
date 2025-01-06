@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import json
 from uuid import UUID
 
 import jwt
@@ -10,7 +11,6 @@ from wlss.shared.types import Id
 
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account, PasswordHash
-from src.auth.models import Session
 from src.config import CONFIG
 from tests.utils import bcrypt as bcrypt_cached
 
@@ -33,20 +33,8 @@ async def db_with_one_account(db_empty):
 
 
 @pytest.fixture
-async def db_with_one_account_and_one_session(db_with_one_account):  # pylint: disable=redefined-outer-name
+async def db_with_two_accounts(db_with_one_account):  # pylint: disable=redefined-outer-name
     session = db_with_one_account
-
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
-    session.add(auth_session)
-    await session.flush()
-
-    await session.commit()
-    return session
-
-
-@pytest.fixture
-async def db_with_two_accounts(db_with_one_account_and_one_session):  # pylint: disable=redefined-outer-name
-    session = db_with_one_account_and_one_session
 
     account = Account(id=Id(2), login=AccountLogin("john_smith"), email=AccountEmail("john.smith@mail.com"))
     session.add(account)
@@ -59,6 +47,20 @@ async def db_with_two_accounts(db_with_one_account_and_one_session):  # pylint: 
 
     await session.commit()
     return session
+
+
+@pytest.fixture
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
 
 
 @pytest.fixture

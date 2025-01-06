@@ -16,7 +16,12 @@ from tests.utils.mocks.models import __eq__
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "db": "db_with_one_profile_and_one_file", "access_token": "access_token"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "db": "db_with_one_profile_and_one_file",
+    "access_token": "access_token",
+    "redis": "redis_with_one_session",
+})
 async def test_update_profile_returns_correct_response(f):
     result = await f.api.profile.update_profile(
         account_id=Id(1),
@@ -38,7 +43,12 @@ async def test_update_profile_returns_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "db": "db_with_one_profile_and_one_file", "access_token": "access_token"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "db": "db_with_one_profile_and_one_file",
+    "access_token": "access_token",
+    "redis": "redis_with_one_session",
+})
 async def test_update_profile_updates_profile_in_db_correctly(f):
     result = await f.api.profile.update_profile(  # noqa: F841
         account_id=Id(1),

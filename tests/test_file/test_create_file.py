@@ -22,7 +22,8 @@ from tests.utils.mocks.models import __eq__
 @pytest.mark.fixtures({
     "api": "api",
     "access_token": "access_token",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_empty",
 })
 async def test_create_file_returns_correct_response(f):
@@ -54,7 +55,8 @@ async def test_create_file_returns_correct_response(f):
 @pytest.mark.fixtures({
     "api": "api",
     "access_token": "access_token",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_empty",
 })
 async def test_create_file_creates_file_in_db_correctly(f):
@@ -92,7 +94,8 @@ async def test_create_file_creates_file_in_db_correctly(f):
 @pytest.mark.fixtures({
     "api": "api",
     "access_token": "access_token",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_empty",
 })
 async def test_create_file_uploads_file_to_minio_correctly(f):
@@ -126,7 +129,8 @@ async def test_create_file_uploads_file_to_minio_correctly(f):
 @pytest.mark.fixtures({
     "access_token": "access_token",
     "api": "api",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_empty",
 })
 @patch("src.file.dependencies.MAX_SIZE", 10)  # lower max size to improve test's performance
@@ -160,7 +164,8 @@ async def test_create_file_with_too_large_file_raises_correct_exception(f):
 @pytest.mark.fixtures({
     "access_token": "access_token",
     "api": "api",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_empty",
 })
 async def test_create_file_with_filename_without_extension_raises_correct_exception(f):

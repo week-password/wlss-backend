@@ -21,6 +21,7 @@ from tests.utils.mocks.models import __eq__
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_friendship_request_from_another_user",
+    "redis": "redis_with_one_session",
 })
 async def test_reject_friendship_request_returns_correct_response(f):
     result = await f.api.friendship.reject_friendship_request(request_id=Id(1), token=f.access_token)
@@ -40,6 +41,7 @@ async def test_reject_friendship_request_returns_correct_response(f):
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_friendship_request_from_another_user",
+    "redis": "redis_with_one_session",
 })
 async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
     await f.api.friendship.reject_friendship_request(request_id=Id(1), token=f.access_token)
@@ -63,6 +65,7 @@ async def test_reject_friendship_request_updates_objects_in_db_correctly(f):
     "access_token": "access_token",
     "api": "api",
     "db": "db_with_one_friendship_request",
+    "redis": "redis_with_one_session",
 })
 async def test_reject_friendship_request_with_friendship_request_from_another_user_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

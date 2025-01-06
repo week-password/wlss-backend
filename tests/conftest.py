@@ -6,6 +6,7 @@ import asyncio
 from types import SimpleNamespace
 
 import pytest
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 
 from api.client import Api
@@ -57,6 +58,7 @@ async def db_empty():
 
 @pytest.fixture
 async def minio_empty():
+    # TODO: should we set 'autouse=True' to all "empty" fixtures?
     """Empty minio."""
     minio = Minio(
         CONFIG.MINIO_SCHEMA,
@@ -69,6 +71,14 @@ async def minio_empty():
         for minio_object in minio.list_objects(bucket_name, recursive=True):
             minio.remove_object(bucket_name, minio_object.object_name)
     return minio
+
+
+@pytest.fixture(autouse=True)
+async def redis_empty():
+    async with Redis(host="localhost", port=6379, decode_responses=True) as connection:
+        await connection.flushall()
+        assert not (await connection.keys()), "Redis is not empty"
+        return connection
 
 
 @pytest.fixture

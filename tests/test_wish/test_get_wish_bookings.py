@@ -13,6 +13,7 @@ from tests.utils.dirty_equals import IsUtcDatetimeSerialized
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_get_wish_bookings_returns_correct_response(f):
     result = await f.api.wish.get_wish_bookings(account_id=Id(2), token=f.access_token)
@@ -35,6 +36,7 @@ async def test_get_wish_bookings_returns_correct_response(f):
     "access_token": "access_token",
     "api": "api",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_one_session",
 })
 async def test_get_wish_bookings_with_same_account_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:

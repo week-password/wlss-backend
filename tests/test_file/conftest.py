@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from io import BytesIO
 from uuid import UUID
@@ -13,14 +14,13 @@ from wlss.shared.types import Id
 from api.file.enums import Extension, MimeType
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account, PasswordHash
-from src.auth.models import Session
 from src.config import CONFIG
 from src.file.models import File
 from tests.utils import bcrypt as bcrypt_cached
 
 
 @pytest.fixture
-async def db_with_one_account_and_one_session(db_empty):
+async def db_with_one_account(db_empty):
     session = db_empty
 
     account = Account(id=Id(1), email=AccountEmail("john.doe@mail.com"), login=AccountLogin("john_doe"))
@@ -32,17 +32,13 @@ async def db_with_one_account_and_one_session(db_empty):
     session.add(password_hash)
     await session.flush()
 
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
-    session.add(auth_session)
-    await session.flush()
-
     await session.commit()
     return session
 
 
 @pytest.fixture
-async def db_with_one_file(db_with_one_account_and_one_session):  # pylint: disable=redefined-outer-name
-    session = db_with_one_account_and_one_session
+async def db_with_one_file(db_with_one_account):  # pylint: disable=redefined-outer-name
+    session = db_with_one_account
 
     file = File(
         id=UUID("4c8a2c85-0fe3-4ab0-b683-96bb1805d370"),
@@ -63,6 +59,20 @@ def minio_with_one_file(minio_empty):
     minio = minio_empty
     minio.put_object("files", "4c8a2c85-0fe3-4ab0-b683-96bb1805d370", data=BytesIO(b"image binary data"), length=17)
     return minio
+
+
+@pytest.fixture
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
 
 
 @pytest.fixture

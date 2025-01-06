@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import uuid
 from unittest.mock import patch
 
 import dirty_equals
@@ -8,15 +9,10 @@ import httpx
 import jwt
 import pydantic
 import pytest
-from sqlalchemy import select
-from wlss.shared.types import Id
 
 from api.auth.dtos import CreateSessionRequest, CreateSessionResponse
-from src.auth.models import Session
 from src.config import CONFIG
-from src.shared.database import Base
-from tests.utils.dirty_equals import IsUtcDatetime, IsUtcDatetimeSerialized
-from tests.utils.mocks.models import __eq__
+from tests.utils.dirty_equals import IsUtcDatetimeSerialized
 
 
 @pytest.mark.anyio
@@ -52,22 +48,20 @@ async def test_create_session_returns_correct_response(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account"})
-async def test_create_session_creates_session_in_db_correctly(f):
-    result = await f.api.auth.create_session(  # noqa: F841
-        request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "qwerty123"}),
-    )
+@pytest.mark.fixtures({"api": "api", "db": "db_with_one_account", "redis": "redis_empty"})
+async def test_create_session_creates_session_in_redis_correctly(f):
+    with patch.object(uuid, "uuid4", lambda: "6640c285-1f7b-44e9-8e30-16f293631285"):
 
-    with patch.object(Base, "__eq__", __eq__):
-        rows = (await f.db.execute(select(Session))).scalars().all()
-        assert rows == [
-            Session(
-                id=dirty_equals.IsUUID(4),
-                account_id=Id(1),
-                created_at=IsUtcDatetime,
-                updated_at=IsUtcDatetime,
-            ),
-        ]
+        result = await f.api.auth.create_session(  # noqa: F841
+            request_data=CreateSessionRequest.model_validate({"login": "john_doe", "password": "qwerty123"}),
+        )
+
+    session = await f.redis.hget("account_id:1", "6640c285-1f7b-44e9-8e30-16f293631285")
+    assert json.loads(session) == {
+        "account_id": 1,
+        "created_at": IsUtcDatetimeSerialized,
+        "id": "6640c285-1f7b-44e9-8e30-16f293631285",
+    }
 
 
 @pytest.mark.anyio

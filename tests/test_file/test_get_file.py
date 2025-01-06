@@ -31,7 +31,8 @@ async def test_get_file_returns_correct_response(f):
 @pytest.mark.anyio
 @pytest.mark.fixtures({
     "api": "api",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
     "minio": "minio_with_one_file",
     "tmp_path": "tmp_path",
 })

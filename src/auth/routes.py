@@ -9,7 +9,8 @@ from api.auth.dtos import CreateSessionRequest, CreateSessionResponse, RefreshTo
 from api.shared.fields import IdField, UuidField
 from src.account.models import Account
 from src.auth import controllers
-from src.auth.dependencies import get_account_from_access_token, get_account_from_refresh_token
+from src.auth.dependencies import get_account_from_access_token, get_account_from_refresh_token, get_session_storage
+from src.auth.storage import SessionStorage
 from src.shared import swagger as shared_swagger
 from src.shared.database import get_session
 
@@ -31,9 +32,10 @@ router = APIRouter(tags=["auth"])
 )
 async def create_session(
     request_data: Annotated[CreateSessionRequest, Body()],
+    session_storage: SessionStorage = Depends(get_session_storage),
     session: AsyncSession = Depends(get_session),
 ) -> CreateSessionResponse:
-    return await controllers.create_session(request_data, session)
+    return await controllers.create_session(request_data, session_storage, session)
 
 
 @router.post(
@@ -51,9 +53,10 @@ async def refresh_tokens(
     account_id: Annotated[IdField, Path(example=42)],
     session_id: Annotated[UuidField, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],
     current_account: Annotated[Account, Depends(get_account_from_refresh_token)],
+    session_storage: SessionStorage = Depends(get_session_storage),
     session: AsyncSession = Depends(get_session),
 ) -> RefreshTokensResponse:
-    return await controllers.refresh_tokens(account_id, session_id, current_account, session)
+    return await controllers.refresh_tokens(account_id, session_id, current_account, session_storage, session)
 
 
 @router.delete(
@@ -72,9 +75,9 @@ async def delete_session(
     account_id: Annotated[IdField, Path(example=42)],
     session_id: Annotated[UuidField, Path(example="b9dd3a32-aee8-4a6b-a519-def9ca30c9ec")],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
-    session: AsyncSession = Depends(get_session),
+    session_storage: SessionStorage = Depends(get_session_storage),
 ) -> None:
-    return await controllers.delete_session(account_id, session_id, current_account, session)
+    return await controllers.delete_session(account_id, session_id, current_account, session_storage)
 
 
 @router.delete(
@@ -94,6 +97,6 @@ async def delete_session(
 async def delete_all_sessions(
     account_id: Annotated[IdField, Path(example=42)],
     current_account: Annotated[Account, Depends(get_account_from_access_token)],
-    session: AsyncSession = Depends(get_session),
+    session_storage: SessionStorage = Depends(get_session_storage),
 ) -> None:
-    return await controllers.delete_all_sessions(account_id, current_account, session)
+    return await controllers.delete_all_sessions(account_id, current_account, session_storage)

@@ -15,7 +15,12 @@ from tests.utils.mocks.models import __eq__
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_two_friend_accounts_and_one_wish"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_two_friend_accounts_and_one_wish",
+    "redis": "redis_with_one_session",
+})
 async def test_create_wish_booking_returns_correct_response(f):
     result = await f.api.wish.create_wish_booking(
         account_id=Id(2),
@@ -37,6 +42,7 @@ async def test_create_wish_booking_returns_correct_response(f):
     "api": "api",
     "access_token": "access_token",
     "db": "db_with_two_friend_accounts_and_one_wish_booking",
+    "redis": "redis_with_two_sessions",
 })
 async def test_create_wish_booking_with_already_booked_with_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -56,7 +62,12 @@ async def test_create_wish_booking_with_already_booked_with_raises_correct_excep
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_two_friend_accounts_and_one_wish"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_two_friend_accounts_and_one_wish",
+    "redis": "redis_with_one_session",
+})
 async def test_create_wish_booking_creates_objects_in_db_correctly(f):
     result = await f.api.wish.create_wish_booking(  # noqa: F841
         account_id=Id(2),
@@ -79,7 +90,12 @@ async def test_create_wish_booking_creates_objects_in_db_correctly(f):
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "api": "api", "db": "db_with_two_accounts_and_one_wish"})
+@pytest.mark.fixtures({
+    "access_token": "access_token",
+    "api": "api",
+    "db": "db_with_two_accounts_and_one_wish",
+    "redis": "redis_with_one_session",
+})
 async def test_create_wish_booking_for_non_friend_account_returns_403_with_correct_response(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.wish.create_wish_booking(

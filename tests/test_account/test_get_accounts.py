@@ -9,7 +9,12 @@ from api.account.dtos import GetAccountsResponse
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"access_token": "access_token", "api": "api", "db": "db_with_two_accounts"})
+@pytest.mark.fixtures({
+    "access_token": "access_token",
+    "api": "api",
+    "db": "db_with_two_accounts",
+    "redis": "redis_with_one_session",
+})
 async def test_get_accounts_returns_correct_response(f):
     result = await f.api.account.get_accounts(
         account_ids=[Id(1)],
@@ -30,7 +35,8 @@ async def test_get_accounts_returns_correct_response(f):
 @pytest.mark.fixtures({
     "access_token": "access_token_incorrect",
     "api": "api",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
 })
 async def test_get_accounts_with_incorrect_token_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -60,7 +66,8 @@ async def test_get_accounts_with_incorrect_token_raises_correct_exception(f):
 @pytest.mark.fixtures({
     "access_token": "access_token_expired",
     "api": "api",
-    "db": "db_with_one_account_and_one_session",
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
 })
 async def test_get_accounts_with_expired_token_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
@@ -81,7 +88,9 @@ async def test_get_accounts_with_expired_token_raises_correct_exception(f):
 @pytest.mark.fixtures({
     "access_token": "access_token_with_nonexistent_account",
     "api": "api",
-    "db": "db_with_one_account_and_one_session"})
+    "db": "db_with_one_account",
+    "redis": "redis_with_one_session",
+})
 async def test_get_accounts_with_nonexistent_account_in_token_payload_raises_correct_exception(f):
     with pytest.raises(httpx.HTTPError) as exc_info:
         await f.api.account.get_accounts(account_logins=[AccountLogin("john_doe")], token=f.access_token)

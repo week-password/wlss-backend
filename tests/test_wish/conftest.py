@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -14,7 +15,6 @@ from wlss.wish.types import WishDescription, WishTitle
 from api.file.enums import Extension, MimeType
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account, PasswordHash
-from src.auth.models import Session
 from src.config import CONFIG
 from src.file.models import File
 from src.friendship.models import Friendship
@@ -34,10 +34,6 @@ async def db_with_one_account_and_one_file(db_empty):
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
     password_hash = PasswordHash(account_id=account.id, value=hash_value)
     session.add(password_hash)
-    await session.flush()
-
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
-    session.add(auth_session)
     await session.flush()
 
     file = File(
@@ -68,7 +64,6 @@ async def db_with_one_account_and_one_file_already_in_use(db_empty):
             description=None,
             name=ProfileName("John Doe"),
         ),
-        Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1)),
         File(
             id=UUID("0b928aaa-521f-47ec-8be5-396650e2a187"),
             extension=Extension.PNG,
@@ -147,10 +142,6 @@ async def db_with_one_wish_and_one_file_already_in_use(db_empty):
             description=None,
             name=ProfileName("John Doe"),
         ),
-        Session(
-            id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-            account_id=Id(1),
-        ),
         File(
             id=UUID("4b94605b-f5e1-40b1-b9fc-c635c9529e3e"),
             extension=Extension.PNG,
@@ -177,10 +168,6 @@ async def db_with_two_accounts_and_one_file(db_with_one_account_and_one_file):  
 
     account = Account(id=Id(2), email=AccountEmail("john.smith@mail.com"), login=AccountLogin("john_smith"))
     session.add(account)
-    await session.flush()
-
-    auth_session = Session(id=UUID("a3bdfc12-ad0b-419c-97fa-59695798ca80"), account_id=Id(2))
-    session.add(auth_session)
     await session.flush()
 
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
@@ -296,10 +283,6 @@ async def db_with_three_friend_accounts_and_one_booking(  # pylint: disable=rede
     session.add(account)
     await session.flush()
 
-    auth_session = Session(id=UUID("8d0c487d-dd59-4d6a-b102-620633cb33ab"), account_id=Id(3))
-    session.add(auth_session)
-    await session.flush()
-
     hash_value = bcrypt_cached.hashpw(b"qwerty123", salt=b"$2b$12$K4wmY3GEMQFoMvpuFK.GMu")
     password_hash = PasswordHash(account_id=Id(3), value=hash_value)
     session.add(password_hash)
@@ -323,6 +306,51 @@ async def db_with_three_friend_accounts_and_one_booking(  # pylint: disable=rede
 
     await session.flush()
     return session
+
+
+@pytest.fixture
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
+    return redis
+
+
+@pytest.fixture
+async def redis_with_two_sessions(redis_with_one_session):
+    redis = redis_with_one_session
+    await redis.hset(
+        "account_id:2",
+        "2ee55d6c-fe71-4ba0-9bbc-df074d365f60",
+        json.dumps({
+            "account_id": 2,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "2ee55d6c-fe71-4ba0-9bbc-df074d365f60",
+        })
+    )
+    return redis
+
+
+@pytest.fixture
+async def redis_with_three_sessions(redis_with_two_sessions):
+    redis = redis_with_two_sessions
+    await redis.hset(
+        "account_id:3",
+        "8d0c487d-dd59-4d6a-b102-620633cb33ab",
+        json.dumps({
+            "account_id": 2,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "8d0c487d-dd59-4d6a-b102-620633cb33ab",
+        })
+    )
+    return redis
 
 
 @pytest.fixture

@@ -6,7 +6,12 @@ from api.profile.dtos import SearchProfilesResponse
 
 
 @pytest.mark.anyio
-@pytest.mark.fixtures({"api": "api", "access_token": "access_token", "db": "db_with_three_profiles"})
+@pytest.mark.fixtures({
+    "api": "api",
+    "access_token": "access_token",
+    "db": "db_with_three_profiles",
+    "redis": "redis_with_one_session",
+})
 async def test_search_profiles_returns_correct_response(f):
     result = await f.api.profile.search_profiles(token=f.access_token)
 

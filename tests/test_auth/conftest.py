@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
@@ -12,7 +13,6 @@ from wlss.shared.types import Id
 
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account, PasswordHash
-from src.auth.models import Session
 from src.config import CONFIG
 from tests.utils import bcrypt as bcrypt_cached
 
@@ -36,29 +36,33 @@ async def db_with_one_account(db_empty):
 
 
 @pytest.fixture
-async def db_with_one_account_and_one_session(db_with_one_account):  # pylint: disable=redefined-outer-name
-    session = db_with_one_account
-
-    auth_session = Session(id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"), account_id=Id(1))
-    session.add(auth_session)
-    await session.flush()
-
-    await session.commit()
-    return session
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
+    return redis
 
 
 @pytest.fixture
-async def db_with_one_account_and_two_sessions(
-    db_with_one_account_and_one_session,
-):  # pylint: disable=redefined-outer-name
-    session = db_with_one_account_and_one_session
-
-    auth_session = Session(id=UUID("2ee55d6c-fe71-4ba0-9bbc-df074d365f60"), account_id=Id(1))
-    session.add(auth_session)
-    await session.flush()
-
-    await session.commit()
-    return session
+async def redis_with_two_sessions(redis_with_one_session):
+    redis = redis_with_one_session
+    await redis.hset(
+        "account_id:1",
+        "2ee55d6c-fe71-4ba0-9bbc-df074d365f60",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "2ee55d6c-fe71-4ba0-9bbc-df074d365f60",
+        })
+    )
+    return redis
 
 
 @pytest.fixture

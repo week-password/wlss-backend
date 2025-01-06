@@ -41,6 +41,7 @@ overrides = "7.3.1"
 psycopg2-binary = "2.9.7"  # used for some special cases when we cannot work with database via async code
 pyjwt = "2.8.0"
 python-dotenv = "1.0.0"
+redis = "5.2.1"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.12"}
 varname = "0.12.0"
 

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 import jwt
-from pydantic import ConfigDict
+from pydantic import ConfigDict, Field
 
 from api.account.fields import AccountEmailField, AccountLoginField, AccountPasswordField
 from api.shared.fields import IdField, UtcDatetimeField, UuidField
@@ -22,10 +23,16 @@ class Credentials(Schema):
     password: AccountPasswordField
 
 
+class SessionData(Schema):
+    id: UuidField  # noqa: A003
+    account_id: IdField
+    created_at: UtcDatetimeField
+
+
 class AccessTokenPayload(Schema):
     account_id: IdField
     created_at: UtcDatetimeField
-    session_id: UuidField
+    session_id: UuidField = Field(default_factory=uuid.uuid4)
 
     model_config = ConfigDict(extra="forbid")
 

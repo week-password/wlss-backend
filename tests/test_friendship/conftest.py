@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -12,7 +13,6 @@ from wlss.shared.types import Id
 from api.friendship.enums import FriendshipRequestStatus
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account
-from src.auth.models import Session
 from src.config import CONFIG
 from src.friendship.models import Friendship, FriendshipRequest
 from src.profile.models import Profile
@@ -37,18 +37,6 @@ async def db_with_two_accounts(db_empty):
     session.add_all(accounts)
     await session.flush()
 
-    auth_session = Session(
-        id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-        account_id=Id(1),
-    )
-    session.add(auth_session)
-    auth_session = Session(
-        id=UUID("f83a7e2b-7f2d-4e12-be41-513d950e54d9"),
-        account_id=Id(2),
-    )
-    session.add(auth_session)
-    await session.flush()
-
     profiles = [
         Profile(
             account_id=Id(1),
@@ -68,6 +56,21 @@ async def db_with_two_accounts(db_empty):
 
     await session.commit()
     return session
+
+
+@pytest.fixture
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
+    return redis
 
 
 @pytest.fixture

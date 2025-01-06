@@ -13,8 +13,6 @@ from wlss.shared.types import Id, UtcDatetime
 
 from src.account.columns import AccountEmailColumn, AccountLoginColumn
 from src.account.exceptions import AccountNotFoundError, DuplicateAccountException
-from src.auth.exceptions import SessionNotFoundError
-from src.auth.models import Session
 from src.friendship.models import Friendship, FriendshipRequest
 from src.profile.models import Profile
 from src.shared.columns import IdColumn, UtcDatetimeColumn
@@ -26,7 +24,6 @@ from src.wish.models import Wish, WishBooking
 
 if TYPE_CHECKING:
     from typing import Self
-    from uuid import UUID
 
     from sqlalchemy.ext.asyncio import AsyncSession
     from wlss.account.types import AccountPassword
@@ -118,33 +115,10 @@ class Account(Base):
         rows = (await session.execute(query)).all()
         return [typing.cast(Account, row.Account) for row in rows]
 
-    async def create_session(self: Self, session: AsyncSession) -> Session:
-        auth_session = Session(account_id=self.id)
-        session.add(auth_session)
-        await session.flush()
-        return auth_session
-
     async def _get_password_hash(self: Self, session: AsyncSession) -> PasswordHash:
         query = select(PasswordHash).where(PasswordHash.account_id == self.id)
         row = (await session.execute(query)).one()
         return typing.cast(PasswordHash, row.PasswordHash)
-
-    async def has_session(self: Self, session: AsyncSession, session_id: UUID) -> bool:
-        query = select(Session).where((Session.id == session_id) & (Session.account_id == self.id))
-        row = (await session.execute(query)).one_or_none()
-        return row is not None
-
-    async def get_session(self: Self, session: AsyncSession, session_id: UUID) -> Session:
-        query = select(Session).where((Session.id == session_id) & (Session.account_id == self.id))
-        row = (await session.execute(query)).one_or_none()
-        if not row:
-            raise SessionNotFoundError()
-        return typing.cast(Session, row.Session)
-
-    async def delete_all_sessions(self: Self, session: AsyncSession) -> None:
-        query = delete(Session).where(Session.account_id == self.id)
-        await session.execute(query)
-        await session.flush()
 
     async def get_profile(self: Self, session: AsyncSession) -> Profile:
         query = select(Profile).where(Profile.account_id == self.id)

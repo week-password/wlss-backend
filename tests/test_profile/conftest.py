@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -13,7 +14,6 @@ from wlss.shared.types import Id
 from api.file.enums import Extension, MimeType
 from api.shared.datetime import DATETIME_FORMAT
 from src.account.models import Account
-from src.auth.models import Session
 from src.config import CONFIG
 from src.file.models import File
 from src.profile.models import Profile
@@ -29,13 +29,6 @@ async def db_with_one_profile_and_one_file(db_empty):
         login=AccountLogin("john_doe"),
     )
     session.add(account)
-    await session.flush()
-
-    auth_session = Session(
-        id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-        account_id=Id(1),
-    )
-    session.add(auth_session)
     await session.flush()
 
     profile = Profile(
@@ -76,10 +69,6 @@ async def db_with_one_profile_and_one_file_already_in_use(db_empty):
             avatar_id=None,
             description=None,
             name=ProfileName("John Doe"),
-        ),
-        Session(
-            id=UUID("b9dd3a32-aee8-4a6b-a519-def9ca30c9ec"),
-            account_id=Id(1),
         ),
 
 
@@ -137,6 +126,21 @@ async def db_with_three_profiles(db_with_one_profile_and_one_file):  # pylint: d
     ])
     await session.flush()
     return session
+
+
+@pytest.fixture
+async def redis_with_one_session(redis_empty):
+    redis = redis_empty
+    await redis.hset(
+        "account_id:1",
+        "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        json.dumps({
+            "account_id": 1,
+            "created_at": datetime.now(tz=timezone.utc).strftime(DATETIME_FORMAT),
+            "id": "b9dd3a32-aee8-4a6b-a519-def9ca30c9ec",
+        }),
+    )
+    return redis
 
 
 @pytest.fixture
